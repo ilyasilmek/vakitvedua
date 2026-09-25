@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2A9D8F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Vakit ve Dua">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Vakit ve Dua</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Rubik:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#F2F8F8;--bg2:#E6F2F1;--card:#FFFFFF;--ink:#1D3A40;--mute:#6A8589;--line:#DCE9E8;--acc:#2A9D8F;--acc2:#5CC2B3;--brass:#C4952F;--accsoft:#E2F4F1;--shadow:0 6px 24px rgba(42,110,110,.08);color-scheme:light}
+body{background:linear-gradient(180deg,var(--bg2),var(--bg) 320px);background-color:var(--bg);color:var(--ink);font-family:Rubik,system-ui,sans-serif;font-size:15px;min-height:100vh;background-attachment:fixed}
+.wrap{max-width:560px;margin:0 auto;padding:16px 16px 100px}
+header{display:flex;flex-direction:column;gap:12px}
+h1{font-size:21px;margin:0;font-weight:600}
+.hijri{color:var(--brass);font-size:13px;margin-top:3px;font-weight:500}
+.loc{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+select,button{font:inherit;color:var(--ink)}
+select{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 10px;width:100%;box-shadow:var(--shadow);min-width:0}
+.approx{font-size:11px;color:var(--brass);margin-top:-4px}
+/* Gökyüzü kartı */
+.sky{margin-top:16px;border-radius:22px;padding:18px 18px 14px;color:#fff;position:relative;overflow:hidden;background:var(--g,linear-gradient(160deg,#6EC6E8,#A8E0F0));transition:background 1.2s ease;box-shadow:0 10px 30px rgba(60,140,170,.25)}
+.sky small{opacity:.9;text-transform:uppercase;letter-spacing:.08em;font-size:11px;font-weight:500}
+.cd{font-size:44px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px;text-shadow:0 2px 12px rgba(0,0,0,.12)}
+.cd span{display:inline-block}
+.cd span.flip{animation:flip .35s ease}
+@keyframes flip{from{transform:translateY(-35%);opacity:.2}to{transform:none;opacity:1}}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.brand>svg{width:44px;height:44px;flex:none;filter:drop-shadow(0 4px 10px rgba(42,157,143,.3))}
+.info-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--acc);display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow);flex:none}
+.info-btn svg{width:22px;height:22px}
+.ab-head{display:flex;align-items:center;gap:14px;margin:20px 0 6px}
+.ab-head svg{width:60px;height:60px}
+.ab{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:4px 18px 10px;box-shadow:var(--shadow);margin-top:12px}
+.ab h3{font-size:15px;margin:16px 0 6px;color:var(--acc)}
+.ab p{margin:0 0 8px;line-height:1.6;color:var(--ink);font-size:14px}
+.splash{position:fixed;inset:0;z-index:50;background:linear-gradient(170deg,#F4FBFA,#DDF1EE);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;animation:spOut .5s ease 2s forwards}
+.sp-logo svg{width:96px;height:96px;animation:spPop .7s cubic-bezier(.3,1.5,.5,1) backwards;filter:drop-shadow(0 10px 24px rgba(42,157,143,.35))}
+.sp-logo .lg-arch{stroke-dasharray:80;stroke-dashoffset:80;animation:draw 1s ease .35s forwards}
+.sp-logo .lg-base{stroke-dasharray:40;stroke-dashoffset:40;animation:draw .5s ease .25s forwards}
+.sp-logo .lg-moon{transform-origin:30px 20px;animation:moonIn .7s ease 1s backwards}
+.sp-name{font-size:24px;font-weight:600;color:var(--ink);animation:rise .6s ease .6s backwards}
+.sp-sub{font-size:13px;color:var(--mute);animation:rise .6s ease .8s backwards}
+@keyframes spPop{from{transform:scale(.4);opacity:0}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes moonIn{from{transform:scale(0) rotate(-90deg);opacity:0}}
+@keyframes spOut{to{opacity:0;visibility:hidden}}
+.slides{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin-top:16px;scrollbar-width:none;border-radius:22px}
+.slides::-webkit-scrollbar{display:none}
+.slides>.sky{flex:0 0 100%;box-sizing:border-box;scroll-snap-align:start;margin-top:0}
+.kslide{background:linear-gradient(165deg,#FFFFFF,#E4F4F1)!important;color:var(--ink)!important;border:1px solid var(--line);box-shadow:0 10px 30px rgba(42,110,110,.12)!important}
+.kslide small{color:var(--acc)}
+.dial{display:block;width:100%;height:auto;margin-top:6px}
+#dHand{animation:hp 2.4s ease-in-out infinite}
+@keyframes hp{50%{opacity:.65}}
+.dseg{animation:segIn .7s ease backwards}
+@keyframes segIn{from{opacity:0}}
+.kzw{animation:kzf 2s ease-in-out infinite}
+.kmsg{display:flex;gap:9px;align-items:flex-start;background:var(--accsoft);border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:13px;line-height:1.45;margin-top:8px}
+.kmsg i{flex:none;width:18px;height:18px;border-radius:50%;border:2px solid #2A9D8F;position:relative;margin-top:1px}
+.kmsg i::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #2A9D8F;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.kmsg.on i{border-color:#D5503C;animation:kp 1.2s ease-in-out infinite}
+.kmsg.on i::after{border:0;content:"!";color:#D5503C;font-weight:700;font-size:12px;left:4px;top:-1px;transform:none;width:auto;height:auto}
+.dots{display:flex;justify-content:center;gap:6px;margin-top:10px}
+.dots button{width:8px;height:8px;border-radius:4px;border:0;background:var(--line);padding:0;cursor:pointer;transition:width .3s,background .3s}
+.dots button[aria-current="true"]{width:22px;background:var(--brass)}
+.kchips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.kchips div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:9px 6px;text-align:center;box-shadow:var(--shadow);transition:background .4s,border-color .4s}
+.kchips span{display:block;font-size:11px;color:var(--mute)}
+.kchips b{font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.kchips div.on{background:#FFE9E5;border-color:#F5A99C}
+.kchips div.on b{color:#B8412F}
+.kr{display:inline-flex;align-items:center;gap:7px;margin-top:6px;font-size:13px;background:rgba(255,255,255,.18);padding:5px 11px;border-radius:20px;backdrop-filter:blur(4px)}
+.kr i{width:8px;height:8px;border-radius:50%;background:#B8F0D0;flex:none}
+.kr.on{background:rgba(255,90,70,.3)}
+.kr.on i{background:#FFB3A6;animation:kp 1.2s ease-in-out infinite}
+@keyframes kp{50%{transform:scale(1.8);opacity:.4}}
+.kzs{animation:kzf 2s ease-in-out infinite}
+@keyframes kzf{50%{opacity:.55}}
+.arc{display:block;width:100%;height:auto;margin-top:6px}
+.star{animation:tw 3s ease-in-out infinite}
+@keyframes tw{50%{opacity:.25}}
+.times{margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.t{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 6px;text-align:center;box-shadow:var(--shadow);animation:rise .5s ease backwards;transition:transform .25s,background .4s,border-color .4s}
+.t:nth-child(2){animation-delay:.05s}.t:nth-child(3){animation-delay:.1s}.t:nth-child(4){animation-delay:.15s}.t:nth-child(5){animation-delay:.2s}.t:nth-child(6){animation-delay:.25s}
+.t b{display:block;font-size:21px;font-variant-numeric:tabular-nums;margin-top:2px}
+.t span{font-size:12px;color:var(--mute)}
+.t.on{border-color:var(--acc2);background:var(--accsoft);transform:translateY(-2px)}
+.t.on span{color:var(--acc);font-weight:600}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+.note{font-size:12px;color:var(--mute);margin-top:12px;line-height:1.55}
+.qibla{margin-top:14px;display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow)}
+.qibla svg{flex:none}
+#needle{transition:transform 1.2s cubic-bezier(.3,1.6,.5,1);transform-origin:32px 32px}
+nav{position:fixed;left:0;right:0;bottom:0;background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+nav button{flex:1;background:none;border:0;padding:10px 4px 12px;font-size:12px;color:var(--mute);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .25s}
+nav svg{width:22px;height:22px;transition:transform .3s}
+nav button[aria-selected="true"]{color:var(--acc);font-weight:600}
+nav button[aria-selected="true"] svg{transform:translateY(-2px) scale(1.1)}
+button:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+section{animation:page .4s ease}
+@keyframes page{from{opacity:0;transform:translateY(8px)}}
+h2{font-size:18px;margin:20px 0 12px}
+details{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:8px;box-shadow:var(--shadow);overflow:hidden}
+summary{padding:14px 16px;cursor:pointer;font-weight:500;list-style:none;display:flex;justify-content:space-between;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--mute);border-bottom:2px solid var(--mute);transform:rotate(45deg);transition:transform .3s}
+details[open] summary::after{transform:rotate(-135deg)}
+details[open] .dua{animation:rise .35s ease}
+.dua{padding:0 16px 16px}
+.ar{font-family:Amiri,serif;font-size:25px;line-height:2;direction:rtl;text-align:right;background:var(--accsoft);border-radius:10px;padding:10px 12px}
+.ok{font-style:italic;color:var(--mute);margin:10px 0;line-height:1.55}
+.ml{line-height:1.6}
+.src{font-size:11px;color:var(--brass);margin-top:6px;font-weight:500}
+.zk{text-align:center;margin-top:10px}
+.zk select{max-width:260px}
+.zk .n{font-size:76px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--acc)}
+.zk .n.bump{animation:bump .25s ease}
+@keyframes bump{50%{transform:scale(1.12)}}
+.ringwrap{position:relative;width:220px;height:220px;margin:8px auto}
+.ringwrap svg{position:absolute;inset:0;transform:rotate(-90deg)}
+#ring{transition:stroke-dashoffset .3s ease}
+.tap{position:absolute;inset:18px;border-radius:50%;border:0;background:radial-gradient(circle at 35% 30%,var(--acc2),var(--acc));color:#fff;font-size:18px;cursor:pointer;touch-action:manipulation;overflow:hidden;box-shadow:0 8px 24px rgba(42,157,143,.35);transition:transform .1s}
+.tap:active{transform:scale(.96)}
+.rip{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:rip .6s ease-out forwards;pointer-events:none}
+@keyframes rip{to{transform:scale(4);opacity:0}}
+.ringwrap.done .tap{animation:glow 1s ease}
+@keyframes glow{40%{box-shadow:0 0 0 18px rgba(196,149,47,.35)}}
+.row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.btn{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 14px;cursor:pointer;box-shadow:var(--shadow)}
+.ev{display:flex;justify-content:space-between;gap:10px;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:8px;box-shadow:var(--shadow);animation:rise .45s ease backwards}
+.ev .d{color:var(--mute);font-size:13px;text-align:right;font-variant-numeric:tabular-nums;flex:none}
+.ev .k{font-size:11px;color:var(--brass);font-weight:500;margin-top:2px}
+.ev .left{font-size:11px;color:var(--acc);font-weight:600}
+.qibla{cursor:pointer;text-align:left;width:100%;font:inherit;color:var(--ink)}
+.qibla .go{margin-left:auto;color:var(--acc);font-size:22px}
+.gs{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow);animation:rise .5s ease .3s backwards}
+.gs-h{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.gs-h b{font-size:15px}
+.seg{display:flex;background:var(--accsoft);border-radius:10px;padding:3px}
+.seg button{border:0;background:none;padding:5px 12px;border-radius:8px;font-size:13px;cursor:pointer;color:var(--mute)}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--acc);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+#gsBody{margin-top:12px;transition:opacity .3s,transform .3s}
+#gsBody.out{opacity:0;transform:translateX(-12px)}
+#gsBody .ar{font-size:22px}
+.gs-t{font-size:16px;line-height:1.6;margin:10px 0 6px}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.acts .btn,.acts a{font-size:13px;padding:7px 11px;text-decoration:none;color:var(--ink);display:inline-flex;align-items:center;gap:5px}
+.toast{position:fixed;left:50%;bottom:86px;transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:20px;font-size:13px;opacity:0;transition:.3s;pointer-events:none;z-index:9}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.cmp{position:relative;width:min(300px,82vw);aspect-ratio:1;margin:18px auto 8px;max-width:100%}
+.cmp svg{width:100%;height:100%;display:block}
+#rose{transition:transform .6s cubic-bezier(.2,.8,.3,1);transform-origin:150px 150px}
+#qn{transform-origin:150px 150px;transition:transform 1.4s cubic-bezier(.3,1.5,.5,1)}
+.cmp.idle #rose{animation:sway 6s ease-in-out infinite}
+@keyframes sway{25%{transform:rotate(6deg)}75%{transform:rotate(-6deg)}}
+.cmp.aligned .face{fill:var(--accsoft)}
+.pulse{transform-origin:150px 150px;animation:pl 2.4s ease-out infinite}
+@keyframes pl{from{transform:scale(.55);opacity:.5}to{transform:scale(1);opacity:0}}
+.qbig{text-align:center;font-size:40px;font-weight:600;color:var(--acc);font-variant-numeric:tabular-nums}
+.qsub{text-align:center;color:var(--mute);font-size:13px}
+.info{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.info div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;box-shadow:var(--shadow)}
+.info span{display:block;font-size:12px;color:var(--mute)}
+.info b{font-size:17px;font-variant-numeric:tabular-nums}
+.status{margin-top:12px;text-align:center;font-size:13px;color:var(--brass);min-height:1.2em}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="splash" id="splash" aria-hidden="true"><div class="sp-logo"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC2B3"/><stop offset="1" stop-color="#2A9D8F"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#lg2)"/><path class="lg-arch" d="M18 50V30a14 14 0 0 1 28 0v20" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><g transform="translate(2 15)"><path class="lg-moon" d="M36.5 20.5a7 7 0 1 1-6.2-7.3 5.4 5.4 0 1 0 6.2 7.3z" fill="#FFE39A"/></g><path class="lg-base" d="M12 50h40" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></svg></div><div class="sp-name">Vakit ve Dua</div><div class="sp-sub">Namaz vakitleri · Kıble · Dualar</div></div>
+<div class="wrap">
+<header>
+ <div class="top"><div class="brand"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC2B3"/><stop offset="1" stop-color="#2A9D8F"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#lg)"/><path class="lg-arch" d="M18 50V30a14 14 0 0 1 28 0v20" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><g transform="translate(2 15)"><path class="lg-moon" d="M36.5 20.5a7 7 0 1 1-6.2-7.3 5.4 5.4 0 1 0 6.2 7.3z" fill="#FFE39A"/></g><path class="lg-base" d="M12 50h40" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></svg><div><h1 id="dateTxt"></h1><div class="hijri" id="hijriTxt"></div></div></div><button class="info-btn" id="aboutBtn" aria-label="Hakkında"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg></button></div>
+ <div class="loc"><select id="il" aria-label="İl"></select><select id="ilce" aria-label="İlçe"></select></div>
+</header>
+
+<section id="p-vakit">
+ <div class="slides" id="slides">
+ <div class="sky" id="sky"><small id="nextLbl"></small><div class="cd" id="cd">--:--:--</div>
+  <div class="kr" id="kr"></div>
+  <svg class="arc" viewBox="0 0 320 110" aria-hidden="true">
+   <g id="stars" fill="#fff"></g>
+   <path d="M20 100 Q160 -20 300 100" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2" stroke-dasharray="4 5"/>
+   <line x1="10" y1="100" x2="310" y2="100" stroke="rgba(255,255,255,.5)" stroke-width="1"/>
+   <text x="20" y="108" fill="#fff" font-size="9" text-anchor="middle" id="aL"></text><text x="300" y="108" fill="#fff" font-size="9" text-anchor="middle" id="aR"></text>
+   <g id="kz"></g>
+   <g id="orb"><circle r="16" fill="rgba(255,236,160,.35)"/><circle r="9" fill="#FFE9A0" id="orbC"/><circle r="8" fill="var(--g2,#6EC6E8)" id="orbM" cx="4" cy="-3" opacity="0"/></g>
+  </svg></div>
+ <div class="sky kslide" id="kslide">
+  <small>Kerahat vakti</small>
+  <svg class="dial" viewBox="0 -14 320 184" aria-label="24 saatlik kerahat kadranı">
+   <defs><filter id="glow" filterUnits="userSpaceOnUse" x="0" y="-20" width="320" height="200"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+   <g id="dSeg"></g><g id="dTick"></g>
+   <line id="dHand" x1="160" y1="160" x2="160" y2="20" stroke="#1FB8D6" stroke-width="3" stroke-linecap="round" filter="url(#glow)"/>
+   <path d="M85 160 A75 75 0 0 1 235 160Z" fill="#2A9D8F"/>
+   <text x="160" y="118" text-anchor="middle" font-size="12" fill="#CDEBE6" id="dLbl"></text>
+   <text x="160" y="150" text-anchor="middle" font-size="30" font-weight="600" fill="#fff" id="dCd" style="font-variant-numeric:tabular-nums"></text>
+   <line x1="18" y1="160" x2="302" y2="160" stroke="#2A9D8F" stroke-width="2"/>
+  </svg>
+  <div class="kmsg" id="kMsg"></div>
+ </div>
+ </div>
+ <div class="dots" id="dots"><button aria-label="Vakit ekranı" aria-current="true"></button><button aria-label="Kerahat ekranı"></button></div>
+ <div class="kchips" id="kChips"></div>
+ <div class="times" id="times"></div>
+ <button class="qibla" id="qGo">
+  <svg width="56" height="56" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" fill="none" stroke="var(--line)" stroke-width="2"/><text x="32" y="11" text-anchor="middle" font-size="8" fill="var(--mute)">K</text><g id="needle"><path d="M32 8 L37 32 L32 29 L27 32Z" fill="var(--brass)"/></g></svg>
+  <div><b>Kıble: <span id="qdeg"></span>°</b><div class="note" style="margin:3px 0 0">Pusulayı aç</div></div><span class="go" aria-hidden="true">›</span>
+ </button>
+ <div class="gs">
+  <div class="gs-h"><b id="gsTitle">Günün duası</b></div>
+  <div id="gsBody"></div>
+  <div class="acts">
+   <button class="btn" id="gsCopy">Kopyala</button>
+   <a id="gsWa" href="#" target="_blank" rel="noopener">WhatsApp</a>
+   <a id="gsTg" href="#" target="_blank" rel="noopener">Telegram</a>
+   <a id="gsX" href="#" target="_blank" rel="noopener">X</a>
+   <button class="btn" id="gsRnd">Rastgele</button>
+  </div>
+ </div>
+</section>
+
+<section id="p-kible" hidden>
+ <h2>Kıble pusulası</h2>
+ <div class="cmp idle" id="cmp">
+  <svg viewBox="0 0 300 300" aria-label="Kıble pusulası">
+   <circle class="pulse" cx="150" cy="150" r="140" fill="none" stroke="var(--acc2)" stroke-width="2"/>
+   <g id="rose">
+    <circle class="face" cx="150" cy="150" r="138" fill="var(--card)" stroke="var(--line)" stroke-width="2" style="transition:fill .4s"/>
+    <g id="ticks"></g>
+    <text x="150" y="42" text-anchor="middle" font-size="18" font-weight="600" fill="#D0584A">K</text>
+    <text x="262" y="156" text-anchor="middle" font-size="15" fill="var(--mute)">D</text>
+    <text x="150" y="270" text-anchor="middle" font-size="15" fill="var(--mute)">G</text>
+    <text x="38" y="156" text-anchor="middle" font-size="15" fill="var(--mute)">B</text>
+    <g id="qn">
+     <path d="M150 58 L160 150 L150 142 L140 150Z" fill="var(--brass)"/>
+     <path d="M150 242 L158 150 L150 158 L142 150Z" fill="var(--line)"/>
+     <g transform="translate(150 50)"><rect x="-9" y="-12" width="18" height="16" rx="1.5" fill="#1D2A2C"/><rect x="-9" y="-8" width="18" height="2.5" fill="#E2B85A"/></g>
+    </g>
+    <circle cx="150" cy="150" r="7" fill="var(--acc)"/>
+   </g>
+   <path d="M150 4 L158 18 L142 18Z" fill="var(--acc)"/>
+  </svg>
+ </div>
+ <div class="qbig"><span id="qBig"></span>°</div>
+ <div class="qsub">Kuzeyden saat yönünde kıble açısı</div>
+ <div class="row" style="margin-top:12px"><button class="btn" id="liveBtn">Canlı pusulayı dene</button></div>
+ <div class="status" id="cStatus"></div>
+ <div class="info">
+  <div><span>Kâbe'ye uzaklık</span><b id="qDist"></b></div>
+  <div><span>Güneşe göre kıble</span><b id="qSun"></b></div>
+ </div>
+ <p class="note" id="sunNote"></p>
+</section>
+
+<section id="p-hakkinda" hidden>
+ <div class="ab-head"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lg3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC2B3"/><stop offset="1" stop-color="#2A9D8F"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#lg3)"/><path class="lg-arch" d="M18 50V30a14 14 0 0 1 28 0v20" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><g transform="translate(2 15)"><path class="lg-moon" d="M36.5 20.5a7 7 0 1 1-6.2-7.3 5.4 5.4 0 1 0 6.2 7.3z" fill="#FFE39A"/></g><path class="lg-base" d="M12 50h40" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></svg><div><h2 style="margin:0">Vakit ve Dua</h2><div class="hijri">Sürüm 1.0</div></div></div>
+ <div class="ab">
+  <h3>Namaz vakitleri</h3>
+  <p>Vakitler, seçilen konuma göre telefonda hesaplanır. Diyanet'in yöntemi kullanılır: imsak için güneşin ufkun 18° altında, yatsı için 17° altında olduğu an, ikindi için tek gölge boyu ve Diyanet'in temkin payları. Sonuçlar resmi takvimden 1-2 dakika sapabilir. Kesin vakit için namazvakitleri.diyanet.gov.tr esastır.</p>
+  <p>81 il ve 973 ilçe listelenir. Koordinatı bulunamayan yaklaşık 120 ilçede, çoğu büyükşehir merkez ilçesi, il merkezinin konumu kullanılır. Bu ilçelerde fark genellikle 1-2 dakikayı geçmez.</p>
+  <h3>Kerahat vakitleri</h3>
+  <p>Güneş doğduktan sonraki 45 dakika, öğle vaktinden önceki 45 dakika ve akşamdan önceki 45 dakika kerahat vakti olarak gösterilir. Bu süreler yaklaşıktır; kaynaklarda 40-50 dakika arası değerler geçer. O günün kılınmamış ikindi farzı akşamdan önceki kerahat vaktinde de kılınabilir.</p>
+  <h3>Kıble</h3>
+  <p>Kıble açısı, konumdan Kâbe'ye olan büyük daire yönüdür ve kuzeyden saat yönünde ölçülür. Tarayıcı telefonun yön sensörüne erişim vermezse pusula kuzeyi yukarıda tutar; bu durumda telefonun kendi pusula uygulamasını ya da güneş yöntemini kullan. Metal eşyalar ve manyetik kılıflar pusulayı saptırabilir.</p>
+  <h3>Dualar ve sureler</h3>
+  <p>Mealler, Diyanet İşleri Başkanlığı Kur'an Yolu mealine dayanan kısaltılmış ifadelerdir. Türkçe okunuşlar yaklaşık transkripsiyondur; doğru telaffuz için Arapça metin ve bir hocadan dinlemek esastır. Metinlerde bir hata fark edersen düzeltilmesi için bildir.</p>
+  <h3>Dini günler</h3>
+  <p>Tarihler Ümmü'l-Kurâ hicri takvimiyle hesaplanır. Diyanet'in ilan ettiği tarihle bir gün fark olabilir. Ramazan başlangıcı ve bayramlar için Diyanet duyurusu esastır. Kandiller, geceye girilen günün akşamında gösterilir.</p>
+  <h3>Veriler</h3>
+  <p>İlçe listesi turkey-neighbourhoods paketinden, koordinatlar GeoNames veri setinden alınmıştır. Seçtiğin konum, sekme ve zikir sayıların yalnızca bu cihazda saklanır.</p>
+ </div>
+</section>
+
+<section id="p-dua" hidden>
+ <h2>Namaz sureleri ve dualar</h2>
+ <div id="duaList"></div>
+</section>
+
+<section id="p-zikir" hidden>
+ <h2>Zikirmatik</h2>
+ <div class="zk">
+  <select id="zkSel" aria-label="Zikir"></select>
+  <div class="n" id="zkN">0</div>
+  <div class="note" id="zkInfo" style="margin:0"></div>
+  <div class="ringwrap" id="ringwrap"><svg viewBox="0 0 220 220"><circle cx="110" cy="110" r="104" fill="none" stroke="var(--line)" stroke-width="8"/><circle id="ring" cx="110" cy="110" r="104" fill="none" stroke="var(--brass)" stroke-width="8" stroke-linecap="round" stroke-dasharray="653.5" stroke-dashoffset="653.5"/></svg><button class="tap" id="zkTap">Dokun</button></div>
+  <div class="row"><button class="btn" id="zkUndo">Geri al</button><button class="btn" id="zkReset">Sıfırla</button><button class="btn" id="zkT">Hedef: 33</button></div>
+ </div>
+</section>
+
+<section id="p-takvim" hidden>
+ <h2>Dini günler (önümüzdeki 12 ay)</h2>
+ <div id="evList"></div>
+</section>
+</div>
+
+<nav role="tablist">
+ <button data-p="vakit" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/></svg>Vakitler</button>
+ <button data-p="kible" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.5 10 10l-.5 4.5L14 14z" fill="currentColor"/></svg>Kıble</button>
+ <button data-p="dua" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5z"/><path d="M12 6v13.5"/></svg>Dualar</button>
+ <button data-p="zikir" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="4.5" r="1.8"/><circle cx="17.5" cy="7.5" r="1.8"/><circle cx="19" cy="13.5" r="1.8"/><circle cx="6.5" cy="7.5" r="1.8"/><circle cx="5" cy="13.5" r="1.8"/><path d="M12 17v4"/><circle cx="12" cy="16" r="1.8"/></svg>Zikir</button>
+ <button data-p="takvim" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Takvim</button>
+</nav>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+/* ---------- Şehirler ---------- */
+const IL={"Adana":{"c":[37.002,35.329],"d":{"Aladağ":[37.548,35.396],"Ceyhan":[37.025,35.818],"Çukurova":[37.002,35.329,1],"Feke":[37.814,35.912],"İmamoğlu":[37.265,35.657],"Karaisalı":[37.257,35.059],"Karataş":[36.582,35.37],"Kozan":[37.455,35.816],"Pozantı":[37.428,34.872],"Saimbeyli":[37.986,36.091],"Sarıçam":[37.002,35.329,1],"Seyhan":[36.987,35.306],"Tufanbeyli":[38.263,36.221],"Yumurtalık":[36.774,35.793],"Yüreğir":[36.974,35.359]}},"Adıyaman":{"c":[37.764,38.276],"d":{"Besni":[37.693,37.861],"Çelikhan":[38.034,38.243],"Gerger":[37.95,39.017],"Gölbaşı":[37.784,37.637],"Kahta":[37.786,38.624],"Merkez":[37.764,38.276],"Samsat":[37.582,38.474],"Sincik":[38.037,38.615],"Tut":[37.795,37.916]}},"Afyonkarahisar":{"c":[38.757,30.543],"d":{"Başmakçı":[37.897,30.012],"Bayat":[38.983,30.925],"Bolvadin":[38.711,31.049],"Çay":[38.592,31.029],"Çobanlar":[38.701,30.783],"Dazkırı":[37.919,29.861],"Dinar":[38.065,30.166],"Emirdağ":[39.02,31.15],"Evciler":[38.041,29.887],"Hocalar":[38.578,29.968],"İhsaniye":[39.029,30.416],"İscehisar":[38.862,30.75],"Kızılören":[38.258,30.152],"Merkez":[38.757,30.543],"Sandıklı":[38.465,30.269],"Sinanpaşa":[38.757,30.543,1],"Sultandağı":[38.531,31.228],"Şuhut":[38.531,30.546]}},"Ağrı":{"c":[39.719,43.051],"d":{"Diyadin":[39.541,43.671],"Doğubayazıt":[39.547,44.084],"Eleşkirt":[39.798,42.676],"Hamur":[39.606,42.985],"Merkez":[39.719,43.051],"Patnos":[39.225,42.857],"Taşlıçay":[39.63,43.369],"Tutak":[39.539,42.766]}},"Aksaray":{"c":[38.373,34.025],"d":{"Ağaçören":[38.875,33.917],"Eskil":[38.402,33.413],"Gülağaç":[38.396,34.346],"Güzelyurt":[38.277,34.372],"Merkez":[38.373,34.025],"Ortaköy":[38.737,34.039],"Sarıyahşi":[38.983,33.841],"Sultanhanı":[38.247,33.55]}},"Amasya":{"c":[40.653,35.833],"d":{"Göynücek":[40.399,35.525],"Gümüşhacıköy":[40.873,35.215],"Hamamözü":[40.785,35.026],"Merkez":[40.653,35.833],"Merzifon":[40.873,35.463],"Suluova":[40.831,35.648],"Taşova":[40.76,36.322]}},"Ankara":{"c":[39.92,32.854],"d":{"Akyurt":[40.135,33.086],"Altındağ":[39.92,32.854,1],"Ayaş":[40.019,32.332],"Bala":[39.554,33.123],"Beypazarı":[40.167,31.921],"Çamlıdere":[40.49,32.475],"Çankaya":[39.918,32.863],"Çubuk":[40.239,33.032],"Elmadağ":[39.921,33.231],"Etimesgut":[39.953,32.633],"Evren":[39.024,33.806],"Gölbaşı":[39.79,32.809],"Güdül":[40.211,32.246],"Haymana":[39.432,32.497],"Kahramankazan":[39.92,32.854,1],"Kalecik":[40.097,33.408],"Keçiören":[39.92,32.854,1],"Kızılcahamam":[40.47,32.651],"Mamak":[39.94,32.91],"Nallıhan":[40.186,31.352],"Polatlı":[39.577,32.141],"Pursaklar":[39.92,32.854,1],"Sincan":[39.92,32.854,1],"Şereflikoçhisar":[38.939,33.539],"Yenimahalle":[39.92,32.854,1]}},"Antalya":{"c":[36.908,30.696],"d":{"Akseki":[37.049,31.79],"Aksu":[36.954,30.848],"Alanya":[36.544,32],"Demre":[36.244,29.985],"Döşemealtı":[37.023,30.602],"Elmalı":[36.736,29.918],"Finike":[36.295,30.141],"Gazipaşa":[36.269,32.318],"Gündoğmuş":[36.908,30.696,1],"İbradı":[37.097,31.599],"Kaş":[36.202,29.638],"Kemer":[36.598,30.561],"Kepez":[36.908,30.696,1],"Konyaaltı":[36.908,30.696,1],"Korkuteli":[37.065,30.196],"Kumluca":[36.37,30.287],"Manavgat":[36.787,31.443],"Muratpaşa":[36.908,30.696,1],"Serik":[36.917,31.099]}},"Ardahan":{"c":[41.109,42.702],"d":{"Çıldır":[41.109,42.702,1],"Damal":[41.34,42.839],"Göle":[41.109,42.702,1],"Hanak":[41.234,42.847],"Merkez":[41.109,42.702],"Posof":[41.511,42.729]}},"Artvin":{"c":[41.182,41.822],"d":{"Ardanuç":[41.127,42.063],"Arhavi":[41.351,41.305],"Borçka":[41.36,41.674],"Hopa":[41.39,41.42],"Kemalpaşa":[41.483,41.526],"Merkez":[41.182,41.822],"Murgul":[41.278,41.562],"Şavşat":[41.24,42.361],"Yusufeli":[40.82,41.537]}},"Aydın":{"c":[37.845,27.84],"d":{"Bozdoğan":[37.671,28.314],"Buharkent":[37.964,28.743],"Çine":[37.613,28.059],"Didim":[37.385,27.256],"Efeler":[37.845,27.84,1],"Germencik":[37.871,27.603],"İncirliova":[37.852,27.724],"Karacasu":[37.728,28.606],"Karpuzlu":[37.559,27.835],"Koçarlı":[37.761,27.706],"Köşk":[37.853,28.052],"Kuşadası":[37.856,27.257],"Kuyucak":[37.913,28.459],"Nazilli":[37.916,28.322],"Söke":[37.845,27.84,1],"Sultanhisar":[37.89,28.154],"Yenipazar":[37.823,28.196]}},"Balıkesir":{"c":[39.649,27.886],"d":{"Altıeylül":[39.649,27.886,1],"Ayvalık":[39.319,26.695],"Balya":[39.749,27.579],"Bandırma":[40.352,27.977],"Bigadiç":[39.392,28.131],"Burhaniye":[39.5,26.973],"Dursunbey":[39.586,28.626],"Edremit":[39.596,27.024],"Erdek":[40.4,27.793],"Gömeç":[39.649,27.886,1],"Gönen":[40.105,27.654],"Havran":[39.558,27.098],"İvrindi":[39.584,27.486],"Karesi":[39.649,27.886,1],"Kepsut":[39.689,28.152],"Manyas":[40.046,27.97],"Marmara":[40.586,27.555],"Savaştepe":[39.383,27.656],"Sındırgı":[39.241,28.178],"Susurluk":[39.914,28.158]}},"Bartın":{"c":[41.636,32.337],"d":{"Amasra":[41.746,32.386],"Kurucaşile":[41.838,32.716],"Merkez":[41.636,32.337],"Ulus":[41.584,32.641]}},"Batman":{"c":[37.887,41.132],"d":{"Beşiri":[37.918,41.292],"Gercüş":[37.887,41.132,1],"Hasankeyf":[37.713,41.415],"Kozluk":[38.191,41.478],"Merkez":[37.887,41.132],"Sason":[38.328,41.414]}},"Bayburt":{"c":[40.256,40.223],"d":{"Aydıntepe":[40.383,40.143],"Demirözü":[40.256,40.223,1],"Merkez":[40.256,40.223]}},"Bilecik":{"c":[40.142,29.979],"d":{"Bozüyük":[39.908,30.037],"Gölpazarı":[40.285,30.317],"İnhisar":[40.049,30.385],"Merkez":[40.142,29.979],"Osmaneli":[40.357,30.014],"Pazaryeri":[39.994,29.904],"Söğüt":[40.014,30.185],"Yenipazar":[40.178,30.52]}},"Bingöl":{"c":[38.885,40.494],"d":{"Adaklı":[39.226,40.483],"Genç":[38.748,40.553],"Karlıova":[39.298,41.014],"Kiğı":[38.885,40.494,1],"Merkez":[38.885,40.494],"Solhan":[38.965,41.054],"Yayladere":[39.226,40.069],"Yedisu":[39.433,40.544]}},"Bitlis":{"c":[38.401,42.108],"d":{"Adilcevaz":[38.799,42.732],"Ahlat":[38.752,42.481],"Güroymak":[38.577,42.028],"Hizan":[38.226,42.428],"Merkez":[38.401,42.108],"Mutki":[38.409,41.919],"Tatvan":[38.507,42.282]}},"Bolu":{"c":[40.736,31.606],"d":{"Dörtdivan":[40.721,32.063],"Gerede":[40.801,32.197],"Göynük":[40.4,30.788],"Kıbrıscık":[40.408,31.852],"Mengen":[40.939,32.076],"Merkez":[40.736,31.606],"Mudurnu":[40.473,31.208],"Seben":[40.411,31.574],"Yeniçağa":[40.771,32.034]}},"Burdur":{"c":[37.72,30.291],"d":{"Ağlasun":[37.649,30.534],"Altınyayla":[36.997,29.546],"Bucak":[37.459,30.595],"Çavdır":[37.155,29.694],"Çeltikçi":[37.529,30.48],"Gölhisar":[37.146,29.509],"Karamanlı":[37.373,29.823],"Kemer":[37.352,30.063],"Merkez":[37.72,30.291],"Tefenni":[37.31,29.775],"Yeşilova":[37.508,29.755]}},"Bursa":{"c":[40.193,29.084],"d":{"Büyükorhan":[39.771,28.886],"Gemlik":[40.431,29.16],"Gürsu":[40.219,29.195],"Harmancık":[39.676,29.155],"İnegöl":[40.078,29.513],"İznik":[40.429,29.721],"Karacabey":[40.213,28.361],"Keles":[39.914,29.229],"Kestel":[40.198,29.212],"Mudanya":[40.375,28.882],"Mustafakemalpaşa":[40.038,28.409],"Nilüfer":[40.193,29.084,1],"Orhaneli":[39.903,28.991],"Orhangazi":[40.489,29.309],"Osmangazi":[40.19,29.093],"Yenişehir":[40.264,29.653],"Yıldırım":[40.203,29.031]}},"Çanakkale":{"c":[40.146,26.406],"d":{"Ayvacık":[39.601,26.405],"Bayramiç":[39.809,26.61],"Biga":[40.228,27.242],"Bozcaada":[39.835,26.07],"Çan":[40.033,27.052],"Eceabat":[40.184,26.357],"Ezine":[39.786,26.341],"Gelibolu":[40.41,26.671],"Gökçeada":[40.201,25.909],"Lapseki":[40.344,26.686],"Merkez":[40.146,26.406],"Yenice":[39.931,27.258]}},"Çankırı":{"c":[40.601,33.613],"d":{"Atkaracalar":[40.816,33.076],"Bayramören":[40.943,33.203],"Çerkeş":[40.812,32.894],"Eldivan":[40.53,33.499],"Ilgaz":[40.925,33.626],"Kızılırmak":[40.346,33.986],"Korgun":[40.735,33.518],"Kurşunlu":[40.841,33.26],"Merkez":[40.601,33.613],"Orta":[40.624,33.109],"Şabanözü":[40.482,33.284],"Yapraklı":[40.758,33.778]}},"Çorum":{"c":[40.549,34.953],"d":{"Alaca":[40.168,34.843],"Bayat":[40.646,34.261],"Boğazkale":[40.022,34.609],"Dodurga":[40.855,34.807],"İskilip":[40.735,34.474],"Kargı":[41.134,34.487],"Laçin":[40.77,34.898],"Mecitözü":[40.52,35.295],"Merkez":[40.549,34.953],"Oğuzlar":[40.754,34.703],"Ortaköy":[40.274,35.252],"Osmancık":[40.978,34.805],"Sungurlu":[40.167,34.374],"Uğurludağ":[40.446,34.453]}},"Denizli":{"c":[37.774,29.087],"d":{"Acıpayam":[37.424,29.349],"Babadağ":[37.808,28.857],"Baklan":[37.977,29.609],"Bekilli":[38.231,29.42],"Beyağaç":[37.235,28.896],"Bozkurt":[37.824,29.61],"Buldan":[38.045,28.831],"Çal":[38.084,29.399],"Çameli":[37.076,29.345],"Çardak":[37.827,29.668],"Çivril":[38.301,29.739],"Güney":[38.154,29.068],"Honaz":[37.757,29.27],"Kale":[37.439,28.845],"Merkezefendi":[37.774,29.087,1],"Pamukkale":[37.916,29.117],"Sarayköy":[37.924,28.925],"Serinhisar":[37.581,29.266],"Tavas":[37.574,29.071]}},"Diyarbakır":{"c":[37.914,40.217],"d":{"Bağlar":[37.914,40.206],"Bismil":[37.849,40.666],"Çermik":[38.136,39.449],"Çınar":[37.722,40.407],"Çüngüş":[38.212,39.286],"Dicle":[38.375,40.072],"Eğil":[38.257,40.083],"Ergani":[38.265,39.762],"Hani":[38.417,40.4],"Hazro":[38.249,40.771],"Kayapınar":[37.914,40.217,1],"Kocaköy":[38.29,40.502],"Kulp":[38.498,41.007],"Lice":[38.458,40.639],"Silvan":[38.137,41.008],"Sur":[37.914,40.229],"Yenişehir":[37.941,40.138]}},"Düzce":{"c":[40.839,31.164],"d":{"Akçakoca":[41.087,31.116],"Cumayeri":[40.874,30.951],"Çilimli":[40.894,31.049],"Gölyaka":[40.777,30.996],"Gümüşova":[40.847,30.941],"Kaynaşlı":[40.769,31.322],"Merkez":[40.839,31.164],"Yığılca":[40.96,31.444]}},"Edirne":{"c":[41.677,26.556],"d":{"Enez":[40.725,26.082],"Havsa":[41.549,26.822],"İpsala":[40.921,26.383],"Keşan":[40.856,26.63],"Lalapaşa":[41.84,26.736],"Meriç":[41.192,26.421],"Merkez":[41.677,26.556],"Süloğlu":[41.677,26.556,1],"Uzunköprü":[41.677,26.556,1]}},"Elazığ":{"c":[38.674,39.223],"d":{"Ağın":[38.945,38.712],"Alacakaya":[38.454,39.849],"Arıcak":[38.564,40.135],"Baskil":[38.568,38.824],"Karakoçan":[38.956,40.039],"Keban":[38.798,38.734],"Kovancılar":[38.721,39.868],"Maden":[38.394,39.674],"Merkez":[38.674,39.223],"Palu":[38.692,39.929],"Sivrice":[38.448,39.308]}},"Erzincan":{"c":[39.739,39.49],"d":{"Çayırlı":[39.739,39.49,1],"İliç":[39.451,38.558],"Kemah":[39.596,39.023],"Kemaliye":[39.263,38.497],"Merkez":[39.739,39.49],"Otlukbeli":[39.97,40.019],"Refahiye":[39.893,38.766],"Tercan":[39.777,40.378],"Üzümlü":[39.739,39.49,1]}},"Erzurum":{"c":[39.909,41.277],"d":{"Aşkale":[39.921,40.695],"Aziziye":[39.909,41.277,1],"Çat":[39.61,40.98],"Hınıs":[39.358,41.693],"Horasan":[40.039,42.164],"İspir":[40.483,40.996],"Karaçoban":[39.344,42.099],"Karayazı":[39.696,42.143],"Köprüköy":[39.966,41.868],"Narman":[40.344,41.861],"Oltu":[40.539,41.987],"Olur":[40.822,42.131],"Palandöken":[39.909,41.277,1],"Pasinler":[39.98,41.67],"Pazaryolu":[40.421,40.771],"Şenkaya":[40.557,42.343],"Tekman":[39.641,41.505],"Tortum":[40.289,41.541],"Uzundere":[40.532,41.538],"Yakutiye":[39.909,41.277,1]}},"Eskişehir":{"c":[39.777,30.521],"d":{"Alpu":[39.769,30.961],"Beylikova":[39.687,31.206],"Çifteler":[39.383,31.039],"Günyüzü":[39.383,31.81],"Han":[39.159,30.861],"İnönü":[39.815,30.145],"Mahmudiye":[39.498,30.987],"Mihalgazi":[40.026,30.577],"Mihalıççık":[39.866,31.496],"Odunpazarı":[39.777,30.521,1],"Sarıcakaya":[40.037,30.627],"Seyitgazi":[39.445,30.695],"Sivrihisar":[39.45,31.534],"Tepebaşı":[39.777,30.521,1]}},"Gaziantep":{"c":[37.059,37.383],"d":{"Araban":[37.427,37.689],"İslahiye":[37.025,36.631],"Karkamış":[36.835,37.998],"Nizip":[37.01,37.794],"Nurdağı":[37.177,36.742],"Oğuzeli":[36.966,37.513],"Şahinbey":[37.048,37.344],"Şehitkamil":[37.085,37.357],"Yavuzeli":[37.318,37.568]}},"Giresun":{"c":[40.917,38.387],"d":{"Alucra":[40.317,38.753],"Bulancak":[40.937,38.229],"Çamoluk":[40.127,38.73],"Çanakçı":[40.911,38.988],"Dereli":[40.738,38.449],"Doğankent":[40.807,38.917],"Espiye":[40.947,38.703],"Eynesil":[41.065,39.144],"Görele":[41.031,39.003],"Güce":[40.893,38.798],"Keşap":[40.91,38.501],"Merkez":[40.917,38.387],"Piraziz":[40.953,38.118],"Şebinkarahisar":[40.288,38.424],"Tirebolu":[41.007,38.814],"Yağlıdere":[40.857,38.62]}},"Gümüşhane":{"c":[40.46,39.481],"d":{"Kelkit":[40.127,39.434],"Köse":[40.207,39.646],"Kürtün":[40.695,39.095],"Merkez":[40.46,39.481],"Şiran":[40.191,39.117],"Torul":[40.551,39.283]}},"Hakkari":{"c":[37.574,43.741],"d":{"Çukurca":[37.248,43.614],"Derecik":[37.574,43.741,1],"Merkez":[37.574,43.741],"Şemdinli":[37.305,44.574],"Yüksekova":[37.574,44.287]}},"Hatay":{"c":[36.207,36.157],"d":{"Altınözü":[36.207,36.157,1],"Antakya":[36.207,36.157],"Arsuz":[36.413,35.89],"Belen":[36.489,36.195],"Defne":[36.207,36.157,1],"Dörtyol":[36.862,36.229],"Erzin":[36.953,36.198],"Hassa":[36.799,36.518],"İskenderun":[36.587,36.173],"Kırıkhan":[36.499,36.358],"Kumlu":[36.364,36.455],"Payas":[36.207,36.157,1],"Reyhanlı":[36.268,36.567],"Samandağ":[36.08,35.976],"Yayladağı":[35.903,36.063]}},"Iğdır":{"c":[39.924,44.045],"d":{"Aralık":[39.873,44.519],"Karakoyunlu":[39.87,43.63],"Merkez":[39.924,44.045],"Tuzluca":[40.039,43.652]}},"Isparta":{"c":[37.764,30.552],"d":{"Aksu":[37.799,31.071],"Atabey":[37.951,30.639],"Eğirdir":[37.875,30.85],"Gelendost":[38.121,31.015],"Gönen":[37.956,30.511],"Keçiborlu":[37.943,30.302],"Merkez":[37.764,30.552],"Senirkent":[38.104,30.549],"Sütçüler":[37.764,30.552,1],"Şarkikaraağaç":[38.079,31.366],"Uluborlu":[38.078,30.45],"Yalvaç":[38.296,31.178],"Yenişarbademli":[37.708,31.386]}},"İstanbul":{"c":[41.014,28.95],"d":{"Adalar":[40.868,29.133],"Arnavutköy":[41.014,28.95,1],"Ataşehir":[40.983,29.117],"Avcılar":[41.014,28.95,1],"Bağcılar":[41.039,28.857],"Bahçelievler":[41.002,28.86],"Bakırköy":[41.014,28.95,1],"Başakşehir":[41.093,28.802],"Bayrampaşa":[41.014,28.95,1],"Beşiktaş":[41.014,28.95,1],"Beykoz":[41.014,28.95,1],"Beylikdüzü":[41.014,28.95,1],"Beyoğlu":[41.014,28.95,1],"Büyükçekmece":[41.014,28.95,1],"Çatalca":[41.143,28.462],"Çekmeköy":[41.014,28.95,1],"Esenler":[41.044,28.876],"Esenyurt":[41.027,28.677],"Eyüpsultan":[41.014,28.95,1],"Fatih":[41.014,28.95,1],"Gaziosmanpaşa":[41.014,28.95,1],"Güngören":[41.014,28.95,1],"Kadıköy":[40.62,29.225],"Kağıthane":[41.014,28.95,1],"Kartal":[41.014,28.95,1],"Küçükçekmece":[41.014,28.95,1],"Maltepe":[40.936,29.155],"Pendik":[40.877,29.273],"Sancaktepe":[41.002,29.232],"Sarıyer":[41.014,28.95,1],"Silivri":[41.074,28.246],"Sultanbeyli":[40.961,29.271],"Sultangazi":[41.107,28.868],"Şile":[41.175,29.613],"Şişli":[41.06,28.987],"Tuzla":[41.014,28.95,1],"Ümraniye":[41.016,29.125],"Üsküdar":[41.014,28.95,1],"Zeytinburnu":[40.994,28.904]}},"İzmir":{"c":[38.413,27.138],"d":{"Aliağa":[38.8,26.972],"Balçova":[38.413,27.138,1],"Bayındır":[38.217,27.647],"Bayraklı":[38.413,27.138,1],"Bergama":[39.121,27.181],"Beydağ":[38.413,27.138,1],"Bornova":[38.479,27.24],"Buca":[38.398,27.167],"Çeşme":[38.326,26.306],"Çiğli":[38.413,27.138,1],"Dikili":[39.071,26.89],"Foça":[38.67,26.757],"Gaziemir":[38.324,27.129],"Güzelbahçe":[38.413,27.138,1],"Karabağlar":[38.374,27.135],"Karaburun":[38.636,26.511],"Karşıyaka":[38.457,27.111],"Kemalpaşa":[38.426,27.417],"Kınık":[39.087,27.383],"Kiraz":[38.231,28.204],"Konak":[38.413,27.138,1],"Menderes":[38.25,27.134],"Menemen":[38.608,27.069],"Narlıdere":[38.413,27.138,1],"Ödemiş":[38.413,27.138,1],"Seferihisar":[38.413,27.138,1],"Selçuk":[37.951,27.368],"Tire":[38.089,27.735],"Torbalı":[38.152,27.362],"Urla":[38.323,26.764]}},"Kahramanmaraş":{"c":[37.585,36.926],"d":{"Afşin":[38.248,36.914],"Andırın":[37.578,36.355],"Çağlayancerit":[37.75,37.296],"Dulkadiroğlu":[37.585,36.926,1],"Ekinözü":[37.585,36.926,1],"Elbistan":[38.206,37.198],"Göksun":[38.021,36.497],"Nurhak":[37.963,37.42],"Onikişubat":[37.585,36.926,1],"Pazarcık":[37.487,37.3],"Türkoğlu":[37.388,36.848]}},"Karabük":{"c":[41.205,32.628],"d":{"Eflani":[41.423,32.958],"Eskipazar":[40.943,32.531],"Merkez":[41.205,32.628],"Ovacık":[41.077,32.92],"Safranbolu":[41.251,32.694],"Yenice":[41.2,32.331]}},"Karaman":{"c":[37.181,33.215],"d":{"Ayrancı":[37.361,33.688],"Başyayla":[36.753,32.68],"Ermenek":[36.64,32.892],"Kazımkarabekir":[37.23,32.959],"Merkez":[37.181,33.215],"Sarıveliler":[36.691,32.62]}},"Kars":{"c":[40.598,43.085],"d":{"Akyaka":[40.741,43.614],"Arpaçay":[40.845,43.327],"Digor":[40.369,43.41],"Kağızman":[40.157,43.134],"Merkez":[40.598,43.085],"Sarıkamış":[40.328,42.587],"Selim":[40.458,42.783],"Susuz":[40.779,43.128]}},"Kastamonu":{"c":[41.378,33.775],"d":{"Abana":[41.979,34.011],"Ağlı":[41.686,33.554],"Araç":[41.242,33.328],"Azdavay":[41.643,33.3],"Bozkurt":[41.958,34.011],"Cide":[41.892,33.004],"Çatalzeytin":[41.953,34.216],"Daday":[41.479,33.467],"Devrekani":[41.603,33.839],"Doğanyurt":[42.005,33.46],"Hanönü":[41.627,34.467],"İhsangazi":[41.204,33.555],"İnebolu":[41.975,33.761],"Küre":[41.806,33.712],"Merkez":[41.378,33.775],"Pınarbaşı":[41.604,33.111],"Seydiler":[41.62,33.718],"Şenpazar":[41.809,33.231],"Taşköprü":[41.51,34.214],"Tosya":[41.015,34.04]}},"Kayseri":{"c":[38.732,35.485],"d":{"Akkışla":[39.002,36.174],"Bünyan":[38.846,35.86],"Develi":[38.391,35.492],"Felahiye":[39.091,35.567],"Hacılar":[38.646,35.449],"İncesu":[38.622,35.183],"Kocasinan":[38.771,35.572],"Melikgazi":[38.75,35.45],"Özvatan":[39.107,35.7],"Pınarbaşı":[38.723,36.393],"Sarıoğlan":[39.077,35.967],"Sarız":[38.479,36.499],"Talas":[38.691,35.554],"Tomarza":[38.447,35.799],"Yahyalı":[38.102,35.357],"Yeşilhisar":[38.35,35.087]}},"Kırıkkale":{"c":[39.845,33.506],"d":{"Bahşılı":[39.8,33.437],"Balışeyh":[39.914,33.723],"Çelebi":[39.464,33.524],"Delice":[39.954,34.026],"Karakeçili":[39.594,33.378],"Keskin":[39.673,33.614],"Merkez":[39.845,33.506],"Sulakyurt":[40.157,33.716],"Yahşihan":[39.85,33.453]}},"Kırklareli":{"c":[41.735,27.225],"d":{"Babaeski":[41.432,27.093],"Demirköy":[41.735,27.225,1],"Kofçaz":[41.945,27.158],"Lüleburgaz":[41.404,27.359],"Merkez":[41.735,27.225],"Pehlivanköy":[41.348,26.925],"Pınarhisar":[41.624,27.52],"Vize":[41.572,27.766]}},"Kırşehir":{"c":[39.146,34.164],"d":{"Akçakent":[39.623,34.096],"Akpınar":[39.45,33.965],"Boztepe":[39.27,34.261],"Çiçekdağı":[39.146,34.164,1],"Kaman":[39.358,33.724],"Merkez":[39.146,34.164],"Mucur":[39.061,34.383]}},"Kilis":{"c":[36.716,37.115],"d":{"Elbeyli":[36.674,37.467],"Merkez":[36.716,37.115],"Musabeyli":[36.886,36.919],"Polateli":[36.841,37.144]}},"Kocaeli":{"c":[40.767,29.917],"d":{"Başiskele":[40.767,29.917,1],"Çayırova":[40.767,29.917,1],"Darıca":[40.78,29.395],"Derince":[40.757,29.815],"Dilovası":[40.767,29.917,1],"Gebze":[40.803,29.431],"Gölcük":[40.767,29.917,1],"İzmit":[40.767,29.917],"Kandıra":[41.07,30.153],"Karamürsel":[40.691,29.616],"Kartepe":[40.767,29.917,1],"Körfez":[40.767,29.783]}},"Konya":{"c":[37.871,32.485],"d":{"Ahırlı":[37.239,32.119],"Akören":[37.453,32.371],"Akşehir":[38.358,31.416],"Altınekin":[38.308,32.869],"Beyşehir":[37.677,31.725],"Bozkır":[37.19,32.247],"Cihanbeyli":[38.661,32.924],"Çeltik":[39.024,31.791],"Çumra":[37.573,32.774],"Derbent":[38.014,32.016],"Derebucak":[37.392,31.509],"Doğanhisar":[38.146,31.676],"Emirgazi":[37.902,33.837],"Ereğli":[37.513,34.047],"Güneysınır":[37.269,32.729],"Hadim":[36.988,32.457],"Halkapınar":[37.434,34.187],"Hüyük":[37.954,31.596],"Ilgın":[38.279,31.914],"Kadınhanı":[38.24,32.211],"Karapınar":[37.716,33.551],"Karatay":[37.871,32.485,1],"Kulu":[39.095,33.08],"Meram":[37.83,32.468],"Sarayönü":[38.262,32.405],"Selçuklu":[37.884,32.492],"Seydişehir":[37.419,31.845],"Taşkent":[36.924,32.491],"Tuzlukçu":[38.478,31.626],"Yalıhüyük":[37.301,32.085],"Yunak":[38.814,31.732]}},"Kütahya":{"c":[39.424,29.983],"d":{"Altıntaş":[39.06,30.109],"Aslanapa":[39.216,29.87],"Çavdarhisar":[39.193,29.619],"Domaniç":[39.802,29.609],"Dumlupınar":[38.854,29.977],"Emet":[39.343,29.258],"Gediz":[38.994,29.391],"Hisarcık":[39.251,29.231],"Merkez":[39.424,29.983],"Pazarlar":[39.424,29.983,1],"Simav":[39.424,29.983,1],"Şaphane":[39.424,29.983,1],"Tavşanlı":[39.542,29.499]}},"Malatya":{"c":[38.35,38.317],"d":{"Akçadağ":[38.345,37.967],"Arapgir":[39.041,38.495],"Arguvan":[38.77,38.271],"Battalgazi":[38.425,38.365],"Darende":[38.546,37.506],"Doğanşehir":[38.092,37.879],"Doğanyol":[38.312,39.038],"Hekimhan":[38.818,37.931],"Kale":[39.033,38],"Kuluncak":[38.883,37.673],"Pütürge":[38.35,38.317,1],"Yazıhan":[38.595,38.18],"Yeşilyurt":[38.297,38.25]}},"Manisa":{"c":[38.612,27.426],"d":{"Ahmetli":[38.52,27.939],"Akhisar":[38.919,27.84],"Alaşehir":[38.351,28.517],"Demirci":[39.046,28.659],"Gölmarmara":[38.714,27.914],"Gördes":[38.933,28.289],"Kırkağaç":[39.106,27.669],"Köprübaşı":[38.75,28.405],"Kula":[38.547,28.65],"Salihli":[38.483,28.148],"Sarıgöl":[38.24,28.697],"Saruhanlı":[38.735,27.568],"Selendi":[38.744,28.868],"Soma":[39.186,27.609],"Şehzadeler":[38.612,27.426,1],"Turgutlu":[38.495,27.7],"Yunusemre":[38.612,27.426,1]}},"Mardin":{"c":[37.313,40.744],"d":{"Artuklu":[37.313,40.744,1],"Dargeçit":[37.545,41.72],"Derik":[37.363,40.265],"Kızıltepe":[37.193,40.588],"Mazıdağı":[37.478,40.482],"Midyat":[37.425,41.339],"Nusaybin":[37.078,41.218],"Ömerli":[37.402,40.954],"Savur":[37.539,40.888],"Yeşilli":[37.34,40.826]}},"Mersin":{"c":[36.812,34.641],"d":{"Akdeniz":[36.812,34.641,1],"Anamur":[36.075,32.837],"Aydıncık":[36.144,33.32],"Bozyazı":[36.108,32.961],"Çamlıyayla":[37.17,34.601],"Erdemli":[36.605,34.308],"Gülnar":[36.341,33.399],"Mezitli":[36.75,34.483],"Mut":[36.644,33.439],"Silifke":[36.378,33.934],"Tarsus":[36.919,34.878],"Toroslar":[36.812,34.641,1],"Yenişehir":[36.812,34.641,1]}},"Muğla":{"c":[37.218,28.366],"d":{"Bodrum":[37.038,27.429],"Dalaman":[36.766,28.803],"Datça":[36.738,27.684],"Fethiye":[36.622,29.116],"Kavaklıdere":[37.445,28.363],"Köyceğiz":[37.218,28.366,1],"Marmaris":[36.855,28.274],"Menteşe":[37.218,28.366,1],"Milas":[37.316,27.784],"Ortaca":[36.829,28.771],"Seydikemer":[37.218,28.366,1],"Ula":[37.105,28.417],"Yatağan":[37.34,28.143]}},"Muş":{"c":[38.732,41.485],"d":{"Bulanık":[39.087,42.272],"Hasköy":[38.683,41.689],"Korkut":[38.739,41.782],"Malazgirt":[39.147,42.535],"Merkez":[38.732,41.485],"Varto":[39.173,41.456]}},"Nevşehir":{"c":[38.625,34.712],"d":{"Acıgöl":[38.625,34.712,1],"Avanos":[38.715,34.847],"Derinkuyu":[38.375,34.734],"Gülşehir":[38.746,34.625],"Hacıbektaş":[38.941,34.558],"Kozaklı":[39.221,34.851],"Merkez":[38.625,34.712],"Ürgüp":[38.625,34.712,1]}},"Niğde":{"c":[37.966,34.679],"d":{"Altunhisar":[37.992,34.373],"Bor":[37.891,34.559],"Çamardı":[37.832,34.981],"Çiftlik":[38.176,34.485],"Merkez":[37.966,34.679],"Ulukışla":[37.548,34.485]}},"Ordu":{"c":[40.985,37.879],"d":{"Akkuş":[40.793,37.016],"Altınordu":[40.985,37.879,1],"Aybastı":[40.687,37.399],"Çamaş":[40.902,37.529],"Çatalpınar":[40.879,37.454],"Çaybaşı":[41.017,37.098],"Fatsa":[41.028,37.501],"Gölköy":[40.688,37.618],"Gülyalı":[40.966,38.061],"Gürgentepe":[40.788,37.602],"İkizce":[41.058,37.08],"Kabadüz":[40.86,37.89],"Kabataş":[40.75,37.45],"Korgan":[40.825,37.347],"Kumru":[40.874,37.264],"Mesudiye":[40.462,37.773],"Perşembe":[41.066,37.771],"Ulubey":[40.872,37.759],"Ünye":[40.985,37.879,1]}},"Osmaniye":{"c":[37.074,36.248],"d":{"Bahçe":[37.197,36.577],"Düziçi":[37.074,36.248,1],"Hasanbeyli":[37.137,36.559],"Kadirli":[37.374,36.096],"Merkez":[37.074,36.248],"Sumbas":[37.451,36.023],"Toprakkale":[37.069,36.147]}},"Rize":{"c":[41.021,40.522],"d":{"Ardeşen":[41.191,40.987],"Çamlıhemşin":[41.048,41],"Çayeli":[41.092,40.729],"Derepazarı":[41.024,40.423],"Fındıklı":[41.269,41.14],"Güneysu":[40.978,40.614],"Hemşin":[41.05,40.894],"İkizdere":[40.779,40.559],"İyidere":[41.012,40.362],"Kalkandere":[40.92,40.437],"Merkez":[41.021,40.522],"Pazar":[41.179,40.884]}},"Sakarya":{"c":[40.781,30.403],"d":{"Adapazarı":[40.781,30.403],"Akyazı":[40.685,30.622],"Arifiye":[40.781,30.403,1],"Erenler":[40.781,30.403,1],"Ferizli":[40.941,30.486],"Geyve":[40.508,30.293],"Hendek":[40.799,30.748],"Karapürçek":[40.642,30.539],"Karasu":[41.104,30.697],"Kaynarca":[41.031,30.308],"Kocaali":[41.053,30.853],"Pamukova":[40.508,30.167],"Sapanca":[40.691,30.267],"Serdivan":[40.781,30.403,1],"Söğütlü":[40.906,30.474],"Taraklı":[40.397,30.493]}},"Samsun":{"c":[41.287,36.33],"d":{"19 Mayıs":[41.287,36.33,1],"Alaçam":[41.606,35.598],"Asarcık":[41.036,36.236],"Atakum":[41.287,36.33,1],"Ayvacık":[40.991,36.631],"Bafra":[41.568,35.907],"Canik":[41.287,36.33,1],"Çarşamba":[41.199,36.722],"Havza":[40.971,35.662],"İlkadım":[41.287,36.33,1],"Kavak":[41.078,36.042],"Ladik":[40.911,35.892],"Salıpazarı":[41.084,36.83],"Tekkeköy":[41.212,36.46],"Terme":[41.209,36.974],"Vezirköprü":[41.144,35.455],"Yakakent":[41.633,35.529]}},"Siirt":{"c":[37.933,41.94],"d":{"Baykan":[38.163,41.783],"Eruh":[37.752,42.181],"Kurtalan":[37.927,41.703],"Merkez":[37.933,41.94],"Pervari":[37.936,42.549],"Şirvan":[38.062,42.029],"Tillo":[37.949,42.012]}},"Sinop":{"c":[42.027,35.163],"d":{"Ayancık":[41.945,34.586],"Boyabat":[41.469,34.767],"Dikmen":[41.65,35.267],"Durağan":[41.416,35.054],"Erfelek":[41.879,34.918],"Gerze":[41.804,35.201],"Merkez":[42.027,35.163],"Saraydüzü":[41.329,34.847],"Türkeli":[41.948,34.339]}},"Sivas":{"c":[39.748,37.016],"d":{"Akıncılar":[40.08,38.348],"Altınyayla":[39.272,36.751],"Divriği":[39.371,38.114],"Doğanşar":[40.217,37.533],"Gemerek":[39.183,36.072],"Gölova":[40.062,38.607],"Gürün":[38.722,37.271],"Hafik":[39.856,37.386],"İmranlı":[39.875,38.114],"Kangal":[39.234,37.391],"Koyulhisar":[40.303,37.831],"Merkez":[39.748,37.016],"Suşehri":[40.164,38.087],"Şarkışla":[39.352,36.41],"Ulaş":[39.445,37.039],"Yıldızeli":[39.866,36.599],"Zara":[39.898,37.758]}},"Şanlıurfa":{"c":[37.167,38.794],"d":{"Akçakale":[36.711,38.947],"Birecik":[37.026,37.978],"Bozova":[37.362,38.527],"Ceylanpınar":[36.847,40.05],"Eyyübiye":[37.167,38.794,1],"Halfeti":[37.245,37.869],"Haliliye":[37.167,38.794,1],"Harran":[36.86,39.031],"Hilvan":[37.587,38.955],"Karaköprü":[37.167,38.794,1],"Siverek":[37.755,39.317],"Suruç":[36.976,38.425],"Viranşehir":[37.223,39.755]}},"Şırnak":{"c":[37.514,42.454],"d":{"Beytüşşebap":[37.563,43.166],"Cizre":[37.33,42.185],"Güçlükonak":[37.514,42.454,1],"İdil":[37.335,41.889],"Merkez":[37.514,42.454],"Silopi":[37.244,42.463],"Uludere":[37.441,42.852]}},"Tekirdağ":{"c":[40.978,27.509],"d":{"Çerkezköy":[40.978,27.509,1],"Çorlu":[41.159,27.8],"Ergene":[40.978,27.509,1],"Hayrabolu":[41.213,27.107],"Kapaklı":[40.978,27.509,1],"Malkara":[40.89,26.901],"Marmaraereğlisi":[40.97,27.955],"Muratlı":[41.172,27.499],"Saray":[41.444,27.922],"Süleymanpaşa":[40.978,27.509,1],"Şarköy":[40.978,27.509,1]}},"Tokat":{"c":[40.314,36.554],"d":{"Almus":[40.376,36.904],"Artova":[40.116,36.3],"Başçiftlik":[40.547,37.169],"Erbaa":[40.669,36.568],"Merkez":[40.314,36.554],"Niksar":[40.592,36.952],"Pazar":[40.277,36.283],"Reşadiye":[40.392,37.337],"Sulusaray":[39.994,36.084],"Turhal":[40.388,36.081],"Yeşilyurt":[40.006,36.221],"Zile":[40.303,35.886]}},"Trabzon":{"c":[41.005,39.727],"d":{"Akçaabat":[41.021,39.571],"Araklı":[40.939,40.058],"Arsin":[40.953,39.927],"Beşikdüzü":[41.052,39.228],"Çarşıbaşı":[41.005,39.727,1],"Çaykara":[40.743,40.232],"Dernekpazarı":[40.797,40.245],"Düzköy":[40.875,39.415],"Hayrat":[40.885,40.365],"Köprübaşı":[40.807,40.114],"Maçka":[40.811,39.605],"Of":[40.941,40.259],"Ortahisar":[41.005,39.727,1],"Sürmene":[40.906,40.128],"Şalpazarı":[40.938,39.19],"Tonya":[40.884,39.285],"Vakfıkebir":[41.046,39.276],"Yomra":[40.953,39.855]}},"Tunceli":{"c":[39.099,39.544],"d":{"Çemişgezek":[39.055,38.908],"Hozat":[39.1,39.208],"Mazgirt":[39.018,39.601],"Merkez":[39.099,39.544],"Nazımiye":[39.18,39.828],"Ovacık":[39.353,39.209],"Pertek":[38.866,39.327],"Pülümür":[39.099,39.544,1]}},"Uşak":{"c":[38.674,29.406],"d":{"Banaz":[38.737,29.752],"Eşme":[38.4,28.969],"Karahallı":[38.321,29.53],"Merkez":[38.674,29.406],"Sivaslı":[38.499,29.684],"Ulubey":[38.42,29.291]}},"Van":{"c":[38.495,43.383],"d":{"Bahçesaray":[38.125,42.798],"Başkale":[38.045,44.017],"Çaldıran":[39.143,43.911],"Çatak":[38.003,43.052],"Edremit":[38.421,43.259],"Erciş":[39.026,43.36],"Gevaş":[38.292,43.102],"Gürpınar":[38.324,43.41],"İpekyolu":[38.495,43.383,1],"Muradiye":[38.986,43.753],"Özalp":[38.655,43.989],"Saray":[38.647,44.161],"Tuşba":[38.495,43.383,1]}},"Yalova":{"c":[40.655,29.277],"d":{"Altınova":[40.695,29.51],"Armutlu":[40.519,28.828],"Çınarcık":[40.645,29.125],"Çiftlikköy":[40.66,29.324],"Merkez":[40.655,29.277],"Termal":[40.608,29.174]}},"Yozgat":{"c":[39.82,34.804],"d":{"Akdağmadeni":[39.66,35.884],"Aydıncık":[40.127,35.288],"Boğazlıyan":[39.189,35.245],"Çandır":[39.244,35.514],"Çayıralan":[39.303,35.644],"Çekerek":[40.073,35.495],"Kadışehri":[39.996,35.792],"Merkez":[39.82,34.804],"Saraykent":[39.694,35.511],"Sarıkaya":[39.494,35.377],"Sorgun":[39.81,35.186],"Şefaatli":[39.504,34.756],"Yenifakılı":[39.211,35],"Yerköy":[39.638,34.467]}},"Zonguldak":{"c":[41.451,31.793],"d":{"Alaplı":[41.169,31.379],"Çaycuma":[41.426,32.076],"Devrek":[41.219,31.956],"Ereğli":[41.283,31.418],"Gökçebey":[41.306,32.142],"Kilimli":[41.491,31.839],"Kozlu":[41.432,31.746],"Merkez":[41.451,31.793]}}};
+const ilSel=document.getElementById('il'),ilceSel=document.getElementById('ilce');
+const trSort=(x,y)=>x.localeCompare(y,'tr');
+Object.keys(IL).sort(trSort).forEach(c=>ilSel.add(new Option(c,c)));
+function fillIlce(){ilceSel.innerHTML='';ilceSel.add(new Option('İl merkezi',''));Object.keys(IL[ilSel.value].d).sort(trSort).forEach(d=>ilceSel.add(new Option(d,d)))}
+const saved=store.get('loc',{il:'Kocaeli',ilce:'Gebze'});
+ilSel.value=IL[saved.il]?saved.il:'Kocaeli';fillIlce();ilceSel.value=saved.ilce in IL[ilSel.value].d?saved.ilce:'';
+ilSel.onchange=()=>{fillIlce();store.set('loc',{il:ilSel.value,ilce:''});render()};
+ilceSel.onchange=()=>{store.set('loc',{il:ilSel.value,ilce:ilceSel.value});render()};
+function coords(){const p=IL[ilSel.value],v=ilceSel.value?p.d[ilceSel.value]:null;return v?[v[0],v[1]]:p.c}
+
+/* ---------- Namaz vakti hesabı ---------- */
+const R=Math.PI/180,sin=d=>Math.sin(d*R),cos=d=>Math.cos(d*R),tan=d=>Math.tan(d*R),asin=x=>Math.asin(x)/R,acos=x=>Math.acos(x)/R,atan2=(y,x)=>Math.atan2(y,x)/R,acot=x=>Math.atan(1/x)/R;
+const fix=(a,b)=>{a=a-b*Math.floor(a/b);return a<0?a+b:a};
+function julian(y,m,d){if(m<=2){y--;m+=12}const A=Math.floor(y/100),B=2-A+Math.floor(A/4);return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524.5}
+function sunPos(jd){const D=jd-2451545,g=fix(357.529+.98560028*D,360),q=fix(280.459+.98564736*D,360),L=fix(q+1.915*sin(g)+.02*sin(2*g),360),e=23.439-.00000036*D;let RA=atan2(cos(e)*sin(L),cos(L))/15;RA=fix(RA,24);return{decl:asin(sin(e)*sin(L)),eqt:q/15-RA}}
+function prayerTimes(date,lat,lng,tz){
+ const jd0=julian(date.getFullYear(),date.getMonth()+1,date.getDate())-lng/(15*24);
+ const mid=t=>fix(12-sunPos(jd0+t).eqt,24);
+ const angT=(ang,t,ccw)=>{const dc=sunPos(jd0+t).decl,n=mid(t),T=acos((-sin(ang)-sin(dc)*sin(lat))/(cos(dc)*cos(lat)))/15;return n+(ccw?-T:T)};
+ const asrT=t=>{const dc=sunPos(jd0+t).decl;return angT(-acot(1+tan(Math.abs(lat-dc))),t)};
+ let h={imsak:5,gunes:6,ogle:12,ikindi:13,aksam:18,yatsi:18};
+ for(let i=0;i<2;i++){const p=k=>h[k]/24;h={imsak:angT(18,p('imsak'),1),gunes:angT(.833,p('gunes'),1),ogle:mid(p('ogle')),ikindi:asrT(p('ikindi')),aksam:angT(.833,p('aksam')),yatsi:angT(17,p('yatsi'))}}
+ const temkin={imsak:0,gunes:-7,ogle:5,ikindi:4,aksam:7,yatsi:0},out={};
+ for(const k in h){const hr=h[k]+tz-lng/15+temkin[k]/60;const d=new Date(date.getFullYear(),date.getMonth(),date.getDate(),0,0,0);d.setTime(d.getTime()+Math.round(hr*60)*60000);out[k]=d}
+ return out}
+const NAMES={imsak:'İmsak',gunes:'Güneş',ogle:'Öğle',ikindi:'İkindi',aksam:'Akşam',yatsi:'Yatsı'};
+const hm=d=>d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+
+/* Sistem saat dilimi Türkiye dışında olsa da vakitleri TSİ (UTC+3) gösterecek şekilde yerel tarih üzerinden çalışılır */
+const tz=-new Date().getTimezoneOffset()/60;
+let today,tomorrow,QB={};
+function render(){lastCur=null;window._seg=null;
+ const [lat,lng]=coords(),now=new Date();
+ today=prayerTimes(now,lat,lng,tz);
+ const t2=new Date(now);t2.setDate(t2.getDate()+1);tomorrow=prayerTimes(t2,lat,lng,tz);
+ document.getElementById('dateTxt').textContent=now.toLocaleDateString('tr-TR',{day:'numeric',month:'long',weekday:'long'});
+ document.getElementById('hijriTxt').textContent=hijriStr(now);
+ const q=fix(atan2(sin(39.8262-lng),cos(lat)*tan(21.4225)-sin(lat)*cos(39.8262-lng)),360);
+ QB={q,lat,lng};document.getElementById('qdeg').textContent=Math.round(q);if(window.updKible)updKible();
+ document.getElementById('needle').style.transform=`rotate(${q}deg)`;
+ tick()}
+let lastCd='',lastCur=null;
+const SKY={imsak:['#8FA3DA','#BFAEE6'],gunes:['#F6A98B','#FBD3A0'],ogle:['#5CB8E4','#9FDDF2'],ikindi:['#6BB9D8','#F2D39B'],aksam:['#F08A7E','#8E7CC3'],yatsi:['#7C8CC8','#A6B4E4']};
+(function(){let h='';for(let i=0;i<22;i++)h+=`<circle class="star" cx="${(i*47)%310+5}" cy="${(i*29)%80+6}" r="${i%3?0.9:1.4}" style="animation-delay:${(i%7)*.4}s"/>`;document.getElementById('stars').innerHTML=h})();
+function tick(){
+ const now=new Date();let nk=null,nt=null,cur=null;
+ for(const k in today){if(today[k]>now){nk=k;nt=today[k];break}cur=k}
+ if(!nk){nk='imsak';nt=tomorrow.imsak;cur='yatsi'}
+ const key=cur||'yatsi';
+ if(key+ilSel.value+ilceSel.value!==lastCur){lastCur=key+ilSel.value+ilceSel.value;
+  document.getElementById('times').innerHTML=Object.keys(NAMES).map(k=>`<div class="t${k===cur?' on':''}"><span>${NAMES[k]}</span><b>${hm(today[k])}</b></div>`).join('');
+  const g=SKY[key];const sky=document.getElementById('sky');sky.style.setProperty('--g',`linear-gradient(160deg,${g[0]},${g[1]})`);sky.style.setProperty('--g2',g[0])}
+ document.getElementById('nextLbl').textContent=NAMES[nk]+' vaktine kalan';
+ const s=Math.max(0,Math.floor((nt-now)/1000));
+ const parts=[s/3600,s%3600/60,s%60].map(x=>String(Math.floor(x)).padStart(2,'0'));
+ const cdEl=document.getElementById('cd');
+ if(!lastCd){cdEl.innerHTML=parts.map(p=>`<span>${p}</span>`).join(':')}else{const sp=cdEl.querySelectorAll('span');parts.forEach((p,i)=>{if(sp[i].textContent!==p){sp[i].textContent=p;sp[i].classList.remove('flip');void sp[i].offsetWidth;sp[i].classList.add('flip')}})}
+ lastCd=parts.join();
+ // gün / gece yayı
+ const day=now>=today.gunes&&now<today.aksam;let a0,a1,f;
+ if(day){a0=today.gunes;a1=today.aksam}else if(now>=today.aksam){a0=today.aksam;a1=tomorrow.gunes}else{const y=new Date(today.gunes);y.setDate(y.getDate()-1);a0=new Date(today.aksam.getTime()-864e5);a1=today.gunes}
+ f=Math.min(1,Math.max(0,(now-a0)/(a1-a0)));
+ const x=(1-f)*(1-f)*20+2*(1-f)*f*160+f*f*300,y=(1-f)*(1-f)*100+2*(1-f)*f*(-20)+f*f*100;
+ document.getElementById('orb').setAttribute('transform',`translate(${x.toFixed(1)} ${y.toFixed(1)})`);
+ document.getElementById('orbM').setAttribute('opacity',day?0:1);document.getElementById('orbC').setAttribute('fill',day?'#FFE9A0':'#F4F1E0');
+ document.getElementById('stars').style.opacity=day?0:1;document.getElementById('stars').style.transition='opacity 1s';
+ document.getElementById('aL').textContent=day?'Güneş '+hm(today.gunes):'Akşam';document.getElementById('aR').textContent=day?'Akşam '+hm(today.aksam):'Güneş';
+
+ // kerahat
+ const M=6e4,KZ=[[today.gunes,new Date(+today.gunes+45*M),'Güneş doğarken'],[new Date(+today.ogle-45*M),today.ogle,'İstiva (zeval)'],[new Date(+today.aksam-45*M),today.aksam,'Güneş batarken']];
+ const bz=f=>[(1-f)*(1-f)*20+2*(1-f)*f*160+f*f*300,(1-f)*(1-f)*100+2*(1-f)*f*(-20)+f*f*100];
+ if(day){const span=today.aksam-today.gunes;document.getElementById('kz').innerHTML=KZ.map(([a,b])=>{let p='';for(let i=0;i<=12;i++){const f=((+a-today.gunes)+(b-a)*i/12)/span,[x,y]=bz(f);p+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)}const on=now>=a&&now<b;return `<path d="${p}" fill="none" stroke="#FF8A78" stroke-width="${on?7:5}" stroke-linecap="round" class="${on?'kzs':''}" opacity=".85"/>`}).join('')}
+ else document.getElementById('kz').innerHTML='';
+ const kr=document.getElementById('kr'),act=KZ.find(k=>now>=k[0]&&now<k[1]);
+ if(act){kr.className='kr on';kr.innerHTML=`<i></i>Kerahat vakti · ${act[2]} · ${Math.ceil((act[1]-now)/M)} dk kaldı`}
+ else{const nx=KZ.find(k=>k[0]>now)||[new Date(+tomorrow.gunes),0,'Güneş doğarken'];kr.className='kr';kr.innerHTML=`<i></i>Namaz kılınabilir · Sonraki kerahat ${hm(nx[0])}`}
+
+ // kerahat kadranı
+ const P=(h,r)=>{const t=Math.PI*(1-h/24);return[160+r*Math.cos(t),160-r*Math.sin(t)]};
+ const hh=d=>d.getHours()+d.getMinutes()/60;
+ const wedge=(a,b,r0,r1)=>{const[x1,y1]=P(a,r1),[x2,y2]=P(b,r1),[x3,y3]=P(b,r0),[x4,y4]=P(a,r0),lg=(b-a)>12?1:0;return `M${x1.toFixed(1)} ${y1.toFixed(1)}A${r1} ${r1} 0 ${lg} 1 ${x2.toFixed(1)} ${y2.toFixed(1)}L${x3.toFixed(1)} ${y3.toFixed(1)}A${r0} ${r0} 0 ${lg} 0 ${x4.toFixed(1)} ${y4.toFixed(1)}Z`};
+ const segKey=ilSel.value+ilceSel.value+today.imsak.getDate();
+ if(window._seg!==segKey){window._seg=segKey;
+  const B=[0,hh(today.imsak),hh(today.gunes),hh(today.ogle),hh(today.ikindi),hh(today.aksam),hh(today.yatsi),24];
+  const LB=['Yatsı','Sabah','','Öğle','İkindi','Akşam','Yatsı'];
+  let g='';B.slice(0,-1).forEach((a,i)=>{const b=B[i+1];g+=`<path class="dseg" style="animation-delay:${i*.06}s" d="${wedge(a,b,78,142)}" fill="${i%2?'#FFFFFF':'#EEF8F6'}" stroke="#A9D8D0" stroke-width=".8"/>`;
+   if(LB[i]){const m=(a+b)/2,[x,y]=P(m,110),deg=180*(1-m/24),rot=deg>90?180-deg:-deg;g+=`<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="${b-a>1.8?10:8.5}" font-weight="600" fill="#1D3A40" text-anchor="middle" dominant-baseline="middle" transform="rotate(${rot.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)})">${LB[i]}</text>`}});
+  KZ.forEach(([a,b])=>{g+=`<path d="${wedge(hh(a),hh(b),78,142)}" fill="#F08A7E" opacity=".9" class="kzk"/>`});
+  document.getElementById('dSeg').innerHTML=g;
+  let t='';for(let h=0;h<=24;h++){const[x1,y1]=P(h,143),[x2,y2]=P(h,h%3?147:151);t+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#8FB3B0" stroke-width="${h%3?1:1.6}"/>`;if(h%3===0&&h%24){const[x,y]=P(h,160);t+=`<text x="${x.toFixed(1)}" y="${(y+3).toFixed(1)}" font-size="9" fill="#5E7F7C" text-anchor="middle">${String(h).padStart(2,'0')}</text>`}}
+  document.getElementById('dTick').innerHTML=t;
+  document.getElementById('kChips').innerHTML=KZ.map(([a,b,n],i)=>`<div data-i="${i}"><span>${['Güneş doğarken','Öğle öncesi','Güneş batarken'][i]}</span><b>${hm(a)}–${hm(b)}</b></div>`).join('')}
+ document.getElementById('dHand').setAttribute('transform',`rotate(${((hh(now)+now.getSeconds()/3600)/24*180-90).toFixed(2)} 160 160)`);
+ document.querySelectorAll('.kzk').forEach((el,i)=>el.classList.toggle('kzw',now>=KZ[i][0]&&now<KZ[i][1]));
+ document.querySelectorAll('#kChips div').forEach((el,i)=>el.classList.toggle('on',now>=KZ[i][0]&&now<KZ[i][1]));
+ const nxK=act?act[1]:(KZ.find(k=>k[0]>now)||[tomorrow.gunes])[0],ks=Math.max(0,Math.floor((nxK-now)/1000));
+ document.getElementById('dLbl').textContent=act?'Kerahat bitimine':'Huzurlu vakit';
+ document.getElementById('dCd').textContent=[ks/3600,ks%3600/60,ks%60].map(x=>String(Math.floor(x)).padStart(2,'0')).join(':');
+ const km=document.getElementById('kMsg');km.className='kmsg'+(act?' on':'');
+ km.innerHTML=act?`<i></i><span>Şu an kerahat vakti (${act[2].toLowerCase()}). Bu sürede namaz kılmak mekruhtur.</span>`:`<i></i><span>Şu an kerahat vakti değil, namazını kılabilirsin. Sonraki kerahat ${hm(nxK)}'de başlıyor.</span>`;
+ if(now.getDate()!==today.imsak.getDate())render()}
+
+/* ---------- Hicri ---------- */
+const HM=['Muharrem','Safer','Rebiülevvel','Rebiülahir','Cemaziyelevvel','Cemaziyelahir','Recep','Şaban','Ramazan','Şevval','Zilkade','Zilhicce'];
+const hf=new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{day:'numeric',month:'numeric',year:'numeric'});
+function hijri(d){const p={};hf.formatToParts(d).forEach(x=>p[x.type]=x.value);return{d:+p.day,m:+p.month,y:parseInt(p.year)}}
+function hijriStr(d){const h=hijri(d);return `${h.d} ${HM[h.m-1]} ${h.y}`}
+
+/* ---------- Dualar ---------- */
+const DUA=[
+{t:"Sübhaneke",a:"سُبْحَانَكَ اللّٰهُمَّ وَبِحَمْدِكَ وَتَبَارَكَ اسْمُكَ وَتَعَالٰى جَدُّكَ وَلَا اِلٰهَ غَيْرُكَ",o:"Sübhânekellâhümme ve bi hamdik ve tebârekesmük ve teâlâ ceddük ve lâ ilâhe ğayrük.",m:"Allah'ım! Sen eksik sıfatlardan uzaksın. Seni daima böyle tenzih eder ve överim. Senin adın mübarektir. Varlığın her şeyden üstündür. Senden başka ilah yoktur.",s:"Namazın ilk rekâtında okunur"},
+{t:"Fâtiha Suresi",a:"بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّح۪يمِ ۝ اَلْحَمْدُ لِلّٰهِ رَبِّ الْعَالَم۪ينَ ۝ اَلرَّحْمٰنِ الرَّح۪يمِ ۝ مَالِكِ يَوْمِ الدّ۪ينِ ۝ اِيَّاكَ نَعْبُدُ وَاِيَّاكَ نَسْتَع۪ينُ ۝ اِهْدِنَا الصِّرَاطَ الْمُسْتَق۪يمَ ۝ صِرَاطَ الَّذ۪ينَ اَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّٓالّ۪ينَ",o:"Bismillâhirrahmânirrahîm. Elhamdü lillâhi rabbil'âlemîn. Errahmânirrahîm. Mâliki yevmiddîn. İyyâke na'büdü ve iyyâke neste'în. İhdinessırâtel müstakîm. Sırâtellezîne en'amte aleyhim ğayrilmağdûbi aleyhim ve leddâllîn.",m:"Rahmân ve Rahîm olan Allah'ın adıyla. Hamd, âlemlerin Rabbi Allah'a mahsustur. O Rahmân ve Rahîm'dir. Hesap ve ceza gününün sahibidir. Yalnız sana ibadet eder, yalnız senden yardım dileriz. Bizi doğru yola ilet; nimet verdiklerinin yoluna, gazaba uğrayanların ve sapmışların yoluna değil.",s:"Kur'an 1. sure"},
+{t:"Âyetü'l-Kürsî",a:"اَللّٰهُ لَٓا اِلٰهَ اِلَّا هُوَۚ اَلْحَيُّ الْقَيُّومُۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌۜ لَهُ مَا فِي السَّمٰوَاتِ وَمَا فِي الْاَرْضِۜ مَنْ ذَا الَّذ۪ي يَشْفَعُ عِنْدَهُٓ اِلَّا بِاِذْنِه۪ۜ يَعْلَمُ مَا بَيْنَ اَيْد۪يهِمْ وَمَا خَلْفَهُمْۚ وَلَا يُح۪يطُونَ بِشَيْءٍ مِنْ عِلْمِه۪ٓ اِلَّا بِمَا شَٓاءَۚ وَسِعَ كُرْسِيُّهُ السَّمٰوَاتِ وَالْاَرْضَۚ وَلَا يَؤُ۫دُهُ حِفْظُهُمَاۚ وَهُوَ الْعَلِيُّ الْعَظ۪يمُ",o:"Allâhü lâ ilâhe illâ hüvel hayyül kayyûm. Lâ te'huzühû sinetün ve lâ nevm. Lehû mâ fissemâvâti ve mâ fil'ard. Men zellezî yeşfeu indehû illâ bi iznih. Ya'lemü mâ beyne eydîhim ve mâ halfehüm. Ve lâ yuhîtûne bi şey'in min ilmihî illâ bimâ şâ'. Vesia kürsiyyühüssemâvâti vel'ard. Ve lâ yeûdühû hıfzuhümâ ve hüvel aliyyül azîm.",m:"Allah, kendisinden başka ilah olmayan, diri ve her şeyin varlığını sürdüren O'dur. O'nu ne uyuklama ne de uyku tutar. Göklerde ve yerdekilerin hepsi O'nundur. İzni olmadan O'nun katında kim şefaat edebilir? O, kulların önlerindekini ve arkalarındakini bilir. Onlar O'nun ilminden, dilediği kadarı dışında hiçbir şey kavrayamazlar. Kürsüsü gökleri ve yeri kaplar; onları koruyup gözetmek O'na ağır gelmez. O yücedir, büyüktür.",s:"Bakara 2:255"},
+{t:"İhlâs Suresi",a:"قُلْ هُوَ اللّٰهُ اَحَدٌۚ ۝ اَللّٰهُ الصَّمَدُۚ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْۙ ۝ وَلَمْ يَكُنْ لَهُ كُفُواً اَحَدٌ",o:"Kul hüvallâhü ehad. Allâhüssamed. Lem yelid ve lem yûled. Ve lem yekün lehû küfüven ehad.",m:"De ki: O Allah birdir. Allah sameddir; her şey O'na muhtaçtır, O hiçbir şeye muhtaç değildir. Doğurmamış ve doğmamıştır. Hiçbir şey O'na denk değildir.",s:"Kur'an 112. sure"},
+{t:"Felak Suresi",a:"قُلْ اَعُوذُ بِرَبِّ الْفَلَقِۙ ۝ مِنْ شَرِّ مَا خَلَقَۙ ۝ وَمِنْ شَرِّ غَاسِقٍ اِذَا وَقَبَۙ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِۙ ۝ وَمِنْ شَرِّ حَاسِدٍ اِذَا حَسَدَ",o:"Kul eûzü birabbil felak. Min şerri mâ halak. Ve min şerri ğâsikın izâ vekab. Ve min şerrinneffâsâti fil'ukad. Ve min şerri hâsidin izâ hased.",m:"De ki: Yarattığı şeylerin şerrinden, karanlığı çöktüğünde gecenin şerrinden, düğümlere üfleyenlerin şerrinden ve haset ettiğinde hasetçinin şerrinden sabahın Rabbine sığınırım.",s:"Kur'an 113. sure"},
+{t:"Nâs Suresi",a:"قُلْ اَعُوذُ بِرَبِّ النَّاسِۙ ۝ مَلِكِ النَّاسِۙ ۝ اِلٰهِ النَّاسِۙ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِۙ ۝ اَلَّذ۪ي يُوَسْوِسُ ف۪ي صُدُورِ النَّاسِۙ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ",o:"Kul eûzü birabbinnâs. Melikinnâs. İlâhinnâs. Min şerril vesvâsil hannâs. Ellezî yüvesvisü fî sudûrinnâs. Minel cinneti vennâs.",m:"De ki: İnsanların kalplerine vesvese veren, Allah anıldığında sinip kaçan cin ve insan şeytanlarının şerrinden; insanların Rabbine, insanların Melik'ine, insanların İlah'ına sığınırım.",s:"Kur'an 114. sure"},
+{t:"Kevser Suresi",a:"اِنَّٓا اَعْطَيْنَاكَ الْكَوْثَرَۜ ۝ فَصَلِّ لِرَبِّكَ وَانْحَرْۜ ۝ اِنَّ شَانِئَكَ هُوَ الْاَبْتَرُ",o:"İnnâ a'taynâke'l-kevser. Fesalli lirabbike venhar. İnne şânieke hüvel ebter.",m:"Şüphesiz biz sana Kevser'i verdik. Öyleyse Rabbin için namaz kıl ve kurban kes. Asıl soyu kesik olan, sana buğzedendir.",s:"Kur'an 108. sure"},
+{t:"Asr Suresi",a:"وَالْعَصْرِۙ ۝ اِنَّ الْاِنْسَانَ لَف۪ي خُسْرٍۙ ۝ اِلَّا الَّذ۪ينَ اٰمَنُوا وَعَمِلُوا الصَّالِحَاتِ وَتَوَاصَوْا بِالْحَقِّ وَتَوَاصَوْا بِالصَّبْرِ",o:"Vel'asr. İnnel insâne lefî husr. İllellezîne âmenû ve amilüssâlihâti ve tevâsav bilhakkı ve tevâsav bissabr.",m:"Asra yemin olsun ki insan gerçekten ziyandadır. Ancak iman edip salih ameller işleyenler, birbirlerine hakkı ve sabrı tavsiye edenler bunun dışındadır.",s:"Kur'an 103. sure"},
+{t:"Kâfirûn Suresi",a:"قُلْ يَٓا اَيُّهَا الْكَافِرُونَۙ ۝ لَٓا اَعْبُدُ مَا تَعْبُدُونَۙ ۝ وَلَٓا اَنْتُمْ عَابِدُونَ مَٓا اَعْبُدُۚ ۝ وَلَٓا اَنَا۬ عَابِدٌ مَا عَبَدْتُمْۙ ۝ وَلَٓا اَنْتُمْ عَابِدُونَ مَٓا اَعْبُدُۜ ۝ لَكُمْ د۪ينُكُمْ وَلِيَ د۪ينِ",o:"Kul yâ eyyühel kâfirûn. Lâ a'büdü mâ ta'büdûn. Ve lâ entüm âbidûne mâ a'büd. Ve lâ ene âbidün mâ abedtüm. Ve lâ entüm âbidûne mâ a'büd. Leküm dînüküm veliye dîn.",m:"De ki: Ey kâfirler! Ben sizin taptıklarınıza tapmam. Siz de benim taptığıma tapmıyorsunuz. Ben de sizin taptıklarınıza tapacak değilim. Siz de benim taptığıma tapacak değilsiniz. Sizin dininiz size, benim dinim banadır.",s:"Kur'an 109. sure"},
+{t:"Nasr Suresi",a:"اِذَا جَٓاءَ نَصْرُ اللّٰهِ وَالْفَتْحُۙ ۝ وَرَاَيْتَ النَّاسَ يَدْخُلُونَ ف۪ي د۪ينِ اللّٰهِ اَفْوَاجاًۙ ۝ فَسَبِّحْ بِحَمْدِ رَبِّكَ وَاسْتَغْفِرْهُۜ اِنَّهُ كَانَ تَوَّاباً",o:"İzâ câe nasrullâhi vel feth. Ve raeytennâse yedhulûne fî dînillâhi efvâcâ. Fesebbih bihamdi rabbike vesteğfirh. İnnehû kâne tevvâbâ.",m:"Allah'ın yardımı ve fetih geldiğinde, insanların bölük bölük Allah'ın dinine girdiğini gördüğünde Rabbini hamd ile tespih et ve O'ndan bağışlanma dile. Çünkü O, tövbeleri çokça kabul edendir.",s:"Kur'an 110. sure"},
+{t:"Ettehiyyâtü",a:"اَلتَّحِيَّاتُ لِلّٰهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ اَلسَّلَامُ عَلَيْكَ اَيُّهَا النَّبِيُّ وَرَحْمَةُ اللّٰهِ وَبَرَكَاتُهُ اَلسَّلَامُ عَلَيْنَا وَعَلٰى عِبَادِ اللّٰهِ الصَّالِح۪ينَ اَشْهَدُ اَنْ لَا اِلٰهَ اِلَّا اللّٰهُ وَاَشْهَدُ اَنَّ مُحَمَّداً عَبْدُهُ وَرَسُولُهُ",o:"Ettehiyyâtü lillâhi vessalevâtü vettayyibât. Esselâmü aleyke eyyühen nebiyyü ve rahmetullâhi ve berakâtüh. Esselâmü aleynâ ve alâ ibâdillâhis sâlihîn. Eşhedü en lâ ilâhe illallâh ve eşhedü enne Muhammeden abdühû ve rasûlüh.",m:"Dil, beden ve mal ile yapılan bütün ibadetler Allah'adır. Ey Peygamber! Allah'ın selamı, rahmeti ve bereketi senin üzerine olsun. Selam bizim üzerimize ve Allah'ın salih kulları üzerine olsun. Şahitlik ederim ki Allah'tan başka ilah yoktur ve yine şahitlik ederim ki Muhammed O'nun kulu ve elçisidir.",s:"Oturuşlarda okunur"},
+{t:"Allâhümme Salli",a:"اَللّٰهُمَّ صَلِّ عَلٰى مُحَمَّدٍ وَعَلٰى اٰلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلٰى اِبْرَاه۪يمَ وَعَلٰى اٰلِ اِبْرَاه۪يمَ اِنَّكَ حَم۪يدٌ مَج۪يدٌ",o:"Allâhümme salli alâ Muhammedin ve alâ âli Muhammed. Kemâ salleyte alâ İbrâhîme ve alâ âli İbrâhîm. İnneke hamîdün mecîd.",m:"Allah'ım! İbrahim'e ve ailesine rahmet ettiğin gibi Muhammed'e ve ailesine de rahmet et. Şüphesiz sen övülmeye layıksın, şanı yücesin.",s:"Son oturuşta okunur"},
+{t:"Allâhümme Bârik",a:"اَللّٰهُمَّ بَارِكْ عَلٰى مُحَمَّدٍ وَعَلٰى اٰلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلٰى اِبْرَاه۪يمَ وَعَلٰى اٰلِ اِبْرَاه۪يمَ اِنَّكَ حَم۪يدٌ مَج۪يدٌ",o:"Allâhümme bârik alâ Muhammedin ve alâ âli Muhammed. Kemâ bârekte alâ İbrâhîme ve alâ âli İbrâhîm. İnneke hamîdün mecîd.",m:"Allah'ım! İbrahim'e ve ailesine bereket verdiğin gibi Muhammed'e ve ailesine de bereket ver. Şüphesiz sen övülmeye layıksın, şanı yücesin.",s:"Son oturuşta okunur"},
+{t:"Rabbenâ Âtinâ",a:"رَبَّنَٓا اٰتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْاٰخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",o:"Rabbenâ âtinâ fiddünyâ haseneten ve fil'âhirati haseneten ve kınâ azâbennâr.",m:"Rabbimiz! Bize dünyada da iyilik ver, ahirette de iyilik ver ve bizi cehennem azabından koru.",s:"Bakara 2:201"},
+{t:"Rabbenağfirlî",a:"رَبَّنَا اغْفِرْ ل۪ي وَلِوَالِدَيَّ وَلِلْمُؤْمِن۪ينَ يَوْمَ يَقُومُ الْحِسَابُ",o:"Rabbenağfirlî ve livâlideyye ve lil mü'minîne yevme yekûmül hisâb.",m:"Rabbimiz! Hesap gününde beni, anne babamı ve bütün müminleri bağışla.",s:"İbrâhîm 14:41"}];
+document.getElementById('duaList').innerHTML=DUA.map(d=>`<details><summary>${d.t}</summary><div class="dua"><div class="ar" lang="ar">${d.a}</div><p class="ok">${d.o}</p><p class="ml">${d.m}</p><div class="src">${d.s}</div></div></details>`).join('');
+
+/* ---------- Zikirmatik ---------- */
+const ZK=["Sübhânallâh","Elhamdülillâh","Allâhu ekber","Lâ ilâhe illallâh","Estağfirullâh","Salavat"];
+const zs=document.getElementById('zkSel');ZK.forEach(z=>zs.add(new Option(z,z)));
+let zk=store.get('zk',{sel:ZK[0],target:33,c:{}});zs.value=zk.sel;
+const TG=[33,99,100,1000];
+function zRender(){const n=zk.c[zk.sel]||0;document.getElementById('zkN').textContent=n;document.getElementById('zkT').textContent='Hedef: '+zk.target;const fr=(n%zk.target||(n?zk.target:0))/zk.target;document.getElementById('ring').style.strokeDashoffset=653.5*(1-fr);document.getElementById('zkInfo').textContent=`${Math.floor(n/zk.target)} tur tamamlandı`;store.set('zk',zk)}
+zs.onchange=()=>{zk.sel=zs.value;zRender()};
+document.getElementById('zkTap').onclick=e=>{const b=e.currentTarget,r=b.getBoundingClientRect(),sp=document.createElement('span');sp.className='rip';const sz=60;sp.style.cssText=`width:${sz}px;height:${sz}px;left:${(e.clientX||r.left+r.width/2)-r.left-sz/2}px;top:${(e.clientY||r.top+r.height/2)-r.top-sz/2}px`;b.appendChild(sp);setTimeout(()=>sp.remove(),650);
+ zk.c[zk.sel]=(zk.c[zk.sel]||0)+1;const nEl=document.getElementById('zkN');nEl.classList.remove('bump');void nEl.offsetWidth;nEl.classList.add('bump');
+ if(zk.c[zk.sel]%zk.target===0){const w=document.getElementById('ringwrap');w.classList.remove('done');void w.offsetWidth;w.classList.add('done')}if(navigator.vibrate)navigator.vibrate(zk.c[zk.sel]%zk.target===0?[80,60,80]:15);zRender()};
+document.getElementById('zkUndo').onclick=()=>{zk.c[zk.sel]=Math.max(0,(zk.c[zk.sel]||0)-1);zRender()};
+const rb=document.getElementById('zkReset');let armed=false;
+rb.onclick=()=>{if(!armed){armed=true;rb.textContent='Emin misin?';setTimeout(()=>{armed=false;rb.textContent='Sıfırla'},2500);return}zk.c[zk.sel]=0;armed=false;rb.textContent='Sıfırla';zRender()};
+document.getElementById('zkT').onclick=()=>{zk.target=TG[(TG.indexOf(zk.target)+1)%TG.length];zRender()};
+zRender();
+
+/* ---------- Dini günler ---------- */
+function events(){
+ const out=[],d=new Date();d.setHours(12,0,0,0);let prev=hijri(d);const add=(dt,n,k)=>out.push({dt:new Date(dt),n,k});
+ for(let i=0;i<400;i++){const h=hijri(d),tm=new Date(d);tm.setDate(tm.getDate()+1);const hn=hijri(tm);
+  if(h.m===1&&h.d===1)add(d,'Hicri Yılbaşı','');
+  if(h.m===1&&h.d===10)add(d,'Aşure Günü','');
+  if(hn.m===3&&hn.d===12)add(d,'Mevlid Kandili','Kandil gecesi');
+  if(h.m===7&&h.d===1)add(d,'Üç Ayların Başlangıcı','');
+  if(h.m===7&&d.getDay()===4&&hn.m===7&&hn.d<=7)add(d,'Regaip Kandili','Kandil gecesi');
+  if(hn.m===7&&hn.d===27)add(d,'Miraç Kandili','Kandil gecesi');
+  if(hn.m===8&&hn.d===15)add(d,'Berat Kandili','Kandil gecesi');
+  if(h.m===9&&h.d===1)add(d,'Ramazan Başlangıcı','İlk oruç');
+  if(hn.m===9&&hn.d===27)add(d,'Kadir Gecesi','Kandil gecesi');
+  if(hn.m===10&&hn.d===1)add(d,'Ramazan Bayramı Arifesi','');
+  if(h.m===10&&h.d===1)add(d,'Ramazan Bayramı','3 gün');
+  if(h.m===12&&h.d===9)add(d,'Kurban Bayramı Arifesi','');
+  if(h.m===12&&h.d===10)add(d,'Kurban Bayramı','4 gün');
+  d.setDate(d.getDate()+1)}
+ const t0=new Date();t0.setHours(12,0,0,0);document.getElementById('evList').innerHTML=out.map((e,i)=>`<div class="ev" style="animation-delay:${Math.min(i,12)*.04}s"><div>${Math.round((e.dt-t0)/864e5)===0?'<div class="left">Bugün</div>':`<div class="left">${Math.round((e.dt-t0)/864e5)} gün sonra</div>`}${e.n}${e.k?`<div class="k">${e.k}</div>`:''}</div><div class="d">${e.dt.toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'})}<br>${e.dt.toLocaleDateString('tr-TR',{weekday:'long'})}</div></div>`).join('')}
+events();
+
+/* ---------- Günün duası / hadisi ---------- */
+const GDUA=[
+{a:"رَبِّ زِدْن۪ي عِلْماً",t:"Rabbim! İlmimi artır.",s:"Tâhâ 20:114"},
+{a:"رَبَّنَٓا اٰتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْاٰخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",t:"Rabbimiz! Bize dünyada da iyilik ver, ahirette de iyilik ver ve bizi cehennem azabından koru.",s:"Bakara 2:201"},
+{a:"رَبِّ اشْرَحْ ل۪ي صَدْر۪ي ۝ وَيَسِّرْ ل۪ٓي اَمْر۪ي",t:"Rabbim! Göğsümü genişlet, işimi bana kolaylaştır.",s:"Tâhâ 20:25-26"},
+{a:"رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ اِذْ هَدَيْتَنَا وَهَبْ لَنَا مِنْ لَدُنْكَ رَحْمَةً",t:"Rabbimiz! Bizi doğru yola ilettikten sonra kalplerimizi eğriltme. Bize katından bir rahmet bağışla.",s:"Âl-i İmrân 3:8"},
+{a:"رَبَّنَا هَبْ لَنَا مِنْ اَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ اَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّق۪ينَ اِمَاماً",t:"Rabbimiz! Bize eşlerimizden ve çocuklarımızdan göz aydınlığı olacak nesiller bağışla ve bizi takva sahiplerine önder kıl.",s:"Furkân 25:74"},
+{a:"رَبِّ ارْحَمْهُمَا كَمَا رَبَّيَان۪ي صَغ۪يراً",t:"Rabbim! Onlar beni küçükken nasıl yetiştirdilerse sen de onlara öyle merhamet et.",s:"İsrâ 17:24"},
+{a:"حَسْبُنَا اللّٰهُ وَنِعْمَ الْوَك۪يلُ",t:"Allah bize yeter. O ne güzel vekildir.",s:"Âl-i İmrân 3:173"},
+{a:"رَبَّنَا ظَلَمْنَٓا اَنْفُسَنَا وَاِنْ لَمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ الْخَاسِر۪ينَ",t:"Rabbimiz! Biz kendimize zulmettik. Eğer bizi bağışlamaz ve bize merhamet etmezsen mutlaka ziyana uğrayanlardan oluruz.",s:"A'râf 7:23"},
+{a:"لَٓا اِلٰهَ اِلَّٓا اَنْتَ سُبْحَانَكَ اِنّ۪ي كُنْتُ مِنَ الظَّالِم۪ينَ",t:"Senden başka ilah yoktur. Seni tenzih ederim. Ben gerçekten kendine yazık edenlerden oldum.",s:"Enbiyâ 21:87"},
+{a:"رَبَّنَا تَقَبَّلْ مِنَّاۜ اِنَّكَ اَنْتَ السَّم۪يعُ الْعَل۪يمُ",t:"Rabbimiz! Bizden kabul buyur. Şüphesiz sen hakkıyla işitensin, hakkıyla bilensin.",s:"Bakara 2:127"}];
+
+let gsMode='dua',gsIdx=null;const HADIS=GDUA;
+const dayNo=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5);
+function gsItem(){const L=gsMode==='dua'?GDUA:HADIS;return L[(gsIdx??dayNo)%L.length]}
+function gsText(){const it=gsItem();return (gsMode==='dua'?it.a+'\n\n':'')+'“'+it.t+'”\n('+it.s+')'}
+function gsRender(anim){const body=document.getElementById('gsBody');const go=()=>{const it=gsItem();
+ document.getElementById('gsTitle').textContent=(gsIdx==null?'Günün ':'')+(gsMode==='dua'?(gsIdx==null?'duası':'Dua'):(gsIdx==null?'hadisi':'Hadis'));
+ body.innerHTML=(gsMode==='dua'?`<div class="ar" lang="ar">${it.a}</div>`:'')+`<p class="gs-t">${it.t}</p><div class="src">${it.s}</div>`;
+ const txt=encodeURIComponent(gsText());
+ document.getElementById('gsWa').href='https://wa.me/?text='+txt;
+ document.getElementById('gsTg').href='https://t.me/share/url?url=%20&text='+txt;
+ document.getElementById('gsX').href='https://twitter.com/intent/tweet?text='+txt;
+ body.classList.remove('out')};
+ if(anim){body.classList.add('out');setTimeout(go,250)}else go();
+}
+document.getElementById('gsRnd').onclick=()=>{const L=gsMode==='dua'?GDUA:HADIS;let n;do{n=Math.floor(Math.random()*L.length)}while(n===((gsIdx??dayNo)%L.length)&&L.length>1);gsIdx=n;gsRender(1)};
+let tt;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),1800)}
+document.getElementById('gsCopy').onclick=()=>{const txt=gsText();const fb=()=>{const r=document.createRange();r.selectNodeContents(document.getElementById('gsBody'));const sel=getSelection();sel.removeAllRanges();sel.addRange(r);toast('Metin seçildi, kopyalamak için basılı tut')};
+ try{navigator.clipboard.writeText(txt).then(()=>toast('Kopyalandı'),fb)}catch(e){fb()}};
+gsRender();
+
+/* ---------- Kıble pusulası ---------- */
+(function(){let h='';for(let i=0;i<72;i++){const a=i*5,big=i%9===0,r1=big?118:124;h+=`<line x1="150" y1="${150-132}" x2="150" y2="${150-r1}" stroke="var(--mute)" stroke-width="${big?2:1}" opacity="${big?.8:.4}" transform="rotate(${a} 150 150)"/>`}document.getElementById('ticks').innerHTML=h})();
+let heading=null,roseRot=0;
+function sunAz(lat,lng){const now=new Date(),jd=now.getTime()/864e5+2440587.5,sp=sunPos(jd);const utcH=now.getUTCHours()+now.getUTCMinutes()/60+now.getUTCSeconds()/3600;const ha=(utcH+lng/15+sp.eqt-12)*15;
+ const el=asin(sin(lat)*sin(sp.decl)+cos(lat)*cos(sp.decl)*cos(ha));const az=fix(atan2(sin(ha),cos(ha)*sin(lat)-tan(sp.decl)*cos(lat))+180,360);return{az,el}}
+function updKible(){const{q,lat,lng}=QB;if(q==null)return;
+ document.getElementById('qBig').textContent=Math.round(q);
+ document.getElementById('qn').style.transform=`rotate(${q}deg)`;
+ const d=6371*Math.acos(Math.min(1,sin(lat)*sin(21.4225)+cos(lat)*cos(21.4225)*cos(39.8262-lng)));
+ document.getElementById('qDist').textContent=Math.round(d).toLocaleString('tr-TR')+' km';
+ const s=sunAz(lat,lng);
+ if(s.el>3){let diff=fix(q-s.az,360);const side=diff<=180?'sağında':'solunda',v=diff<=180?diff:360-diff;
+  document.getElementById('qSun').textContent=Math.round(v)+'° '+side;
+  document.getElementById('sunNote').textContent=`Güneş şu an ${Math.round(s.az)}° yönünde. Güneşe dön, sonra ${Math.round(v)}° ${diff<=180?'sağa':'sola'} dön: kıble o yöndedir. Güneş hareket ettiği için bu değer dakikalar içinde değişir.`}
+ else{document.getElementById('qSun').textContent='Güneş batık';document.getElementById('sunNote').textContent='Güneş yöntemi gündüz kullanılabilir.'}}
+function onOri(e){let h=null;if(typeof e.webkitCompassHeading==='number')h=e.webkitCompassHeading;else if(e.absolute&&e.alpha!=null)h=360-e.alpha;if(h==null)return;
+ heading=h;const cmp=document.getElementById('cmp');cmp.classList.remove('idle');
+ let target=-h;let d=((target-roseRot)%360+540)%360-180;roseRot+=d;document.getElementById('rose').style.transform=`rotate(${roseRot}deg)`;
+ const off=Math.abs(((QB.q-h)%360+540)%360-180);cmp.classList.toggle('aligned',off<4);
+ document.getElementById('cStatus').textContent=off<4?'Kıbleye dönüksün':`Kıbleye ${Math.round(off)}° kaldı`;
+ if(off<4&&!cmp.dataset.v){cmp.dataset.v=1;navigator.vibrate&&navigator.vibrate(60)}if(off>=4)delete cmp.dataset.v}
+document.getElementById('liveBtn').onclick=async()=>{const st=document.getElementById('cStatus');st.textContent='Sensör bekleniyor…';
+ try{if(typeof DeviceOrientationEvent!=='undefined'&&DeviceOrientationEvent.requestPermission){const r=await DeviceOrientationEvent.requestPermission();if(r!=='granted')throw 0}
+  addEventListener('deviceorientationabsolute',onOri);addEventListener('deviceorientation',onOri)}catch(e){}
+ setTimeout(()=>{if(heading==null)st.textContent='Bu görünümde yön sensörüne erişilemedi. Açıyı telefonun pusulasıyla ya da güneş yöntemiyle kullan.'},2500)};
+setInterval(()=>{if(!document.getElementById('p-kible').hidden)updKible()},30000);
+document.getElementById('aboutBtn').onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',false));document.querySelectorAll('section').forEach(s=>s.hidden=s.id!=='p-hakkinda');scrollTo(0,0)};
+setTimeout(()=>{const sp=document.getElementById('splash');sp&&sp.remove()},2600);
+document.getElementById('qGo').onclick=()=>document.querySelector('nav button[data-p="kible"]').click();
+
+/* ---------- Kaydırma noktaları */
+(function(){const sl=document.getElementById('slides'),ds=[...document.querySelectorAll('#dots button')];
+ sl.addEventListener('scroll',()=>{const i=Math.round(sl.scrollLeft/sl.clientWidth);ds.forEach((d,j)=>d.setAttribute('aria-current',i===j))},{passive:true});
+ ds.forEach((d,j)=>d.onclick=()=>sl.scrollTo({left:j*(sl.clientWidth+12),behavior:'smooth'}))})();
+
+/* ---------- Sekmeler ---------- */
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('section').forEach(s=>s.hidden=s.id!=='p-'+b.dataset.p);store.set('tab',b.dataset.p);scrollTo(0,0)});
+const lt=store.get('tab','vakit');document.querySelector(`nav button[data-p="${lt}"]`)?.click();
+render();setInterval(tick,1000);
+</script>
+
+<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});</script>
+</body>
+</html>
