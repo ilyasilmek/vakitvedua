@@ -145,7 +145,11 @@ details[open] .dua{animation:rise .35s ease}
 .ev .k{font-size:11px;color:var(--brass);font-weight:500;margin-top:2px}
 .ev .left{font-size:11px;color:var(--acc);font-weight:600}
 .qibla{cursor:pointer;text-align:left;width:100%;font:inherit;color:var(--ink)}
-.qibla .go{margin-left:auto;color:var(--acc);font-size:22px}
+.qibla .go,.sup .go{margin-left:auto;color:var(--acc);font-size:22px}
+.sup{margin-top:14px;display:flex;align-items:center;gap:14px;width:100%;text-align:left;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow);cursor:pointer}
+.sup .ic{width:44px;height:44px;border-radius:50%;background:var(--accsoft);display:grid;place-items:center;flex:none;color:var(--acc)}
+.sup .note{margin:3px 0 0}
+.sup[aria-busy="true"]{opacity:.7;cursor:progress}
 .gs{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow);animation:rise .5s ease .3s backwards}
 .gs-h{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .gs-h b{font-size:15px}
@@ -223,6 +227,10 @@ details[open] .dua{animation:rise .35s ease}
   <svg width="56" height="56" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" fill="none" stroke="var(--line)" stroke-width="2"/><text x="32" y="11" text-anchor="middle" font-size="8" fill="var(--mute)">K</text><g id="needle"><path d="M32 8 L37 32 L32 29 L27 32Z" fill="var(--brass)"/></g></svg>
   <div><b>Kıble: <span id="qdeg"></span>°</b><div class="note" style="margin:3px 0 0">Pusulayı aç</div></div><span class="go" aria-hidden="true">›</span>
  </button>
+ <button class="sup" id="supBtn" hidden>
+  <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span>
+  <div><b>Destek ol &amp; Reklam izle</b><div class="note" id="supInfo">Kısa bir reklam izleyerek uygulamaya destek olabilirsin</div></div><span class="go" aria-hidden="true">›</span>
+ </button>
  <div class="gs">
   <div class="gs-h"><b id="gsTitle">Günün duası</b></div>
   <div id="gsBody"></div>
@@ -270,7 +278,7 @@ details[open] .dua{animation:rise .35s ease}
 </section>
 
 <section id="p-hakkinda" hidden>
- <div class="ab-head"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lg3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC2B3"/><stop offset="1" stop-color="#2A9D8F"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#lg3)"/><path class="lg-arch" d="M18 50V30a14 14 0 0 1 28 0v20" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><g transform="translate(2 15)"><path class="lg-moon" d="M36.5 20.5a7 7 0 1 1-6.2-7.3 5.4 5.4 0 1 0 6.2 7.3z" fill="#FFE39A"/></g><path class="lg-base" d="M12 50h40" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></svg><div><h2 style="margin:0">Vakit ve Dua</h2><div class="hijri">Sürüm 1.54.01</div></div></div>
+ <div class="ab-head"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lg3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC2B3"/><stop offset="1" stop-color="#2A9D8F"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#lg3)"/><path class="lg-arch" d="M18 50V30a14 14 0 0 1 28 0v20" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><g transform="translate(2 15)"><path class="lg-moon" d="M36.5 20.5a7 7 0 1 1-6.2-7.3 5.4 5.4 0 1 0 6.2 7.3z" fill="#FFE39A"/></g><path class="lg-base" d="M12 50h40" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></svg><div><h2 style="margin:0">Vakit ve Dua</h2><div class="hijri">Sürüm 1.55.01</div></div></div>
  <div class="ab">
   <h3>Namaz vakitleri</h3>
   <p>Vakitler, seçilen konuma göre telefonda hesaplanır. Diyanet'in yöntemi kullanılır: imsak için güneşin ufkun 18° altında, yatsı için 17° altında olduğu an, ikindi için tek gölge boyu ve Diyanet'in temkin payları. Sonuçlar resmi takvimden 1-2 dakika sapabilir. Kesin vakit için namazvakitleri.diyanet.gov.tr esastır.</p>
@@ -285,6 +293,8 @@ details[open] .dua{animation:rise .35s ease}
   <p>Tarihler Ümmü'l-Kurâ hicri takvimiyle hesaplanır. Diyanet'in ilan ettiği tarihle bir gün fark olabilir. Ramazan başlangıcı ve bayramlar için Diyanet duyurusu esastır. Kandiller, geceye girilen günün akşamında gösterilir.</p>
   <h3>Veriler</h3>
   <p>İlçe listesi turkey-neighbourhoods paketinden, koordinatlar GeoNames veri setinden alınmıştır. Seçtiğin konum, sekme ve zikir sayıların yalnızca bu cihazda saklanır.</p>
+  <h3 class="adnote" hidden>Reklamlar</h3>
+  <p class="adnote" hidden>Android uygulaması, açılışta bir kez ve yalnızca sen "Destek ol &amp; Reklam izle" düğmesine bastığında Google AdMob reklamı gösterir. Reklamlar uygulamanın geliştirilmesine destek olur. Konumun ve diğer ayarların reklam için kullanılmaz.</p>
  </div>
 </section>
 
@@ -548,7 +558,7 @@ document.getElementById('liveBtn').onclick=async()=>{const st=document.getElemen
  setTimeout(()=>{if(heading==null)st.textContent='Bu görünümde yön sensörüne erişilemedi. Açıyı telefonun pusulasıyla ya da güneş yöntemiyle kullan.'},2500)};
 setInterval(()=>{if(!document.getElementById('p-kible').hidden)updKible()},30000);
 document.getElementById('aboutBtn').onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',false));document.querySelectorAll('section').forEach(s=>s.hidden=s.id!=='p-hakkinda');scrollTo(0,0)};
-setTimeout(()=>{const sp=document.getElementById('splash');sp&&sp.remove()},2600);
+const splashGone=new Promise(r=>setTimeout(()=>{const sp=document.getElementById('splash');sp&&sp.remove();r()},2600));
 document.getElementById('qGo').onclick=()=>document.querySelector('nav button[data-p="kible"]').click();
 
 /* ---------- Kaydırma noktaları */
@@ -585,6 +595,42 @@ if(NATIVE){document.getElementById('nRow').hidden=false;nState();
  nSw.onclick=()=>{store.set('notif',!store.get('notif',true));nState();scheduleNotifs()};
  scheduleNotifs();
  document.addEventListener('visibilitychange',()=>{if(!document.hidden){render();scheduleNotifs()}});}
+
+/* ---------- Android: reklamlar ---------- */
+const AM=NATIVE?CAP.Plugins.AdMob:null;
+const AD={open:'ca-app-pub-4494482100556023/8265664443',reward:'ca-app-pub-4494482100556023/5846461225'};
+if(AM){
+ document.querySelectorAll('.adnote').forEach(e=>e.hidden=false);
+ const supBtn=document.getElementById('supBtn'),supInfo=document.getElementById('supInfo'),supTxt=supInfo.textContent;
+ let rwReady=null,busy=false;
+ const loadReward=()=>rwReady=AM.prepareRewardVideoAd({adId:AD.reward}).catch(e=>{rwReady=null;throw e});
+ (async()=>{
+  try{
+   await AM.initialize();
+   const ci=await AM.requestConsentInfo().catch(()=>null);
+   if(ci&&ci.status==='REQUIRED'&&ci.isConsentFormAvailable)await AM.showConsentForm().catch(()=>{});
+  }catch(e){return}
+  supBtn.hidden=false;loadReward().catch(()=>{});
+  /* Açılış reklamı: animasyondan sonra, uygulama her açıldığında bir kez. Geç yüklenirse o açılışta atlanır. */
+  const loaded=AM.loadAppOpen({adId:AD.open}).then(()=>true,()=>false);
+  await splashGone;
+  const ok=await Promise.race([loaded,new Promise(r=>setTimeout(()=>r(false),5000))]);
+  if(ok&&!document.hidden)AM.showAppOpen().catch(()=>{});
+ })();
+ /* Ödül gelmezse showRewardVideoAd hiç sonuçlanmaz; kapanışı olaylardan izliyoruz. */
+ let earned=false;
+ const done=fail=>{if(!busy)return;busy=false;supBtn.removeAttribute('aria-busy');
+  supInfo.textContent=fail?'Şu an reklam bulunamadı. Biraz sonra tekrar dene.':earned?'Teşekkürler, desteğin için Allah razı olsun!':supTxt;
+  loadReward().catch(()=>{});setTimeout(()=>{if(!busy)supInfo.textContent=supTxt},6000)};
+ AM.addListener('onRewardedVideoAdReward',()=>earned=true);
+ AM.addListener('onRewardedVideoAdDismissed',()=>setTimeout(()=>done(false),300));
+ AM.addListener('onRewardedVideoAdFailedToShow',()=>done(true));
+ supBtn.onclick=async()=>{
+  if(busy)return;busy=true;earned=false;supBtn.setAttribute('aria-busy','true');supInfo.textContent='Reklam yükleniyor…';
+  try{if(!rwReady)loadReward();await rwReady;rwReady=null}catch(e){rwReady=null;return done(true)}
+  AM.showRewardVideoAd().catch(()=>done(true));
+ };
+}
 </script>
 
 <script>if(!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform())&&'serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});</script>
