@@ -1,6 +1,6 @@
 {
   "name": "vakitvedua",
-  "version": "1.55.01",
+  "version": "1.54.01",
   "private": true,
   "scripts": {
     "build": "node scripts/build-www.js"
