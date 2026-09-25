@@ -51,6 +51,12 @@ select{background:var(--card);border:1px solid var(--line);border-radius:12px;pa
 @keyframes draw{to{stroke-dashoffset:0}}
 @keyframes moonIn{from{transform:scale(0) rotate(-90deg);opacity:0}}
 @keyframes spOut{to{opacity:0;visibility:hidden}}
+.nrow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow)}
+.nrow span{display:block;font-size:12px;color:var(--mute);margin-top:2px}
+.sw{width:48px;height:28px;border-radius:14px;border:0;background:var(--line);position:relative;cursor:pointer;flex:none;transition:background .25s}
+.sw i{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .25s}
+.sw[aria-checked="true"]{background:var(--acc)}
+.sw[aria-checked="true"] i{transform:translateX(20px)}
 .slides{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin-top:16px;scrollbar-width:none;border-radius:22px}
 .slides::-webkit-scrollbar{display:none}
 .slides>.sky{flex:0 0 100%;box-sizing:border-box;scroll-snap-align:start;margin-top:0}
@@ -211,6 +217,7 @@ details[open] .dua{animation:rise .35s ease}
  </div>
  <div class="dots" id="dots"><button aria-label="Vakit ekranı" aria-current="true"></button><button aria-label="Kerahat ekranı"></button></div>
  <div class="kchips" id="kChips"></div>
+ <div class="nrow" id="nRow" hidden><div><b>Vakit bildirimleri</b><span id="nInfo">Her vakit girdiğinde bildirim gönderilir</span></div><button class="sw" id="nSw" role="switch" aria-checked="false" aria-label="Vakit bildirimleri"><i></i></button></div>
  <div class="times" id="times"></div>
  <button class="qibla" id="qGo">
   <svg width="56" height="56" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" fill="none" stroke="var(--line)" stroke-width="2"/><text x="32" y="11" text-anchor="middle" font-size="8" fill="var(--mute)">K</text><g id="needle"><path d="M32 8 L37 32 L32 29 L27 32Z" fill="var(--brass)"/></g></svg>
@@ -323,8 +330,8 @@ Object.keys(IL).sort(trSort).forEach(c=>ilSel.add(new Option(c,c)));
 function fillIlce(){ilceSel.innerHTML='';ilceSel.add(new Option('İl merkezi',''));Object.keys(IL[ilSel.value].d).sort(trSort).forEach(d=>ilceSel.add(new Option(d,d)))}
 const saved=store.get('loc',{il:'Kocaeli',ilce:'Gebze'});
 ilSel.value=IL[saved.il]?saved.il:'Kocaeli';fillIlce();ilceSel.value=saved.ilce in IL[ilSel.value].d?saved.ilce:'';
-ilSel.onchange=()=>{fillIlce();store.set('loc',{il:ilSel.value,ilce:''});render()};
-ilceSel.onchange=()=>{store.set('loc',{il:ilSel.value,ilce:ilceSel.value});render()};
+ilSel.onchange=()=>{fillIlce();store.set('loc',{il:ilSel.value,ilce:''});render();scheduleNotifs()};
+ilceSel.onchange=()=>{store.set('loc',{il:ilSel.value,ilce:ilceSel.value});render();scheduleNotifs()};
 function coords(){const p=IL[ilSel.value],v=ilceSel.value?p.d[ilceSel.value]:null;return v?[v[0],v[1]]:p.c}
 
 /* ---------- Namaz vakti hesabı ---------- */
@@ -553,8 +560,33 @@ document.getElementById('qGo').onclick=()=>document.querySelector('nav button[da
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('section').forEach(s=>s.hidden=s.id!=='p-'+b.dataset.p);store.set('tab',b.dataset.p);scrollTo(0,0)});
 const lt=store.get('tab','vakit');document.querySelector(`nav button[data-p="${lt}"]`)?.click();
 render();setInterval(tick,1000);
+
+/* ---------- Android: vakit bildirimleri ---------- */
+const CAP=window.Capacitor,NATIVE=!!(CAP&&CAP.isNativePlatform&&CAP.isNativePlatform()),LN=NATIVE?CAP.Plugins.LocalNotifications:null;
+const nSw=document.getElementById('nSw'),nInfo=document.getElementById('nInfo');
+function nState(){nSw.setAttribute('aria-checked',!!store.get('notif',true))}
+async function scheduleNotifs(){
+ if(!LN)return;
+ try{
+  const old=await LN.getPending();if(old.notifications.length)await LN.cancel({notifications:old.notifications.map(n=>({id:n.id}))});
+  if(!store.get('notif',true)){nInfo.textContent='Kapalı';return}
+  let p=await LN.checkPermissions();if(p.display!=='granted')p=await LN.requestPermissions();
+  if(p.display!=='granted'){nInfo.textContent='Bildirim izni verilmedi. Telefon ayarlarından izin ver.';return}
+  if(LN.checkExactNotificationSetting){const ex=await LN.checkExactNotificationSetting();if(ex.exact_alarm!=='granted'){nInfo.textContent='Tam zamanında gelmesi için "Alarm ve hatırlatıcılar" iznini aç.';await LN.changeExactNotificationSetting()}}
+  await LN.createChannel({id:'vakit',name:'Vakit bildirimleri',description:'Namaz vakti girdiğinde',importance:4,visibility:1,vibration:true});
+  const [lat,lng]=coords(),place=ilceSel.value||ilSel.value,now=new Date(),list=[];
+  const K=['imsak','ogle','ikindi','aksam','yatsi'];
+  for(let d=0;d<14;d++){const day=new Date(now);day.setDate(day.getDate()+d);const pt=prayerTimes(day,lat,lng,tz);
+   K.forEach((k,i)=>{if(pt[k]>now)list.push({id:1000+d*10+i,title:NAMES[k]+' vakti',body:`${place} · ${hm(pt[k])}`,schedule:{at:pt[k],allowWhileIdle:true},channelId:'vakit',smallIcon:'ic_stat_vakit'})})}
+  await LN.schedule({notifications:list});
+  nInfo.textContent=`${place} için sonraki 14 günün vakitleri kuruldu`;
+ }catch(e){nInfo.textContent='Bildirimler kurulamadı: '+(e.message||e)}}
+if(NATIVE){document.getElementById('nRow').hidden=false;nState();
+ nSw.onclick=()=>{store.set('notif',!store.get('notif',true));nState();scheduleNotifs()};
+ scheduleNotifs();
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden){render();scheduleNotifs()}});}
 </script>
 
-<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});</script>
+<script>if(!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform())&&'serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});</script>
 </body>
 </html>

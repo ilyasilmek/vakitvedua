@@ -1,0 +1,11 @@
+{
+  "appId": "com.ilyasilmek.vakitvedua",
+  "appName": "Vakit ve Dua",
+  "webDir": "www",
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_vakit",
+      "iconColor": "#2A9D8F"
+    }
+  }
+}
