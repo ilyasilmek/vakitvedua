@@ -202,6 +202,17 @@ details[open] .dua{animation:rise .35s ease}
 .gs-h{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .gs-h b{font-size:15px}
 .seg{display:flex;background:var(--accsoft);border-radius:10px;padding:3px}
+.tkseg{margin:16px 0 4px}.tkseg button{flex:1;padding:8px 6px}
+.imsh{display:flex;align-items:center;justify-content:space-between;margin:16px 0 8px}.imsh b{font-size:17px}.imsh .btn{width:42px;padding:7px 0;font-size:18px}
+.imsram{display:block;margin:0 auto 10px;font-size:13px}.imsram[aria-pressed="true"]{background:var(--acc);color:#fff;border-color:var(--acc)}
+.imst{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.imst table{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums;text-align:center}
+.imst th,.imst td{padding:7px 2px}.imst thead th{background:var(--accsoft);color:var(--acc);font-weight:600;font-size:11.5px}
+.imst tbody th{font-weight:600;text-align:left;padding-left:10px;white-space:nowrap}.imst tbody th small{display:block;font-weight:400;color:var(--mute);font-size:10.5px}
+.imst tbody tr+tr{border-top:1px solid var(--line)}.imst tr.fri{background:color-mix(in srgb,var(--brass) 7%,transparent)}
+.imst tr.on{background:var(--accsoft)}.imst tr.on th,.imst tr.on td{color:var(--acc);font-weight:700}.imst tr.calc td{opacity:.6}
+.ramcd{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px;background:linear-gradient(135deg,#2A9D8F,#1F7A70);color:#fff;border-radius:16px;padding:12px 16px;box-shadow:var(--shadow)}
+.ramcd small{display:block;font-size:11px;opacity:.85}.ramcd b{font-size:15px}.ramcd .rc{text-align:right;font-size:26px;font-weight:600;font-variant-numeric:tabular-nums}
 .seg button{border:0;background:none;padding:5px 12px;border-radius:8px;font-size:13px;cursor:pointer;color:var(--mute)}
 .seg button[aria-pressed="true"]{background:var(--card);color:var(--acc);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.08)}
 #gsBody{margin-top:12px;transition:opacity .3s,transform .3s}
@@ -268,6 +279,7 @@ details[open] .dua{animation:rise .35s ease}
  </div>
  </div>
  <div class="dots" id="dots"><button aria-label="Vakit ekranı" aria-current="true"></button><button aria-label="Kerahat ekranı"></button></div>
+ <div class="ramcd" id="ramCd" hidden></div>
  <div class="kchips" id="kChips"></div>
  <div class="times" id="times"></div>
  <div class="note" id="srcNote" style="text-align:center;margin-top:8px"></div>
@@ -415,8 +427,17 @@ details[open] .dua{animation:rise .35s ease}
 </section>
 
 <section id="p-takvim" hidden>
- <h2>Dini günler (önümüzdeki 12 ay)</h2>
- <div id="evList"></div>
+ <div class="seg tkseg" id="tkSeg" role="group" aria-label="Takvim görünümü"><button data-v="ev">Dini günler</button><button data-v="ims">İmsakiye</button></div>
+ <div id="evWrap">
+  <h2>Dini günler (önümüzdeki 12 ay)</h2>
+  <div id="evList"></div>
+ </div>
+ <div id="imsWrap" hidden>
+  <div class="imsh"><button class="btn" id="imsPrev" aria-label="Önceki ay">‹</button><b id="imsTitle"></b><button class="btn" id="imsNext" aria-label="Sonraki ay">›</button></div>
+  <button class="btn imsram" id="imsRam" aria-pressed="false">Ramazan imsakiyesi</button>
+  <div class="imst"><table><thead><tr><th>Gün</th><th>İmsak</th><th>Güneş</th><th>Öğle</th><th>İkindi</th><th>Akşam</th><th>Yatsı</th></tr></thead><tbody id="imsBody"></tbody></table></div>
+  <div class="note" id="imsNote"></div>
+ </div>
 </section>
 </div>
 
@@ -520,6 +541,7 @@ function tick(){
   document.getElementById('times').innerHTML=Object.keys(NAMES).map(k=>`<div class="t${k===cur?' on':''}"><span>${NAMES[k]}</span><b>${hm(today[k])}</b></div>`).join('');
   const g=SKY[key];const sky=document.getElementById('sky');sky.style.setProperty('--g',`linear-gradient(160deg,${g[0]},${g[1]})`);sky.style.setProperty('--g2',g[0])}
  document.getElementById('nextLbl').textContent=NAMES[nk]+' vaktine kalan';
+ ramTick(now);
  const s=Math.max(0,Math.floor((nt-now)/1000));
  const parts=[s/3600,s%3600/60,s%60].map(x=>String(Math.floor(x)).padStart(2,'0'));
  const cdEl=document.getElementById('cd');
@@ -630,6 +652,39 @@ function events(){
   d.setDate(d.getDate()+1)}
  const t0=new Date();t0.setHours(12,0,0,0);document.getElementById('evList').innerHTML=out.map((e,i)=>`<div class="ev" style="animation-delay:${Math.min(i,12)*.04}s"><div>${Math.round((e.dt-t0)/864e5)===0?'<div class="left">Bugün</div>':`<div class="left">${Math.round((e.dt-t0)/864e5)} gün sonra</div>`}${e.n}${e.k?`<div class="k">${e.k}</div>`:''}</div><div class="d">${e.dt.toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'})}<br>${e.dt.toLocaleDateString('tr-TR',{weekday:'long'})}</div></div>`).join('');return out}
 const EVS=events();
+
+/* ---------- İmsakiye ---------- */
+const AYLAR=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+let imsM=new Date();imsM.setDate(1);let imsRam=false;
+/* Önümüzdeki (ya da içinde bulunulan) Ramazan'ın ilk günü */
+function ramStart(){const d=new Date();d.setHours(12,0,0,0);for(let i=0;i<400;i++){const h=hijri(d);if(h.m===9){const s=new Date(d);s.setDate(s.getDate()-(h.d-1));return s}d.setDate(d.getDate()+1)}return null}
+function imsRender(){
+ const rows=[],t0=ymd(new Date());let start,n,lab;
+ if(imsRam){start=ramStart();n=30;lab=(d,i)=>`${i+1}. gün<small>${d.getDate()} ${AYLAR[d.getMonth()].slice(0,3)}</small>`}
+ else{start=new Date(imsM);n=new Date(imsM.getFullYear(),imsM.getMonth()+1,0).getDate();lab=d=>`${d.getDate()}<small>${d.toLocaleDateString('tr-TR',{weekday:'short'})}</small>`}
+ document.getElementById('imsTitle').textContent=imsRam?`Ramazan ${hijri(start).y} imsakiyesi`:`${AYLAR[imsM.getMonth()]} ${imsM.getFullYear()}`;
+ let calc=0;const d=new Date(start);
+ for(let i=0;i<n;i++){if(imsRam&&hijri(d).m!==9)break;const t=timesFor(d),dy=isDyn(d);if(!dy)calc++;
+  rows.push(`<tr class="${ymd(d)===t0?'on ':''}${d.getDay()===5?'fri ':''}${dy?'':'calc'}"><th>${lab(d,i)}</th>${DK.map(k=>`<td>${hm(t[k])}</td>`).join('')}</tr>`);d.setDate(d.getDate()+1)}
+ document.getElementById('imsBody').innerHTML=rows.join('');
+ document.getElementById('imsNote').textContent=calc?(calc===rows.length?'Bu tablo telefonda hesaplandı; Diyanet vakitlerinden 1-2 dakika sapabilir.':'Soluk satırlar telefonda hesaplandı; diğerleri Diyanet vakitleridir.'):'Tüm vakitler Diyanet İşleri Başkanlığı vakitleridir.';
+ document.getElementById('imsRam').setAttribute('aria-pressed',imsRam);
+ const on=document.querySelector('#imsBody tr.on');if(on&&!document.getElementById('p-takvim').hidden)on.scrollIntoView({block:'center'})}
+document.getElementById('imsPrev').onclick=()=>{imsRam=false;imsM.setMonth(imsM.getMonth()-1);imsRender()};
+document.getElementById('imsNext').onclick=()=>{imsRam=false;imsM.setMonth(imsM.getMonth()+1);imsRender()};
+document.getElementById('imsRam').onclick=()=>{imsRam=!imsRam;if(!imsRam){imsM=new Date();imsM.setDate(1)}imsRender()};
+document.querySelectorAll('#tkSeg button').forEach(b=>b.onclick=()=>{const v=b.dataset.v;store.set('tkSeg',v);
+ document.querySelectorAll('#tkSeg button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+ document.getElementById('evWrap').hidden=v!=='ev';document.getElementById('imsWrap').hidden=v!=='ims';if(v==='ims')imsRender()});
+document.querySelector(`#tkSeg button[data-v="${store.get('tkSeg','ev')}"]`).click();
+if(hijri(new Date()).m===9)imsRam=true;
+
+/* ---------- Ramazan: sahur / iftar geri sayımı ---------- */
+function ramTick(now){const el=document.getElementById('ramCd'),h=hijri(now);
+ if(h.m!==9){el.hidden=true;return}el.hidden=false;
+ const iftar=now<today.aksam,to=iftar?(now<today.imsak?today.imsak:today.aksam):tomorrow.imsak,isSahur=to===today.imsak||to===tomorrow.imsak;
+ const s=Math.max(0,Math.floor((to-now)/1000)),cd=[s/3600,s%3600/60,s%60].map(x=>String(Math.floor(x)).padStart(2,'0')).join(':');
+ el.innerHTML=`<div><small>Ramazan'ın ${h.d}. günü</small><b>${isSahur?'Sahura (imsak)':'İftara'} kalan</b></div><div class="rc">${cd}<small>${isSahur?'İmsak':'İftar'} ${hm(to)}</small></div>`}
 
 /* ---------- Günün duası / hadisi ---------- */
 const GDUA=[
