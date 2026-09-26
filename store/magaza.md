@@ -47,6 +47,7 @@ KUR'AN, DUALAR VE ESMÂÜ'L-HÜSNÂ
 • Yâsîn, Mülk, Nebe', Âyetü'l-Kürsî ve namaz sureleri (Arapça metin)
 • Namaz sureleri ve duaları; Arapça, okunuş ve anlamıyla
 • Esmâü'l-Hüsnâ: 99 isim ve anlamları
+• Kütüb-i Sitte'den seçilmiş sahih hadisler ve günün hadisi
 • Resimli abdest ve namaz rehberi
 
 ZİKİRMATİK
@@ -76,6 +77,7 @@ Vakitler Diyanet'in yayımladığı verilerden alınır; bağlantı yoksa Diyane
 • Namaz takibi ve kaza sayacı
 • Kur'an, Esmâü'l-Hüsnâ, abdest ve namaz rehberi
 • Zikir hedefleri ve kendi zikrini ekleme
+• Kütüb-i Sitte'den hadisler ve günün hadisi
 • Seyahat modu, yeni küçük widget, mesaj görselleri
 
 ## Mağaza ayarları
