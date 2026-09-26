@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2A9D8F">
+<script>(function(){var t="system";try{t=JSON.parse(localStorage.getItem("theme"))||t}catch(e){}var d=t==="dark"||(t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=d?"dark":"light"})()</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Vakit ve Dua">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -13,13 +14,16 @@
 <title>Vakit ve Dua</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Rubik:wght@400;500;600&display=swap">
 <style>
-:root{--bg:#F2F8F8;--bg2:#E6F2F1;--card:#FFFFFF;--ink:#1D3A40;--mute:#6A8589;--line:#DCE9E8;--acc:#2A9D8F;--acc2:#5CC2B3;--brass:#C4952F;--accsoft:#E2F4F1;--shadow:0 6px 24px rgba(42,110,110,.08);color-scheme:light}
+:root{--bg:#F2F8F8;--bg2:#E6F2F1;--card:#FFFFFF;--ink:#1D3A40;--mute:#6A8589;--line:#DCE9E8;--acc:#2A9D8F;--acc2:#5CC2B3;--brass:#C4952F;--accsoft:#E2F4F1;--shadow:0 6px 24px rgba(42,110,110,.08);--sp1:#F4FBFA;--sp2:#DDF1EE;--ks1:#FFFFFF;--ks2:#E4F4F1;--dA:#FFFFFF;--dB:#EEF8F6;--dS:#A9D8D0;--dT:#1D3A40;--dK:#8FB3B0;--kon:#FFE9E5;--konb:#F5A99C;--kont:#B8412F;color-scheme:light}
+:root[data-theme="dark"]{--bg:#0E1A1C;--bg2:#12282A;--card:#172629;--ink:#E2EEED;--mute:#8EA7AA;--line:#263B3E;--acc:#3DB5A5;--acc2:#5CC2B3;--brass:#D8AD55;--accsoft:#1A3432;--shadow:0 6px 24px rgba(0,0,0,.35);--sp1:#10201F;--sp2:#0C1719;--ks1:#1B2D30;--ks2:#132325;--dA:#1E3033;--dB:#18292B;--dS:#2E4B4C;--dT:#D7E7E5;--dK:#4F6E6C;--kon:#3A1F1B;--konb:#8A3D31;--kont:#FF9C8A;color-scheme:dark}
+:root[data-theme="dark"] .sky:not(.kslide){filter:brightness(.82) saturate(.95)}
+body{transition:background-color .3s,color .3s}
 body{background:linear-gradient(180deg,var(--bg2),var(--bg) 320px);background-color:var(--bg);color:var(--ink);font-family:Rubik,system-ui,sans-serif;font-size:15px;min-height:100vh;background-attachment:fixed}
 .wrap{max-width:560px;margin:0 auto;padding:16px 16px 100px}
 header{display:flex;flex-direction:column;gap:12px}
 h1{font-size:21px;margin:0;font-weight:600}
 .hijri{color:var(--brass);font-size:13px;margin-top:3px;font-weight:500}
-.loc{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.loc{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}
 html{-webkit-tap-highlight-color:transparent}
 select,button{font:inherit;color:var(--ink)}
 select{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 10px;width:100%;box-shadow:var(--shadow);min-width:0}
@@ -36,12 +40,38 @@ select{background:var(--card);border:1px solid var(--line);border-radius:12px;pa
 .brand>svg{width:44px;height:44px;flex:none;filter:drop-shadow(0 4px 10px rgba(42,157,143,.3))}
 .info-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--acc);display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow);flex:none}
 .info-btn svg{width:22px;height:22px}
+.hbtns{display:flex;gap:8px;flex:none}
+.locbtn{width:42px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--acc);display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow);padding:0}
+.locbtn svg{width:20px;height:20px}
+.locbtn.busy svg{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.set{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
+.set h3{font-size:13px;color:var(--mute);font-weight:500;margin:0;padding:12px 14px 4px;text-transform:uppercase;letter-spacing:.06em}
+.set .nrow{margin:0;border:0;box-shadow:none;border-radius:0;border-top:1px solid var(--line)}
+.set h3+.nrow{border-top:0}
+.set .seg{margin:6px 14px 14px}
+.set .nset{margin:0;border:0;border-top:1px solid var(--line);border-radius:0;box-shadow:none}
+.set .seg button{flex:1;padding:8px 6px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none;margin:0 -16px;padding-left:16px;padding-right:16px}
+.chips::-webkit-scrollbar{display:none}
+.chips button{flex:none;border:1px solid var(--line);background:var(--card);border-radius:20px;padding:7px 13px;font-size:13px;cursor:pointer;white-space:nowrap}
+.chips button[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:500}
+.msgban{display:flex;gap:10px;align-items:center;background:var(--accsoft);border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:13px;margin-bottom:10px;line-height:1.4}
+.msgban b{color:var(--acc)}
+.msg{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow);animation:rise .4s ease backwards}
+.msg p{margin:0 0 10px;line-height:1.6;white-space:pre-line}
+.msg .acts{margin-top:0}
+.more{display:block;margin:6px auto 0}
+.zkbar{display:flex;justify-content:center;margin-top:10px}
+.sndbtn{display:inline-flex;align-items:center;gap:6px;font-size:13px}
+.sndbtn svg{width:18px;height:18px}
+
 .ab-head{display:flex;align-items:center;gap:14px;margin:20px 0 6px}
 .ab-head svg{width:60px;height:60px}
 .ab{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:4px 18px 10px;box-shadow:var(--shadow);margin-top:12px}
 .ab h3{font-size:15px;margin:16px 0 6px;color:var(--acc)}
 .ab p{margin:0 0 8px;line-height:1.6;color:var(--ink);font-size:14px}
-.splash{position:fixed;inset:0;z-index:50;background:linear-gradient(170deg,#F4FBFA,#DDF1EE);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;animation:spOut .5s ease 2s forwards}
+.splash{position:fixed;inset:0;z-index:50;background:linear-gradient(170deg,var(--sp1),var(--sp2));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;animation:spOut .5s ease 2s forwards}
 .sp-logo svg{width:96px;height:96px;animation:spPop .7s cubic-bezier(.3,1.5,.5,1) backwards;filter:drop-shadow(0 10px 24px rgba(42,157,143,.35))}
 .sp-logo .lg-arch{stroke-dasharray:80;stroke-dashoffset:80;animation:draw 1s ease .35s forwards}
 .sp-logo .lg-base{stroke-dasharray:40;stroke-dashoffset:40;animation:draw .5s ease .25s forwards}
@@ -67,7 +97,7 @@ select{background:var(--card);border:1px solid var(--line);border-radius:12px;pa
 .slides{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin-top:16px;scrollbar-width:none;border-radius:22px}
 .slides::-webkit-scrollbar{display:none}
 .slides>.sky{flex:0 0 100%;box-sizing:border-box;scroll-snap-align:start;margin-top:0}
-.kslide{background:linear-gradient(165deg,#FFFFFF,#E4F4F1)!important;color:var(--ink)!important;border:1px solid var(--line);box-shadow:0 10px 30px rgba(42,110,110,.12)!important}
+.kslide{background:linear-gradient(165deg,var(--ks1),var(--ks2))!important;color:var(--ink)!important;border:1px solid var(--line);box-shadow:0 10px 30px rgba(42,110,110,.12)!important}
 .kslide small{color:var(--acc)}
 .dial{display:block;width:100%;height:auto;margin-top:6px}
 #dHand{animation:hp 2.4s ease-in-out infinite}
@@ -87,8 +117,8 @@ select{background:var(--card);border:1px solid var(--line);border-radius:12px;pa
 .kchips div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:9px 6px;text-align:center;box-shadow:var(--shadow);transition:background .4s,border-color .4s}
 .kchips span{display:block;font-size:11px;color:var(--mute)}
 .kchips b{font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}
-.kchips div.on{background:#FFE9E5;border-color:#F5A99C}
-.kchips div.on b{color:#B8412F}
+.kchips div.on{background:var(--kon);border-color:var(--konb)}
+.kchips div.on b{color:var(--kont)}
 .kr{display:inline-flex;align-items:center;gap:7px;margin-top:6px;font-size:13px;background:rgba(255,255,255,.18);padding:5px 11px;border-radius:20px;backdrop-filter:blur(4px)}
 .kr i{width:8px;height:8px;border-radius:50%;background:#B8F0D0;flex:none}
 .kr.on{background:rgba(255,90,70,.3)}
@@ -112,7 +142,7 @@ select{background:var(--card);border:1px solid var(--line);border-radius:12px;pa
 .qibla svg{flex:none}
 #needle{transition:transform 1.2s cubic-bezier(.3,1.6,.5,1);transform-origin:32px 32px}
 nav{position:fixed;left:0;right:0;bottom:0;background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
-nav button{flex:1;background:none;border:0;padding:10px 4px 12px;font-size:12px;color:var(--mute);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .25s}
+nav button{flex:1;min-width:0;background:none;border:0;padding:10px 2px 12px;font-size:11.5px;color:var(--mute);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .25s}
 nav svg{width:22px;height:22px;transition:transform .3s}
 nav button[aria-selected="true"]{color:var(--acc);font-weight:600}
 nav button[aria-selected="true"] svg{transform:translateY(-2px) scale(1.1)}
@@ -196,8 +226,8 @@ details[open] .dua{animation:rise .35s ease}
 <div class="splash" id="splash" aria-hidden="true"><div class="sp-logo"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC2B3"/><stop offset="1" stop-color="#2A9D8F"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#lg2)"/><path class="lg-arch" d="M18 50V30a14 14 0 0 1 28 0v20" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><g transform="translate(2 15)"><path class="lg-moon" d="M36.5 20.5a7 7 0 1 1-6.2-7.3 5.4 5.4 0 1 0 6.2 7.3z" fill="#FFE39A"/></g><path class="lg-base" d="M12 50h40" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></svg></div><div class="sp-name">Vakit ve Dua</div><div class="sp-sub">Namaz vakitleri · Kıble · Dualar</div></div>
 <div class="wrap">
 <header>
- <div class="top"><div class="brand"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC2B3"/><stop offset="1" stop-color="#2A9D8F"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#lg)"/><path class="lg-arch" d="M18 50V30a14 14 0 0 1 28 0v20" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><g transform="translate(2 15)"><path class="lg-moon" d="M36.5 20.5a7 7 0 1 1-6.2-7.3 5.4 5.4 0 1 0 6.2 7.3z" fill="#FFE39A"/></g><path class="lg-base" d="M12 50h40" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></svg><div><h1 id="dateTxt"></h1><div class="hijri" id="hijriTxt"></div></div></div><button class="info-btn" id="aboutBtn" aria-label="Hakkında"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg></button></div>
- <div class="loc"><select id="il" aria-label="İl"></select><select id="ilce" aria-label="İlçe"></select></div>
+ <div class="top"><div class="brand"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC2B3"/><stop offset="1" stop-color="#2A9D8F"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#lg)"/><path class="lg-arch" d="M18 50V30a14 14 0 0 1 28 0v20" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><g transform="translate(2 15)"><path class="lg-moon" d="M36.5 20.5a7 7 0 1 1-6.2-7.3 5.4 5.4 0 1 0 6.2 7.3z" fill="#FFE39A"/></g><path class="lg-base" d="M12 50h40" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></svg><div><h1 id="dateTxt"></h1><div class="hijri" id="hijriTxt"></div></div></div><div class="hbtns"><button class="info-btn" id="setBtn" aria-label="Ayarlar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button><button class="info-btn" id="aboutBtn" aria-label="Hakkında"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg></button></div></div>
+ <div class="loc" id="loc"><select id="il" aria-label="İl"></select><select id="ilce" aria-label="İlçe"></select><button class="locbtn" id="locBtn" aria-label="Konumumu bul" title="Konumumu bul"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg></button></div>
 </header>
 
 <section id="p-vakit">
@@ -228,14 +258,11 @@ details[open] .dua{animation:rise .35s ease}
  </div>
  <div class="dots" id="dots"><button aria-label="Vakit ekranı" aria-current="true"></button><button aria-label="Kerahat ekranı"></button></div>
  <div class="kchips" id="kChips"></div>
- <div class="nrow" id="nRow" hidden><div><b>Vakit bildirimleri</b><span id="nInfo">Her vakit girdiğinde bildirim gönderilir</span></div><button class="sw" id="nSw" role="switch" aria-checked="false" aria-label="Vakit bildirimleri"><i></i></button></div>
- <div class="nset" id="nSet" hidden>
-  <label for="nSnd">Bildirim sesi</label>
-  <select id="nSnd"><option value="ezan">Ezan</option><option value="vakit">Telefonun bildirim sesi</option><option value="sessiz">Sessiz (yalnızca bildirim)</option></select>
-  <div class="nk" id="nK"></div>
-  <div class="nsub">Seçtiğin vakitlerde bildirim gelir. Ezan sesi yalnızca bildirim geldiğinde çalar; bildirimi kaydırınca susar.</div>
- </div>
  <div class="times" id="times"></div>
+ <button class="sup" id="occBtn" hidden>
+  <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5.5h16v10.5H10l-4.5 3.5V16H4z"/></svg></span>
+  <div><b id="occTxt"></b><div class="note">Bu güne özel mesajları paylaş</div></div><span class="go" aria-hidden="true">›</span>
+ </button>
  <button class="qibla" id="qGo">
   <svg width="56" height="56" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" fill="none" stroke="var(--line)" stroke-width="2"/><text x="32" y="11" text-anchor="middle" font-size="8" fill="var(--mute)">K</text><g id="needle"><path d="M32 8 L37 32 L32 29 L27 32Z" fill="var(--brass)"/></g></svg>
   <div><b>Kıble: <span id="qdeg"></span>°</b><div class="note" style="margin:3px 0 0">Pusulayı aç</div></div><span class="go" aria-hidden="true">›</span>
@@ -290,6 +317,40 @@ details[open] .dua{animation:rise .35s ease}
  <p class="note" id="sunNote"></p>
 </section>
 
+<section id="p-ayar" hidden>
+ <h2>Ayarlar</h2>
+ <div class="set">
+  <h3>Tema</h3>
+  <div class="seg" id="themeSeg" role="group" aria-label="Tema"><button data-t="light">Açık</button><button data-t="dark">Koyu</button><button data-t="system">Sistem</button></div>
+ </div>
+ <div class="set">
+  <h3>Konum</h3>
+  <div class="nrow"><div><b id="locNow"></b><span id="locInfo">Konumunu bularak en yakın ilçeyi seçer</span></div><button class="btn" id="locBtn2">Konumumu bul</button></div>
+ </div>
+ <div class="set">
+  <h3>Zikirmatik</h3>
+  <div class="nrow"><div><b>Tespih sesi</b><span>Her dokunuşta tespih tanesi sesi, tur bitince çan sesi</span></div><button class="sw" id="zsSw" role="switch" aria-checked="false" aria-label="Tespih sesi"><i></i></button></div>
+ </div>
+ <div class="set" id="nCard" hidden>
+  <h3>Bildirimler</h3>
+  <div class="nrow"><div><b>Vakit bildirimleri</b><span id="nInfo">Her vakit girdiğinde bildirim gönderilir</span></div><button class="sw" id="nSw" role="switch" aria-checked="false" aria-label="Vakit bildirimleri"><i></i></button></div>
+  <div class="nset" id="nSet" hidden>
+   <label for="nSnd">Bildirim sesi</label>
+   <select id="nSnd"><option value="ezan">Ezan</option><option value="vakit">Telefonun bildirim sesi</option><option value="sessiz">Sessiz (yalnızca bildirim)</option></select>
+   <div class="nk" id="nK"></div>
+   <div class="nsub">Seçtiğin vakitlerde bildirim gelir. Ezan sesi yalnızca bildirim geldiğinde çalar; bildirimi kaydırınca susar.</div>
+  </div>
+ </div>
+</section>
+
+<section id="p-mesaj" hidden>
+ <h2>Hazır mesajlar</h2>
+ <div class="msgban" id="msgBan" hidden></div>
+ <div class="chips" id="msgCats" role="group" aria-label="Mesaj türü"></div>
+ <div id="msgList"></div>
+ <button class="btn more" id="msgMore" hidden>Daha fazla göster</button>
+</section>
+
 <section id="p-hakkinda" hidden>
  <div class="ab-head"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lg3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC2B3"/><stop offset="1" stop-color="#2A9D8F"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#lg3)"/><path class="lg-arch" d="M18 50V30a14 14 0 0 1 28 0v20" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><g transform="translate(2 15)"><path class="lg-moon" d="M36.5 20.5a7 7 0 1 1-6.2-7.3 5.4 5.4 0 1 0 6.2 7.3z" fill="#FFE39A"/></g><path class="lg-base" d="M12 50h40" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></svg><div><h2 style="margin:0">Vakit ve Dua</h2><div class="hijri">Sürüm 1.54.01</div></div></div>
  <div class="ab">
@@ -305,7 +366,8 @@ details[open] .dua{animation:rise .35s ease}
   <h3>Dini günler</h3>
   <p>Tarihler Ümmü'l-Kurâ hicri takvimiyle hesaplanır. Diyanet'in ilan ettiği tarihle bir gün fark olabilir. Ramazan başlangıcı ve bayramlar için Diyanet duyurusu esastır. Kandiller, geceye girilen günün akşamında gösterilir.</p>
   <h3>Veriler</h3>
-  <p>İlçe listesi turkey-neighbourhoods paketinden, koordinatlar GeoNames veri setinden alınmıştır. Seçtiğin konum, sekme ve zikir sayıların yalnızca bu cihazda saklanır.</p>
+  <p>İlçe listesi turkey-neighbourhoods paketinden, koordinatlar GeoNames veri setinden alınmıştır. Seçtiğin konum, sekme ve zikir sayıların yalnızca bu cihazda saklanır. "Konumumu bul" kullanıldığında konumun yalnızca en yakın ilçeyi bulmak için telefonda kullanılır, hiçbir yere gönderilmez.</p>
+  <p>Ezan sesi, Wikimedia Commons'taki "Beautiful adhan" kaydıdır (CC0, kamu malı).</p>
   <h3>Gizlilik</h3>
   <p>Uygulama hesap istemez, konumunu ya da kişisel verini sunucuya göndermez. Ayrıntılar için <a href="https://ilyasilmek.github.io/vakitvedua/gizlilik.html" target="_blank" rel="noopener">gizlilik politikası</a>.</p>
   <button class="btn" id="privBtn" hidden>Reklam gizlilik seçenekleri</button>
@@ -327,6 +389,7 @@ details[open] .dua{animation:rise .35s ease}
   <div class="note" id="zkInfo" style="margin:0"></div>
   <div class="ringwrap" id="ringwrap"><svg viewBox="0 0 220 220"><circle cx="110" cy="110" r="104" fill="none" stroke="var(--line)" stroke-width="8"/><circle id="ring" cx="110" cy="110" r="104" fill="none" stroke="var(--brass)" stroke-width="8" stroke-linecap="round" stroke-dasharray="653.5" stroke-dashoffset="653.5"/></svg><button class="tap" id="zkTap">Dokun</button></div>
   <div class="row"><button class="btn" id="zkUndo">Geri al</button><button class="btn" id="zkReset">Sıfırla</button><button class="btn" id="zkT">Hedef: 33</button></div>
+  <div class="zkbar"><button class="btn sndbtn" id="zkSnd" aria-pressed="true"></button></div>
  </div>
 </section>
 
@@ -340,6 +403,7 @@ details[open] .dua{animation:rise .35s ease}
  <button data-p="vakit" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/></svg>Vakitler</button>
  <button data-p="kible" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.5 10 10l-.5 4.5L14 14z" fill="currentColor"/></svg>Kıble</button>
  <button data-p="dua" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5z"/><path d="M12 6v13.5"/></svg>Dualar</button>
+ <button data-p="mesaj" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 5.5h16v10.5H10l-4.5 3.5V16H4z"/><path d="M8 9.5h8M8 12.5h5" stroke-linecap="round"/></svg>Mesajlar</button>
  <button data-p="zikir" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="4.5" r="1.8"/><circle cx="17.5" cy="7.5" r="1.8"/><circle cx="19" cy="13.5" r="1.8"/><circle cx="6.5" cy="7.5" r="1.8"/><circle cx="5" cy="13.5" r="1.8"/><path d="M12 17v4"/><circle cx="12" cy="16" r="1.8"/></svg>Zikir</button>
  <button data-p="takvim" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Takvim</button>
 </nav>
@@ -435,11 +499,11 @@ function tick(){
  if(window._seg!==segKey){window._seg=segKey;
   const B=[0,hh(today.imsak),hh(today.gunes),hh(today.ogle),hh(today.ikindi),hh(today.aksam),hh(today.yatsi),24];
   const LB=['Yatsı','Sabah','','Öğle','İkindi','Akşam','Yatsı'];
-  let g='';B.slice(0,-1).forEach((a,i)=>{const b=B[i+1];g+=`<path class="dseg" style="animation-delay:${i*.06}s" d="${wedge(a,b,78,142)}" fill="${i%2?'#FFFFFF':'#EEF8F6'}" stroke="#A9D8D0" stroke-width=".8"/>`;
-   if(LB[i]){const m=(a+b)/2,[x,y]=P(m,110),deg=180*(1-m/24),rot=deg>90?180-deg:-deg;g+=`<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="${b-a>1.8?10:8.5}" font-weight="600" fill="#1D3A40" text-anchor="middle" dominant-baseline="middle" transform="rotate(${rot.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)})">${LB[i]}</text>`}});
+  let g='';B.slice(0,-1).forEach((a,i)=>{const b=B[i+1];g+=`<path class="dseg" style="animation-delay:${i*.06}s" d="${wedge(a,b,78,142)}" fill="${i%2?'var(--dA)':'var(--dB)'}" stroke="var(--dS)" stroke-width=".8"/>`;
+   if(LB[i]){const m=(a+b)/2,[x,y]=P(m,110),deg=180*(1-m/24),rot=deg>90?180-deg:-deg;g+=`<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="${b-a>1.8?10:8.5}" font-weight="600" fill="var(--dT)" text-anchor="middle" dominant-baseline="middle" transform="rotate(${rot.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)})">${LB[i]}</text>`}});
   KZ.forEach(([a,b])=>{g+=`<path d="${wedge(hh(a),hh(b),78,142)}" fill="#F08A7E" opacity=".9" class="kzk"/>`});
   document.getElementById('dSeg').innerHTML=g;
-  let t='';for(let h=0;h<=24;h++){const[x1,y1]=P(h,143),[x2,y2]=P(h,h%3?147:151);t+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#8FB3B0" stroke-width="${h%3?1:1.6}"/>`;if(h%3===0&&h%24){const[x,y]=P(h,160);t+=`<text x="${x.toFixed(1)}" y="${(y+3).toFixed(1)}" font-size="9" fill="#5E7F7C" text-anchor="middle">${String(h).padStart(2,'0')}</text>`}}
+  let t='';for(let h=0;h<=24;h++){const[x1,y1]=P(h,143),[x2,y2]=P(h,h%3?147:151);t+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="var(--dK)" stroke-width="${h%3?1:1.6}"/>`;if(h%3===0&&h%24){const[x,y]=P(h,160);t+=`<text x="${x.toFixed(1)}" y="${(y+3).toFixed(1)}" font-size="9" fill="var(--mute)" text-anchor="middle">${String(h).padStart(2,'0')}</text>`}}
   document.getElementById('dTick').innerHTML=t;
   document.getElementById('kChips').innerHTML=KZ.map(([a,b,n],i)=>`<div data-i="${i}"><span>${['Güneş doğarken','Öğle öncesi','Güneş batarken'][i]}</span><b>${hm(a)}–${hm(b)}</b></div>`).join('')}
  document.getElementById('dHand').setAttribute('transform',`rotate(${((hh(now)+now.getSeconds()/3600)/24*180-90).toFixed(2)} 160 160)`);
@@ -511,8 +575,8 @@ function events(){
   if(h.m===12&&h.d===9)add(d,'Kurban Bayramı Arifesi','');
   if(h.m===12&&h.d===10)add(d,'Kurban Bayramı','4 gün');
   d.setDate(d.getDate()+1)}
- const t0=new Date();t0.setHours(12,0,0,0);document.getElementById('evList').innerHTML=out.map((e,i)=>`<div class="ev" style="animation-delay:${Math.min(i,12)*.04}s"><div>${Math.round((e.dt-t0)/864e5)===0?'<div class="left">Bugün</div>':`<div class="left">${Math.round((e.dt-t0)/864e5)} gün sonra</div>`}${e.n}${e.k?`<div class="k">${e.k}</div>`:''}</div><div class="d">${e.dt.toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'})}<br>${e.dt.toLocaleDateString('tr-TR',{weekday:'long'})}</div></div>`).join('')}
-events();
+ const t0=new Date();t0.setHours(12,0,0,0);document.getElementById('evList').innerHTML=out.map((e,i)=>`<div class="ev" style="animation-delay:${Math.min(i,12)*.04}s"><div>${Math.round((e.dt-t0)/864e5)===0?'<div class="left">Bugün</div>':`<div class="left">${Math.round((e.dt-t0)/864e5)} gün sonra</div>`}${e.n}${e.k?`<div class="k">${e.k}</div>`:''}</div><div class="d">${e.dt.toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'})}<br>${e.dt.toLocaleDateString('tr-TR',{weekday:'long'})}</div></div>`).join('');return out}
+const EVS=events();
 
 /* ---------- Günün duası / hadisi ---------- */
 const GDUA=[
@@ -573,7 +637,9 @@ document.getElementById('liveBtn').onclick=async()=>{const st=document.getElemen
   addEventListener('deviceorientationabsolute',onOri);addEventListener('deviceorientation',onOri)}catch(e){}
  setTimeout(()=>{if(heading==null)st.textContent='Bu görünümde yön sensörüne erişilemedi. Açıyı telefonun pusulasıyla ya da güneş yöntemiyle kullan.'},2500)};
 setInterval(()=>{if(!document.getElementById('p-kible').hidden)updKible()},30000);
-document.getElementById('aboutBtn').onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',false));document.querySelectorAll('section').forEach(s=>s.hidden=s.id!=='p-hakkinda');scrollTo(0,0)};
+function showPage(p,nb){document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',x===nb));document.querySelectorAll('section').forEach(s=>s.hidden=s.id!=='p-'+p);document.getElementById('loc').hidden=p!=='vakit';scrollTo(0,0)}
+document.getElementById('aboutBtn').onclick=()=>showPage('hakkinda');
+document.getElementById('setBtn').onclick=()=>showPage('ayar');
 const splashGone=new Promise(r=>setTimeout(()=>{const sp=document.getElementById('splash');sp&&sp.remove();r()},2600));
 document.getElementById('qGo').onclick=()=>document.querySelector('nav button[data-p="kible"]').click();
 
@@ -583,7 +649,7 @@ document.getElementById('qGo').onclick=()=>document.querySelector('nav button[da
  ds.forEach((d,j)=>d.onclick=()=>sl.scrollTo({left:j*(sl.clientWidth+12),behavior:'smooth'}))})();
 
 /* ---------- Sekmeler ---------- */
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('section').forEach(s=>s.hidden=s.id!=='p-'+b.dataset.p);store.set('tab',b.dataset.p);scrollTo(0,0)});
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{showPage(b.dataset.p,b);store.set('tab',b.dataset.p)});
 const lt=store.get('tab','vakit');document.querySelector(`nav button[data-p="${lt}"]`)?.click();
 render();setInterval(tick,1000);
 
@@ -603,25 +669,393 @@ async function scheduleNotifs(){
   if(p.display!=='granted'){nInfo.textContent='Bildirim izni verilmedi. Telefon ayarlarından izin ver.';return}
   if(LN.checkExactNotificationSetting){const ex=await LN.checkExactNotificationSetting();if(ex.exact_alarm!=='granted'){nInfo.textContent='Tam zamanında gelmesi için "Alarm ve hatırlatıcılar" iznini aç.';await LN.changeExactNotificationSetting()}}
   await LN.createChannel({id:'vakit',name:'Vakit bildirimleri',description:'Namaz vakti girdiğinde, telefonun bildirim sesiyle',importance:4,visibility:1,vibration:true});
-  await LN.createChannel({id:'ezan',name:'Ezan',description:'Namaz vakti girdiğinde ezan sesiyle',importance:5,visibility:1,vibration:true,sound:'ezan.mp3'});
+  await LN.createChannel({id:'ezan',name:'Ezan',description:'Namaz vakti girdiğinde ezan sesiyle',importance:5,visibility:1,vibration:true,sound:'ezan.ogg'});
   await LN.createChannel({id:'sessiz',name:'Sessiz vakit bildirimleri',description:'Sessiz bildirim',importance:2,visibility:1,vibration:false});
   const ch=store.get('nSnd','ezan'),on=store.get('nK',{imsak:true,ogle:true,ikindi:true,aksam:true,yatsi:true});
   const [lat,lng]=coords(),place=ilceSel.value||ilSel.value,now=new Date(),list=[];
   const K=['imsak','ogle','ikindi','aksam','yatsi'];
   for(let d=0;d<14;d++){const day=new Date(now);day.setDate(day.getDate()+d);const pt=prayerTimes(day,lat,lng,tz);
-   K.forEach((k,i)=>{if(on[k]!==false&&pt[k]>now)list.push({id:1000+d*10+i,title:NAMES[k]+' vakti',body:`${place} · ${hm(pt[k])}`,schedule:{at:pt[k],allowWhileIdle:true},channelId:ch,smallIcon:'ic_stat_vakit'})})}
+   K.forEach((k,i)=>{if(on[k]!==false&&pt[k]>now)list.push({id:1000+d*10+i,title:NAMES[k]+' vakti',body:`${place} · ${hm(pt[k])}`,schedule:{at:pt[k],allowWhileIdle:true},channelId:ch,sound:ch==='ezan'?'ezan.ogg':undefined,smallIcon:'ic_stat_vakit'})})}
   await LN.schedule({notifications:list});
   nInfo.textContent=`${place} için sonraki 14 günün vakitleri kuruldu`;
  }catch(e){nInfo.textContent='Bildirimler kurulamadı: '+(e.message||e)}}
-if(NATIVE){document.getElementById('nRow').hidden=false;nState();
+if(NATIVE){document.getElementById('nCard').hidden=false;nState();
  nSw.onclick=()=>{store.set('notif',!store.get('notif',true));nState();scheduleNotifs()};
- document.getElementById('nSet').hidden=false;
  const nSnd=document.getElementById('nSnd');nSnd.value=store.get('nSnd','ezan');nSnd.onchange=()=>{store.set('nSnd',nSnd.value);scheduleNotifs()};
  const nKEl=document.getElementById('nK'),KN={imsak:'İmsak',ogle:'Öğle',ikindi:'İkindi',aksam:'Akşam',yatsi:'Yatsı'};
  const drawK=()=>{const on=store.get('nK',{});nKEl.innerHTML=Object.keys(KN).map(k=>`<button data-k="${k}" aria-pressed="${on[k]!==false}">${KN[k]}</button>`).join('')};
  nKEl.onclick=e=>{const k=e.target.dataset&&e.target.dataset.k;if(!k)return;const on=store.get('nK',{});on[k]=on[k]===false;store.set('nK',on);drawK();scheduleNotifs()};drawK();
  scheduleNotifs();
  document.addEventListener('visibilitychange',()=>{if(!document.hidden){render();scheduleNotifs()}});}
+
+/* ---------- Hazır mesajlar ---------- */
+const MSG={
+cuma:{n:'Cuma',m:[
+"Cumanız mübarek olsun. Rabbim dualarımızı kabul, günahlarımızı affeylesin.",
+"Haftanın en güzel gününde dualarda buluşmak dileğiyle. Hayırlı cumalar.",
+"Cuma'nın bereketi evinize, huzuru gönlünüze dolsun. Hayırlı cumalar.",
+"Rabbim bu mübarek cuma hürmetine kalplerimize huzur, sofralarımıza bereket versin. Hayırlı cumalar.",
+"Dua ettiğinizde beni de unutmayın. Cumanız mübarek olsun.",
+"Allah'ım, bu cuma gününü günahlarımıza kefaret, ahiretimize azık eyle. Âmin. Hayırlı cumalar.",
+"Gönüller bir olsun, dualar kabul olsun. Hayırlı cumalar.",
+"Rabbim sevdiklerinizle birlikte sağlıklı, huzurlu ve bereketli bir ömür nasip etsin. Cumanız mübarek olsun.",
+"Cuma, müminin haftalık bayramıdır. Bayramınız mübarek, dualarınız makbul olsun.",
+"Allah'ın rahmeti üzerinize, bereketi evinize olsun. Hayırlı cumalar.",
+"Bugün ezan başka okunur, dualar başka yükselir. Cumanız mübarek olsun.",
+"Rabbim dilimizden duayı, kalbimizden imanı eksik etmesin. Hayırlı cumalar.",
+"Kederler dağılsın, dertler şifa bulsun, dualar kabul olsun. Hayırlı cumalar.",
+"Salavat getirmeyi unutmadığımız, dualarımızda birbirimizi andığımız bir cuma olsun. Hayırlı cumalar.",
+"Cuma namazında saf saf durduğumuz kardeşlerimizle ahirette de beraber olmak dileğiyle. Hayırlı cumalar.",
+"Bu cuma kapına huzur, gönlüne ferahlık, sofrana bereket gelsin. Hayırlı cumalar.",
+"Rabbim hastalarımıza şifa, dertlilerimize deva, darda kalanlara kolaylık versin. Cumanız mübarek olsun.",
+"Allah'ım, bizi affeden ve affedilen kullarından eyle. Hayırlı cumalar.",
+"Cuma gününün feyzi ve bereketi hanenizden eksik olmasın.",
+"Bir dua da benden: Rabbim yüzünü güldürsün, gönlünü ferah eylesin. Hayırlı cumalar.",
+"Kalpler Kur'an'la, diller zikirle, eller duayla dolsun. Cumanız mübarek olsun.",
+"Anne babalarımıza, geçmişlerimize rahmet dilediğimiz mübarek bir cuma olsun. Hayırlı cumalar.",
+"Rabbim bu haftayı hayırla tamamlamayı, yeni haftaya bereketle başlamayı nasip etsin. Hayırlı cumalar.",
+"Nice güzel cumalara sağlıkla, huzurla ve imanla ulaşmak dileğiyle.",
+"Allah'ım, sevdiklerimizi koru, kalplerimizi birbirine ısındır. Hayırlı cumalar.",
+"Dualarınızın semaya yükseldiği, kalbinizin sükûnet bulduğu bir cuma dilerim.",
+"Cuma vakti geldi; bir Fatiha, bir salavat, bir de gönülden dua... Hayırlı cumalar.",
+"Rabbim rızıklarımızı helalinden bol, ömrümüzü hayırlı eylesin. Cumanız mübarek olsun.",
+"Mübarek cuma gününüz hayırlara vesile olsun. Dualarınızda kardeşlerinizi unutmayın.",
+"Güzel bir cuma, güzel dualar, güzel insanlar... Rabbim hepinizden razı olsun. Hayırlı cumalar."]},
+ramazan:{n:'Ramazan',m:[
+"Hoş geldin ya şehr-i Ramazan! Rabbim oruçlarımızı ve ibadetlerimizi kabul eylesin.",
+"On bir ayın sultanı Ramazan-ı Şerif'iniz mübarek olsun.",
+"Rahmet, mağfiret ve kurtuluş ayı Ramazan hayırlara vesile olsun.",
+"Sahurlarınız bereketli, iftarlarınız huzurlu, dualarınız makbul olsun. Hayırlı Ramazanlar.",
+"Rabbim bu Ramazan'ı günahlarımızın affına, kalplerimizin arınmasına vesile kılsın.",
+"Oruç sabrı, iftar şükrü öğretir. Sabrı ve şükrü bol bir Ramazan dilerim.",
+"İftar sofralarınız sevdiklerinizle, gönülleriniz huzurla dolsun. Hayırlı Ramazanlar.",
+"Mukabeleler, teravihler, sahurlar ve iftarlar... Ramazan'ın bütün güzellikleri sizinle olsun.",
+"Rabbim tuttuğumuz oruçları, kıldığımız namazları, okuduğumuz Kur'an'ı kabul eylesin. Âmin.",
+"Ramazan'ın bereketi evinize, rahmeti gönlünüze dolsun.",
+"Bu Ramazan'da kalbimiz kırgınlıktan, dilimiz gıybetten, elimiz haramdan oruç tutsun. Hayırlı Ramazanlar.",
+"İftar vaktinde edilen dualarınızda beni de unutmayın. Hayırlı Ramazanlar.",
+"Paylaştıkça bereketlenen bir Ramazan olsun; sofralarımızda ihtiyaç sahiplerine de yer açalım.",
+"Kur'an'ın indirildiği bu mübarek ayda kalplerimiz Kur'an'la aydınlansın.",
+"Rabbim sağlıkla oruç tutmayı, huzurla iftar etmeyi nasip etsin. Hayırlı Ramazanlar.",
+"Ramazan bir misafir; ağırlayana rahmet, uğurlayana mağfiret bırakır. Ramazan'ınız mübarek olsun.",
+"Hayırlı sahurlar! Rabbim niyetlerimizi kabul, oruçlarımızı kolay eylesin.",
+"Hayırlı iftarlar! Rabbim bu iftarı şükrümüze, sofralarımızı berekete vesile kılsın.",
+"Allah'ım, senin rızan için oruç tuttuk, senin rızkınla orucumuzu açtık; kabul eyle. Hayırlı iftarlar.",
+"Ramazan'ın son günlerine yaklaşırken dualarımızı çoğaltalım; Rabbim bizi affedilenlerden eylesin.",
+"Rabbim bu Ramazan'ı ümmet-i Muhammed'e birlik, beraberlik ve huzur ayı kılsın.",
+"Oruç bedene sağlık, ruha şifa olsun. Hayırlı Ramazanlar.",
+"Teravih namazlarınız kabul, mukabeleleriniz makbul olsun.",
+"Bu mübarek ayda fitrenizi, zekâtınızı, sadakanızı unutmayın; paylaşmak bereket getirir.",
+"Nice Ramazanlara sağlıkla, imanla ve sevdiklerimizle birlikte ulaşmak dileğiyle."]},
+kadir:{n:'Kadir Gecesi',m:[
+"Bin aydan hayırlı Kadir Gecesi'niz mübarek olsun.",
+"Kur'an'ın indirildiği bu mübarek gecede dualarınız kabul olsun. Kadir Geceniz mübarek olsun.",
+"Rabbim bu gecenin hürmetine günahlarımızı affetsin, dualarımızı kabul eylesin.",
+"Allah'ım, sen affedicisin, affetmeyi seversin; bizi de affeyle. Kadir Geceniz mübarek olsun.",
+"Meleklerin yeryüzüne indiği bu gecede kalbinize huzur, evinize rahmet insin.",
+"Bu gece dualar semaya, rahmet yeryüzüne... Kadir Gecesi'niz mübarek olsun.",
+"Kadir Gecesi'nin nuru kalbinizi, bereketi hanenizi aydınlatsın.",
+"Rabbim bu gecede ettiğimiz tövbeleri kabul, gözyaşlarımızı rahmetine vesile eylesin.",
+"Bin aydan hayırlı bir gece, ömrümüze bereket olsun. Dualarınızda beni de unutmayın.",
+"Kadir Gecesi'nde açılan eller boş dönmesin. Rabbim dualarımızı kabul eylesin.",
+"Sabaha kadar esenlik olan bu gece, ömrünüze esenlik getirsin. Kadir Geceniz mübarek olsun.",
+"Rabbim bu mübarek gecede hastalarımıza şifa, dertlilerimize deva, gönüllerimize huzur versin.",
+"Bu gece bir Fatiha, bir Yasin, bir de gönülden dua... Kadir Gecesi'niz mübarek olsun.",
+"Kur'an'ın indirildiği bu gecede Kur'an'la yaşamayı nasip etsin Rabbim.",
+"Allah'ım, bu gecenin bereketiyle kalplerimizi imanla, evlerimizi huzurla doldur. Âmin.",
+"Kadir Gecesi'ne ulaşmak bir nimet; bu nimetin şükrünü dua ile eda edelim.",
+"Geçmişlerimize rahmet, yaşayanlara sağlık, gelecek nesillere hidayet dileriz. Kadir Geceniz mübarek olsun.",
+"Rabbim bizi bu gecenin kıymetini bilen ve feyzinden nasiplenen kullarından eylesin.",
+"Bu gece rahmet kapıları ardına kadar açık; dualarınızın kabul olması dileğiyle.",
+"Kadir Gecesi'nin rahmeti, bereketi ve bağışı sizinle olsun.",
+"Nice Kadir Gecelerine imanla, sağlıkla ve huzurla ulaşmak dileğiyle.",
+"Bu mübarek gecede edeceğiniz dualarda ümmet-i Muhammed'i ve beni unutmayın."]},
+rbayram:{n:'Ramazan Bayramı',m:[
+"Ramazan Bayramınız mübarek olsun. Rabbim tuttuğumuz oruçları kabul eylesin.",
+"Bir ay süren oruçtan sonra gelen bu bayram, gönlünüze sevinç, evinize bereket getirsin.",
+"Bayramınız kutlu, sofralarınız bereketli, gönülleriniz sevinçli olsun.",
+"Küslerin barıştığı, büyüklerin eli öpülüp küçüklerin sevindirildiği nice bayramlara...",
+"Ramazan Bayramı'nın huzuru ve sevinci hanenizden eksik olmasın.",
+"Rabbim bu bayramı ümmet-i Muhammed'e birlik ve beraberlik vesilesi kılsın. Bayramınız mübarek olsun.",
+"Şeker tadında, sevgi dolu, huzurlu bir bayram dilerim.",
+"Bayram sabahı gibi aydınlık, bayram namazı gibi huzurlu bir ömür dilerim. İyi bayramlar.",
+"Ellerinizden öper, bayramınızı en içten dileklerimle kutlarım.",
+"Uzakta olanlar yakın, dargın olanlar barışık olsun. Ramazan Bayramınız mübarek olsun.",
+"Sevdiklerinizle birlikte sağlıkla, huzurla nice bayramlar geçirmeniz dileğiyle.",
+"Bayram; affetmenin, sevindirmenin, paylaşmanın adıdır. Bayramınız kutlu olsun.",
+"Rabbim bu bayramda yüzünüzü güldürsün, gönlünüzü şenlendirsin. İyi bayramlar.",
+"Oruçla arınan gönüllere bayram sevinci yakışır. Ramazan Bayramınız mübarek olsun.",
+"Bayramın bereketi sofranıza, sevinci yüzünüze, huzuru gönlünüze dolsun.",
+"Büyüklerimize saygı, küçüklerimize sevgi, geçmişlerimize rahmet dileriz. İyi bayramlar.",
+"Kapınız dost, sofranız misafir, gönlünüz sevinçle dolsun. Bayramınız mübarek olsun.",
+"Bu bayram kimse yalnız, kimse mahzun kalmasın. Ramazan Bayramınız mübarek olsun.",
+"Rabbim bizi bir sonraki Ramazan'a ve bayrama sağlıkla ulaştırsın.",
+"Tatlı sohbetler, sıcak kucaklaşmalar ve bol dualarla dolu bir bayram dilerim.",
+"Arefe gününüz mübarek olsun. Rabbim Ramazan'ın son gününü affımıza vesile kılsın.",
+"Yarın bayram! Ramazan'ı uğurlarken Rabbim dualarımızı kabul, oruçlarımızı makbul eylesin.",
+"Bayram namazına beraber gittiğimiz, bayram sofrasında beraber oturduğumuz nice bayramlara...",
+"Bayram sevinciniz daim, dualarınız kabul olsun. Ramazan Bayramınız kutlu olsun.",
+"Bayramlaşmanın bereketi aramızdaki sevgiyi çoğaltsın. İyi bayramlar."]},
+kbayram:{n:'Kurban Bayramı',m:[
+"Kurban Bayramınız mübarek olsun. Rabbim kurbanlarınızı ve dualarınızı kabul eylesin.",
+"Teslimiyetin ve fedakârlığın bayramı Kurban Bayramı hayırlara vesile olsun.",
+"Kurbanınız kabul, bayramınız mübarek olsun.",
+"Rabbim kestiğimiz kurbanları kendisine yakınlığımıza, paylaştıklarımızı berekete vesile kılsın.",
+"Hz. İbrahim'in teslimiyeti, Hz. İsmail'in sabrı gönüllerimize ilham olsun. Bayramınız mübarek olsun.",
+"Paylaştıkça çoğalan sevinçlerle dolu bir Kurban Bayramı dilerim.",
+"Kurban Bayramı'nın bereketi hanenizden, huzuru gönlünüzden eksik olmasın.",
+"Bu bayramda kimsenin kapısı çalınmadan kalmasın; paylaşmanın bereketi hepimize yetsin.",
+"Hacılarımızın haccı makbul, kurbanlarımız kabul, bayramımız mübarek olsun.",
+"Rabbim bu bayramı İslam âlemine huzur ve birlik vesilesi kılsın.",
+"Ellerinizden öper, Kurban Bayramınızı en içten dileklerimle kutlarım.",
+"Sevdiklerinizle birlikte sağlıkla, huzurla nice bayramlara...",
+"Kurban, yaklaşmak demektir. Rabbim bizi kendisine yaklaştıran amellerle buluştursun. Bayramınız mübarek olsun.",
+"Bayram sabahının tekbirleri gönlünüze huzur, evinize bereket getirsin.",
+"Dargınlıkların bittiği, gönüllerin birleştiği bir bayram dilerim. İyi bayramlar.",
+"Rabbim kurbanlarımızı günahlarımıza kefaret eylesin. Bayramınız mübarek olsun.",
+"Bayramınız kutlu, sofranız bereketli, kapınız dostlarla dolu olsun.",
+"Büyüklerimizin duasını alan, küçüklerimizi sevindiren bir bayram olsun. İyi bayramlar.",
+"Rabbim bayram sevincini yüzümüzden, şükrü dilimizden eksik etmesin.",
+"Geçmişlerimize rahmet, yaşayanlara sağlık ve huzur dileriz. Kurban Bayramınız mübarek olsun.",
+"Arefe gününüz mübarek olsun. Bu mübarek günde edilen dualar kabul olsun.",
+"Arefe'de açılan eller, bayramda sevinçle kucaklaşsın. Rabbim dualarımızı kabul eylesin.",
+"Allâhu ekber, Allâhu ekber... Tekbirlerle karşıladığımız bayramınız mübarek olsun.",
+"Bu bayram ihtiyaç sahiplerini sevindirmek, gönülleri kazanmak nasip olsun. İyi bayramlar.",
+"Nice Kurban Bayramlarına sağlıkla, imanla ve sevdiklerimizle ulaşmak dileğiyle."]},
+mevlid:{n:'Mevlid Kandili',m:[
+"Âlemlere rahmet olarak gönderilen Peygamber Efendimiz'in (s.a.v.) dünyayı şereflendirdiği Mevlid Kandili'niz mübarek olsun.",
+"Mevlid Kandili'niz mübarek olsun. Rabbim bizi Efendimiz'in şefaatine nail eylesin.",
+"Bu gece salavatlarımız çok, dualarımız kabul olsun. Kandiliniz mübarek olsun.",
+"Sevgili Peygamberimizin doğduğu bu mübarek gece, kalplerimize sevgi ve rahmet getirsin.",
+"Allah'ım, Efendimiz'in ahlakıyla ahlaklanmayı, sünnetiyle yaşamayı nasip eyle. Kandiliniz mübarek olsun.",
+"Mevlid Kandili'nin nuru evinizi, bereketi gönlünüzü aydınlatsın.",
+"Bu gece bir salavat da benim için getirir misiniz? Mevlid Kandili'niz mübarek olsun.",
+"Rahmet peygamberinin doğum gecesi, rahmet dolu bir ömre vesile olsun.",
+"Allâhümme salli alâ seyyidinâ Muhammed... Mevlid Kandili'niz mübarek olsun.",
+"Efendimiz'i sevmek, onun sevdiklerini sevmektir. Kandiliniz mübarek, dualarınız makbul olsun.",
+"Bu mübarek gecede okunan mevlidler, edilen dualar kabul olsun.",
+"Rabbim bizi ahirette Peygamberimizin sancağı altında toplasın. Kandiliniz mübarek olsun.",
+"Mevlid Kandili'nde kalbimiz sevgiyle, dilimiz salavatla dolsun.",
+"Âlemlerin efendisinin doğduğu gece kutlu olsun; dualarınızda beni de unutmayın.",
+"Güzel ahlakın timsali Peygamberimizi anladığımız ve yaşadığımız nice kandillere...",
+"Mevlid Kandili hürmetine Rabbim hastalarımıza şifa, gönüllerimize huzur versin.",
+"Bu gece dünyaya rahmet doğdu. Mevlid Kandili'niz mübarek olsun.",
+"Rabbim Peygamberimizin sevgisini kalbimizden, sünnetini hayatımızdan eksik etmesin.",
+"Kandil gecenizde evinize huzur, sofranıza bereket, gönlünüze sevinç dolsun.",
+"Mevlid Kandili'nde okunan her salavat Efendimiz'e ulaşsın, dualarımız kabul olsun."]},
+regaip:{n:'Regaip Kandili',m:[
+"Üç ayların ilk kandili Regaip Kandili'niz mübarek olsun.",
+"Rağbet edilen, dualarla ihya edilen Regaip Kandili hayırlara vesile olsun.",
+"Rabbim Regaip Kandili hürmetine dualarımızı kabul, günahlarımızı affeylesin.",
+"Üç ayların müjdecisi Regaip Kandili, gönüllerimize bahar gibi gelsin.",
+"Regaip Kandili'nde açılan eller, Rabbimizin rahmetiyle dolsun.",
+"Bu gece Rabbimize yöneldiğimiz, dualarımızı çoğalttığımız bir gece olsun. Kandiliniz mübarek olsun.",
+"Allah'ım, Recep ve Şaban'ı bize mübarek kıl, bizi Ramazan'a ulaştır. Regaip Kandili'niz mübarek olsun.",
+"Regaip Kandili'nin nuru kalbinize, bereketi evinize dolsun.",
+"Bu kandil gecesi dualarınızda beni de unutmayın. Kandiliniz mübarek olsun.",
+"Üç ayların bereketine erişmek, Ramazan'a hazırlanmak nasip olsun. Hayırlı kandiller.",
+"Rabbim bu mübarek gecede sevdiklerinize sağlık, hastalarınıza şifa versin.",
+"Regaip, Rabbin lütfuna rağbet etme gecesidir. Rağbetimiz dua, dileğimiz rahmet olsun.",
+"Kandil geceniz aydınlık, dualarınız kabul olsun.",
+"Mübarek üç ayların ilk kandilinde tövbelerimiz kabul olsun.",
+"Regaip Kandili'nde kalplerimiz yumuşasın, gönüllerimiz birbirine ısınsın.",
+"Rabbim bizi bu mübarek günlerin kıymetini bilen kullarından eylesin. Kandiliniz mübarek olsun.",
+"Bu gece bir Fatiha, bir dua; geçmişlerimize rahmet, yaşayanlara huzur. Hayırlı kandiller.",
+"Regaip Kandili'niz mübarek, üç aylarınız bereketli olsun."]},
+mirac:{n:'Miraç Kandili',m:[
+"Miraç Kandili'niz mübarek olsun. Rabbim namazlarımızı miracımız eylesin.",
+"Namazın hediye edildiği Miraç gecesinde Rabbim namazlarımızı kabul eylesin.",
+"Efendimiz'in göklere yükseldiği bu gece, dualarımız da semaya yükselsin. Kandiliniz mübarek olsun.",
+"Namaz müminin miracıdır; Rabbim bizi namazını huşu ile kılan kullarından eylesin.",
+"Miraç Kandili'nin nuru ve bereketi evinizden eksik olmasın.",
+"Bu mübarek gecede edilen dualar kabul, yapılan tövbeler makbul olsun.",
+"Bakara suresinin son ayetlerinin hediye edildiği bu gecede okuyalım, dua edelim. Kandiliniz mübarek olsun.",
+"Rabbim Miraç hürmetine gönüllerimizi yükseltsin, dertlerimizi hafifletsin.",
+"Miraç Kandili'nde kalbiniz huzur, eviniz rahmet dolsun.",
+"Bu gece dualarınızda beni de anın. Miraç Kandili'niz mübarek olsun.",
+"İsra ve Miraç'ın hatırası imanımıza güç, kalbimize ferahlık versin.",
+"Rabbim namazlarımızı dosdoğru kılmayı, ibadetlerimizde sebat etmeyi nasip etsin.",
+"Kandil geceniz aydınlık, dualarınız kabul, namazlarınız makbul olsun.",
+"Miraç Kandili hürmetine Rabbim hastalarımıza şifa, dertlilerimize deva versin.",
+"Yükselmenin yolu secdeden geçer. Miraç Kandili'niz mübarek olsun.",
+"Mübarek Miraç gecesinde ümmet-i Muhammed'e huzur ve birlik dileriz.",
+"Rabbim bizi Efendimiz'in izinden giden, namazını kaçırmayan kullarından eylesin. Hayırlı kandiller.",
+"Nice Miraç Kandillerine sağlıkla ve imanla ulaşmak dileğiyle."]},
+berat:{n:'Berat Kandili',m:[
+"Berat Kandili'niz mübarek olsun. Rabbim hepimizi günahlarından beraat edenlerden eylesin.",
+"Affın ve bağışlanmanın gecesi Berat Kandili hayırlara vesile olsun.",
+"Rabbim bu gece dualarımızı kabul, tövbelerimizi makbul eylesin. Hayırlı kandiller.",
+"Berat gecesinde günahlarımızdan arınmak, rahmete ermek dileğiyle.",
+"Berat Kandili'nin rahmeti evinize, bereketi sofranıza, huzuru gönlünüze dolsun.",
+"Allah'ım, bu gecenin hürmetine bizi affet, bize merhamet et. Âmin. Kandiliniz mübarek olsun.",
+"Ramazan'ın habercisi Berat Kandili, gönüllerimizi Ramazan'a hazırlasın.",
+"Bu gece dualarınızda beni de unutmayın. Berat Kandili'niz mübarek olsun.",
+"Kırgınlıkları geride bırakıp helalleştiğimiz bir Berat gecesi olsun.",
+"Rabbim bu mübarek gecede hastalarımıza şifa, borçlularımıza kolaylık, dertlilerimize deva versin.",
+"Rabbim bu gecenin hürmetine takdirimizi hayırlı, ömrümüzü bereketli eylesin.",
+"Beraat müjdesiyle sevinenlerden olmak dileğiyle... Kandiliniz mübarek olsun.",
+"Bu gece bir Yasin, bir dua, bir tövbe... Berat Kandili'niz mübarek olsun.",
+"Rabbim bizi Ramazan'a sağlıkla ve imanla ulaştırsın. Hayırlı kandiller.",
+"Berat gecesi kalbimiz tertemiz, niyetimiz halis olsun.",
+"Mübarek Berat Kandili'nde geçmişlerimize rahmet, yaşayanlara sağlık dileriz.",
+"Rahmet kapılarının açıldığı bu gecede dualarınız kabul olsun.",
+"Berat Kandili'niz mübarek, geceniz nurlu, dualarınız makbul olsun.",
+"Rabbim bu gecenin hürmetine kalplerimizi birleştirsin, sofralarımızı bereketlendirsin.",
+"Nice Berat Kandillerine sağlıkla ve huzurla ulaşmak dileğiyle."]},
+ucaylar:{n:'Üç Aylar',m:[
+"Rahmet, bereket ve mağfiret mevsimi üç aylarınız mübarek olsun.",
+"Allah'ım, Recep ve Şaban'ı bize mübarek kıl, bizi Ramazan'a ulaştır. Âmin.",
+"Üç aylar geldi; gönüller Ramazan'a hazırlanıyor. Hayırlı üç aylar.",
+"Mübarek üç ayların bereketi evinize, huzuru gönlünüze dolsun.",
+"Recep ekme, Şaban sulama, Ramazan hasat ayıdır derler. Bereketli bir hasat dilerim. Hayırlı üç aylar.",
+"Üç ayları dua, tövbe ve ibadetle ihya etmek nasip olsun.",
+"Rabbim bu mübarek ayları günahlarımıza kefaret, ahiretimize azık eylesin.",
+"Üç aylarınız hayırlı, kandilleriniz mübarek, Ramazan'ınız bereketli olsun.",
+"Kalplerin yumuşadığı, duaların çoğaldığı üç aylar hepimize hayırlar getirsin.",
+"Mübarek üç aylara sağlıkla eriştiren Rabbimize hamdolsun. Hayırlı üç aylar.",
+"Bu üç ayda küslükler bitsin, gönüller birleşsin. Üç aylarınız mübarek olsun.",
+"Rabbim üç ayları idrak edip Ramazan'a erişenlerden eylesin.",
+"Üç aylar bir hazırlık; kalbimizi Ramazan'a, ömrümüzü ahirete hazırlayalım.",
+"Hayırlı üç aylar! Dualarınızda beni de unutmayın."]},
+hicri:{n:'Hicri Yılbaşı',m:[
+"Hicri yeni yılınız mübarek olsun. Yeni yıl hayırlara vesile olsun.",
+"Hicretin hatırası yeni bir başlangıcın ümidi olsun. Hayırlı hicri yıllar.",
+"Rabbim yeni hicri yılı ümmet-i Muhammed'e huzur ve birlik yılı eylesin.",
+"Muharrem ayınız ve hicri yılbaşınız mübarek olsun.",
+"Geride kalan yılımızı affeden, yeni yılımızı bereketlendiren Rabbimize hamdolsun. Hayırlı yıllar.",
+"Yeni hicri yılda kötülüklerden iyiliğe, gafletten uyanıklığa hicret etmek nasip olsun.",
+"Hicri yeni yılın ilk gününde dualarımız kabul, niyetlerimiz halis olsun.",
+"Rabbim bu yılı sağlık, huzur ve bereketle geçirmeyi nasip etsin. Hayırlı hicri yıllar.",
+"Hicret; kötüden iyiye, karanlıktan aydınlığa göçtür. Hicri yılınız mübarek olsun.",
+"Yeni hicri yıl, yeni dualar, yeni umutlar... Hayırlı yıllar.",
+"Muharrem ayının bereketi hanenize dolsun. Hicri yılbaşınız mübarek olsun.",
+"Allah'ım, bu yılı bize hayırlı kıl; hayrından ver, şerrinden koru. Âmin."]},
+asure:{n:'Aşure Günü',m:[
+"Aşure Günü'nüz mübarek olsun. Paylaştıkça bereketlenen aşure gibi gönülleriniz bereketlensin.",
+"Bir kazanda buluşan nimetler gibi gönüllerimiz de bir olsun. Hayırlı Aşure Günleri.",
+"Aşurenin tatlılığı hayatınıza, bereketi sofranıza dolsun.",
+"Komşuya, dosta aşure götürdüğümüz nice güzel günlere...",
+"Aşure Günü'nüz mübarek olsun. Rabbim tuttuğunuz oruçları kabul eylesin.",
+"Aşure Günü'nde sevinçleri de hüzünleri de paylaşarak birbirimize yakınlaşalım.",
+"Hz. Nuh'un gemisindeki ümit, aşure kasesiyle sofralarımıza gelsin. Hayırlı Aşure Günleri.",
+"Kerbela'da şehit edilen Hz. Hüseyin'i ve yakınlarını rahmetle anıyoruz.",
+"Aşure paylaşıldıkça tatlanır; sevgi de öyle. Aşure Günü'nüz mübarek olsun.",
+"Rabbim bu mübarek günde dualarınızı kabul, sofranızı bereketli eylesin.",
+"Bir kase aşure, bir tutam sevgi, bir avuç dua... Hayırlı Aşure Günleri.",
+"Aşure Günü'nün bereketi hanenizden eksik olmasın."]},
+sabah:{n:'Hayırlı Sabahlar',m:[
+"Hayırlı sabahlar! Bismillah ile başlayan gününüz bereketli olsun.",
+"Rabbim bugünü sizin için hayırlı, kolay ve huzurlu kılsın. Hayırlı sabahlar.",
+"Yeni bir güne uyandıran Rabbimize hamdolsun. Hayırlı sabahlar.",
+"Sabahın serinliği gönlünüze, güneşin aydınlığı yolunuza dolsun.",
+"Bugün hangi kapıyı çalarsanız hayırla açılsın. Hayırlı sabahlar.",
+"Güne şükürle başlayanın günü bereketli olur. Hayırlı sabahlar.",
+"Rabbim rızkınızı bol, işinizi kolay, yolunuzu açık eylesin. Hayırlı sabahlar.",
+"Sabah namazının huzuruyla başlayan güzel bir gün dilerim.",
+"Allah'ım, bu günün hayrını isteriz, şerrinden sana sığınırız. Hayırlı sabahlar.",
+"Tebessümle başlayan, duayla devam eden bir gün olsun.",
+"Hayırlı sabahlar! Bugün birinin yüzünü güldürmek nasip olsun.",
+"Yüzünüz gülsün, gönlünüz ferah olsun, gününüz aydın olsun.",
+"Her sabah yeni bir fırsat; Rabbim bu fırsatı hayırla değerlendirmeyi nasip etsin.",
+"Günaydın! Rabbim sağlık, huzur ve bereket dolu bir gün versin.",
+"Sabahınız nur, gününüz huzur, akşamınız şükür dolsun."]},
+gece:{n:'Hayırlı Geceler',m:[
+"Hayırlı geceler! Rabbim uykunuzu huzurlu, uyanışınızı hayırlı eylesin.",
+"Günün yorgunluğunu dua ile bırakın; Rabbim sizi korusun. Hayırlı geceler.",
+"Allah'ım, senin adınla yatar, senin adınla kalkarız. Hayırlı geceler.",
+"Bugün için şükür, yarın için dua... Hayırlı geceler.",
+"Yatmadan önce bir Fatiha, bir İhlas, bir salavat... Hayırlı geceler.",
+"Gecenin sükûneti gönlünüze huzur versin. Allah'a emanet olun.",
+"Rabbim sizi ve sevdiklerinizi her türlü kötülükten korusun. Hayırlı geceler.",
+"Dertleriniz hafiflesin, uykunuz tatlı olsun, sabahınız aydınlık doğsun.",
+"Günü affedilmiş olarak kapatmak nasip olsun. Hayırlı geceler.",
+"Yıldızlar kadar parlak, gece kadar huzurlu bir uyku dilerim. Allah'a emanet olun.",
+"Rabbim bu geceyi rahmetiyle örtsün, sabaha sağlıkla eriştirsin.",
+"Hayırlı geceler! Dualarınızda beni de unutmayın."]}
+};
+
+/* ---------- Tema ---------- */
+const mqDark=matchMedia('(prefers-color-scheme: dark)');
+function applyTheme(){const t=store.get('theme','system'),d=t==='dark'||(t==='system'&&mqDark.matches);
+ document.documentElement.dataset.theme=d?'dark':'light';
+ document.querySelector('meta[name="theme-color"]').content=d?'#0E1A1C':'#2A9D8F';
+ document.querySelectorAll('#themeSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t===t));
+ if(NATIVE&&CAP.Plugins.SystemBars)CAP.Plugins.SystemBars.setStyle({style:d?'DARK':'LIGHT'}).catch(()=>{})}
+document.querySelectorAll('#themeSeg button').forEach(b=>b.onclick=()=>{store.set('theme',b.dataset.t);applyTheme()});
+mqDark.addEventListener('change',applyTheme);applyTheme();
+
+/* ---------- Otomatik konum ---------- */
+const locBtn=document.getElementById('locBtn'),locInfo=document.getElementById('locInfo');
+function locNow(){document.getElementById('locNow').textContent=ilSel.value+(ilceSel.value?' / '+ilceSel.value:' (il merkezi)')}
+ilSel.addEventListener('change',locNow);ilceSel.addEventListener('change',locNow);locNow();
+/* Koordinatı il merkezinden ödünç alınan ilçeler aday sayılmaz; o bölgede il merkezi seçilir. */
+function nearest(lat,lng){let best=null,bd=Infinity;const dist=v=>{const x=(v[1]-lng)*Math.cos((lat+v[0])/2*R),y=v[0]-lat;return Math.hypot(x,y)*111.2};
+ for(const il in IL){const p=IL[il];let d=dist(p.c);if(d<bd){bd=d;best={il,ilce:''}}
+  for(const n in p.d){const v=p.d[n];if(v[2])continue;d=dist(v);if(d<bd){bd=d;best={il,ilce:n}}}}
+ return best&&Object.assign(best,{km:bd})}
+async function getPos(){const opt={enableHighAccuracy:false,timeout:15000,maximumAge:600000},G=NATIVE&&CAP.Plugins.Geolocation;
+ if(G){const ok=p=>p.location==='granted'||p.coarseLocation==='granted';let p=await G.checkPermissions();if(!ok(p))p=await G.requestPermissions({permissions:['location','coarseLocation']});
+  if(!ok(p))throw{code:1};return(await G.getCurrentPosition(opt)).coords}
+ return new Promise((ok,no)=>navigator.geolocation?navigator.geolocation.getCurrentPosition(r=>ok(r.coords),no,opt):no({}))}
+async function locate(silent){locBtn.classList.add('busy');locInfo.textContent='Konum aranıyor…';
+ try{const c=await getPos(),n=nearest(c.latitude,c.longitude);if(!n||n.km>60)throw{far:1};
+  ilSel.value=n.il;fillIlce();ilceSel.value=n.ilce;store.set('loc',{il:n.il,ilce:n.ilce});render();scheduleNotifs();locNow();
+  const nm=n.il+(n.ilce?' / '+n.ilce:'');locInfo.textContent='Konumuna göre seçildi';toast('Konum: '+nm)}
+ catch(e){const m=e.far?'Türkiye dışında görünüyorsun, il ve ilçeyi elle seç':e.code===1?'Konum izni verilmedi':'Konum bulunamadı. Konum servisinin açık olduğundan emin ol';locInfo.textContent=m;if(!silent)toast(m)}
+ locBtn.classList.remove('busy')}
+locBtn.onclick=()=>locate();document.getElementById('locBtn2').onclick=()=>locate();
+if(store.get('loc',null)===null&&!store.get('locTried',false)){store.set('locTried',true);locate(true)}
+
+/* ---------- Tespih sesi (Web Audio ile üretilir, ses dosyası yok) ---------- */
+let actx=null;
+function ac(){if(!actx){const A=window.AudioContext||window.webkitAudioContext;if(!A)return null;actx=new A()}if(actx.state==='suspended')actx.resume();return actx}
+function bead(){const c=ac();if(!c)return;const t0=c.currentTime+.005;
+ [[0,1,2300],[.03,.55,2800]].forEach(([o,g,f])=>{const t=t0+o,len=Math.floor(c.sampleRate*.035),buf=c.createBuffer(1,len,c.sampleRate),d=buf.getChannelData(0);
+  for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,6);
+  const src=c.createBufferSource(),bp=c.createBiquadFilter(),gn=c.createGain();src.buffer=buf;bp.type='bandpass';bp.frequency.value=f;bp.Q.value=4;gn.gain.value=g*1.9;
+  src.connect(bp).connect(gn).connect(c.destination);src.start(t);
+  const os=c.createOscillator(),og=c.createGain();os.frequency.value=f*.6;og.gain.setValueAtTime(g*.38,t);og.gain.exponentialRampToValueAtTime(.001,t+.05);os.connect(og).connect(c.destination);os.start(t);os.stop(t+.06)})}
+function chime(){const c=ac();if(!c)return;const t=c.currentTime+.06;
+ [[659.3,.3],[987.8,.15],[1318.5,.09]].forEach(([f,g])=>{const o=c.createOscillator(),gn=c.createGain();o.frequency.value=f;gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(g,t+.01);gn.gain.exponentialRampToValueAtTime(.0005,t+1.8);o.connect(gn).connect(c.destination);o.start(t);o.stop(t+1.9)})}
+const zkSnd=document.getElementById('zkSnd'),zsSw=document.getElementById('zsSw');
+const SPK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/>';
+function zsState(){const on=store.get('zkSound',true);zsSw.setAttribute('aria-checked',on);zkSnd.setAttribute('aria-pressed',on);
+ zkSnd.innerHTML=SPK+(on?'<path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>Tespih sesi açık':'<path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>Tespih sesi kapalı')}
+zkSnd.onclick=zsSw.onclick=()=>{store.set('zkSound',!store.get('zkSound',true));zsState()};zsState();
+document.getElementById('zkTap').addEventListener('click',()=>{if(!store.get('zkSound',true))return;const n=zk.c[zk.sel]||0;bead();if(n&&n%zk.target===0)chime()});
+
+/* ---------- Hazır mesajlar: özel güne göre öneri ---------- */
+const EVKEY={'Hicri Yılbaşı':'hicri','Aşure Günü':'asure','Mevlid Kandili':'mevlid','Üç Ayların Başlangıcı':'ucaylar','Regaip Kandili':'regaip','Miraç Kandili':'mirac','Berat Kandili':'berat','Ramazan Başlangıcı':'ramazan','Kadir Gecesi':'kadir','Ramazan Bayramı Arifesi':'rbayram','Ramazan Bayramı':'rbayram','Kurban Bayramı Arifesi':'kbayram','Kurban Bayramı':'kbayram'};
+function occasion(){const now=new Date(),t0=new Date(now);t0.setHours(12,0,0,0);const h=hijri(t0);
+ /* Aynı güne düşenlerde kandil gecesi öne geçer (ör. Regaip ile üç ayların başlangıcı) */
+ const near=EVS.map(e=>({e,dd:Math.round((e.dt-t0)/864e5)})).filter(x=>x.dd>=0&&x.dd<=2&&EVKEY[x.e.n]).sort((a,b)=>a.dd-b.dd||(b.e.k==='Kandil gecesi')-(a.e.k==='Kandil gecesi'));
+ for(const{e,dd}of near){const key=EVKEY[e.n],gece=e.k==='Kandil gecesi';return{key,txt:(dd===0?(gece?'Bu gece ':'Bugün '):dd===1?(gece?'Yarın gece ':'Yarın '):'2 gün sonra ')+`<b>${e.n}</b>`}}
+ if(h.m===10&&h.d<=3)return{key:'rbayram',txt:`Ramazan Bayramı'nın <b>${h.d}. günü</b>`};
+ if(h.m===12&&h.d>=10&&h.d<=13)return{key:'kbayram',txt:`Kurban Bayramı'nın <b>${h.d-9}. günü</b>`};
+ if(now.getDay()===5)return{key:'cuma',txt:'Bugün <b>Cuma</b>'};
+ if(now.getDay()===4&&now.getHours()>=17)return{key:'cuma',txt:'Yarın <b>Cuma</b>'};
+ if(h.m===9)return{key:'ramazan',txt:`<b>Ramazan</b> ayının ${h.d}. günü`};
+ return null}
+const OCC=occasion();
+let mCat=OCC?OCC.key:store.get('msgCat','cuma'),mShown=20;if(!MSG[mCat])mCat='cuma';
+document.getElementById('msgCats').innerHTML=Object.keys(MSG).map(k=>`<button data-c="${k}">${MSG[k].n}</button>`).join('');
+function mRender(){document.querySelectorAll('#msgCats button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===mCat));
+ const L=MSG[mCat].m;document.getElementById('msgList').innerHTML=L.slice(0,mShown).map((t,i)=>`<div class="msg" style="animation-delay:${Math.min(i%20,10)*.03}s"><p>${t}</p><div class="acts"><button class="btn" data-sh="${i}">Paylaş</button><button class="btn" data-cp="${i}">Kopyala</button></div></div>`).join('');
+ document.getElementById('msgMore').hidden=L.length<=mShown}
+document.getElementById('msgCats').onclick=e=>{const b=e.target.closest('button');if(!b)return;mCat=b.dataset.c;mShown=20;store.set('msgCat',mCat);mRender();b.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'})};
+document.getElementById('msgMore').onclick=()=>{mShown+=20;mRender()};
+async function shareText(t){const S=NATIVE&&CAP.Plugins.Share;
+ if(S){try{await S.share({text:t,dialogTitle:'Mesajı paylaş'})}catch(e){}return}
+ if(navigator.share){try{await navigator.share({text:t})}catch(e){}return}
+ open('https://wa.me/?text='+encodeURIComponent(t),'_blank','noopener')}
+function copyText(t){const fb=()=>{const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity=0;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Kopyalandı')}catch(e){}ta.remove()};
+ try{navigator.clipboard.writeText(t).then(()=>toast('Kopyalandı'),fb)}catch(e){fb()}}
+document.getElementById('msgList').onclick=e=>{const b=e.target.closest('button');if(!b)return;const L=MSG[mCat].m;
+ if(b.dataset.sh!=null)shareText(L[b.dataset.sh]);else if(b.dataset.cp!=null)copyText(L[b.dataset.cp])};
+if(OCC){const ban=document.getElementById('msgBan');ban.hidden=false;ban.innerHTML=`<span>${OCC.txt}. Bu güne özel mesajlar aşağıda.</span>`;
+ const ob=document.getElementById('occBtn');ob.hidden=false;document.getElementById('occTxt').innerHTML=OCC.txt;
+ ob.onclick=()=>{mCat=OCC.key;mShown=20;mRender();document.querySelector('nav button[data-p="mesaj"]').click()}}
+mRender();
 
 /* ---------- Android: reklamlar ---------- */
 const AM=NATIVE?CAP.Plugins.AdMob:null;

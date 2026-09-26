@@ -10,9 +10,9 @@ GitHub Actions her `main` gönderiminde iki dosya üretir: test için debug APK 
 
 AAB'nin imzalı çıkması için depoya şu sırlar eklenmelidir: `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`. Sırlar yoksa AAB imzasız üretilir.
 
-## Android
+### Dosyalar
 
-- `assets/ezan.mp3`: Bildirimde çalacak ezan kaydı. Dosya yoksa ezan kanalı telefonun varsayılan bildirim sesini kullanır. Telif hakkı sende olan ya da kullanım izni bulunan bir kayıt koy.
+- `android-res/raw/ezan.ogg`: Bildirimde çalan ezan kaydı (Wikimedia Commons, "Beautiful adhan", CC0). Başka bir kayıtla değiştirmek için aynı adla koy; telif hakkı sende olan ya da kullanım izni bulunan bir kayıt olmalı.
 - `android-res/`: Derleme sırasında Android projesine kopyalanan widget, bildirim ikonu ve Java kodu.
 - Gizlilik politikası: `gizlilik.html` (Play Console'da bu sayfanın GitHub Pages adresini ver).
 - `app-ads.txt`: AdMob doğrulaması için alan adının köküne konmalıdır (bkz. aşağıdaki not).

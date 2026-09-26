@@ -32,13 +32,14 @@ jobs:
       - name: Uygulama ikonu
         run: npx capacitor-assets generate --android --iconBackgroundColor '#2A9D8F' --splashBackgroundColor '#F2F8F8'
 
-      - name: Bildirim ikonu, izinler ve AdMob
+      - name: Android kaynakları, widget, izinler ve AdMob
         run: |
-          cp android-res/drawable/*.xml android/app/src/main/res/drawable/
+          for d in drawable layout values xml raw; do mkdir -p android/app/src/main/res/$d; cp android-res/$d/* android/app/src/main/res/$d/; done
+          cp android-res/java/*.java android/app/src/main/java/com/stitchilyas/vakitvedua/
           M=android/app/src/main/AndroidManifest.xml
-          sed -i 's#</manifest>#    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />\n</manifest>#' $M
-          sed -i 's#</application>#    <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-4494482100556023~2278665585" />\n    </application>#' $M
-          grep -q 'ads.APPLICATION_ID' $M
+          sed -i 's#</manifest>#    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n</manifest>#' $M
+          sed -i 's#</application>#    <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-4494482100556023~2278665585" />\n        <receiver android:name=".VakitWidget" android:exported="true" android:label="Vakit ve Dua">\n            <intent-filter>\n                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />\n                <action android:name="android.intent.action.BOOT_COMPLETED" />\n                <action android:name="android.intent.action.TIME_SET" />\n                <action android:name="android.intent.action.TIMEZONE_CHANGED" />\n            </intent-filter>\n            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_vakit_info" />\n        </receiver>\n    </application>#' $M
+          grep -q 'ads.APPLICATION_ID' $M && grep -q 'VakitWidget' $M
 
       - name: Sürüm
         run: |
