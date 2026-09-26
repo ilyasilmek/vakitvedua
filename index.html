@@ -272,6 +272,10 @@ details[open] .dua{animation:rise .35s ease}
 .zkw div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;min-width:0}
 .zkw i{width:70%;max-width:26px;border-radius:5px 5px 2px 2px;background:var(--acc2);opacity:.75}.zkw i.kd{background:var(--brass);opacity:1}
 .zkw span{font-size:10px;color:var(--mute);font-variant-numeric:tabular-nums}.zkw small{font-size:10.5px;color:var(--mute)}
+.dlg{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:16px}
+.dlgb{background:var(--card);border-radius:18px;padding:14px;max-width:420px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.dlgb img{display:block;width:100%;max-height:62vh;object-fit:contain;border-radius:10px;margin-bottom:12px}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:500}
 .status{margin-top:12px;text-align:center;font-size:13px;color:var(--brass);min-height:1.2em}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
@@ -532,6 +536,8 @@ details[open] .dua{animation:rise .35s ease}
  <button data-p="takvim" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Takvim</button>
 </nav>
 <div class="toast" id="toast" role="status"></div>
+<div class="dlg" id="imgDlg" hidden><div class="dlgb" role="dialog" aria-label="Mesaj görseli"><img id="imgPrev" alt="Mesaj görseli önizlemesi"><canvas id="imgCv" hidden></canvas>
+ <div class="row"><button class="btn" id="imgStyle">Arka planı değiştir</button><button class="btn pri" id="imgShare">Paylaş</button><button class="btn" id="imgClose">Kapat</button></div></div></div>
 
 <script>
 const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -1485,7 +1491,7 @@ const OCC=occasion();
 let mCat=OCC?OCC.key:store.get('msgCat','cuma'),mShown=20;if(!MSG[mCat])mCat='cuma';
 document.getElementById('msgCats').innerHTML=Object.keys(MSG).map(k=>`<button data-c="${k}">${MSG[k].n}</button>`).join('');
 function mRender(){document.querySelectorAll('#msgCats button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===mCat));
- const L=MSG[mCat].m;document.getElementById('msgList').innerHTML=L.slice(0,mShown).map((t,i)=>`<div class="msg" style="animation-delay:${Math.min(i%20,10)*.03}s"><p>${t}</p><div class="acts"><button class="btn" data-sh="${i}">Paylaş</button><button class="btn" data-cp="${i}">Kopyala</button></div></div>`).join('');
+ const L=MSG[mCat].m;document.getElementById('msgList').innerHTML=L.slice(0,mShown).map((t,i)=>`<div class="msg" style="animation-delay:${Math.min(i%20,10)*.03}s"><p>${t}</p><div class="acts"><button class="btn" data-sh="${i}">Paylaş</button><button class="btn" data-cp="${i}">Kopyala</button><button class="btn" data-im="${i}">Görsel</button></div></div>`).join('');
  document.getElementById('msgMore').hidden=L.length<=mShown}
 document.getElementById('msgCats').onclick=e=>{const b=e.target.closest('button');if(!b)return;mCat=b.dataset.c;mShown=20;store.set('msgCat',mCat);mRender();b.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'})};
 document.getElementById('msgMore').onclick=()=>{mShown+=20;mRender()};
@@ -1496,11 +1502,45 @@ async function shareText(t){const S=NATIVE&&CAP.Plugins.Share;
 function copyText(t){const fb=()=>{const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity=0;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');copied()}catch(e){}ta.remove()};
  try{navigator.clipboard.writeText(t).then(copied,fb)}catch(e){fb()}}
 document.getElementById('msgList').onclick=e=>{const b=e.target.closest('button');if(!b)return;const L=MSG[mCat].m;
- if(b.dataset.sh!=null)shareText(L[b.dataset.sh]);else if(b.dataset.cp!=null)copyText(L[b.dataset.cp])};
+ if(b.dataset.sh!=null)shareText(L[b.dataset.sh]);else if(b.dataset.cp!=null)copyText(L[b.dataset.cp]);else if(b.dataset.im!=null)openImg(L[b.dataset.im])};
 if(OCC){const ban=document.getElementById('msgBan');ban.hidden=false;ban.innerHTML=`<span>${OCC.txt}. Bu güne özel mesajlar aşağıda.</span>`;
  const ob=document.getElementById('occBtn');ob.hidden=false;document.getElementById('occTxt').innerHTML=OCC.txt;
  ob.onclick=()=>{mCat=OCC.key;mShown=20;mRender();document.querySelector('nav button[data-p="mesaj"]').click()}}
 mRender();
+
+/* ---------- Mesaj görselleri ---------- */
+const IMG_ST=['gece','yesil','altin'],IMG_DEF={mevlid:'gece',regaip:'gece',mirac:'gece',berat:'gece',kadir:'gece',gece:'gece',cuma:'yesil',rbayram:'yesil',kbayram:'yesil',ramazan:'gece'};
+let imgTxt='',imgSt='yesil',imgUrl='';
+function star8(c,x,y,r){c.beginPath();for(let i=0;i<16;i++){const a=i*Math.PI/8,rr=i%2?r*.72:r;c.lineTo(x+rr*Math.cos(a),y+rr*Math.sin(a))}c.closePath()}
+async function drawImg(){
+ const W=1080,H=1350,cv=document.getElementById('imgCv'),c=cv.getContext('2d');cv.width=W;cv.height=H;
+ try{await Promise.all([document.fonts.load('500 60px Rubik'),document.fonts.load('400 40px Rubik')])}catch(e){}
+ let ink='#fff',sub='rgba(255,255,255,.75)',acc='#FFE39A';
+ if(imgSt==='gece'){const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0F1D3A');g.addColorStop(.6,'#1B3B5A');g.addColorStop(1,'#1F6F6A');c.fillStyle=g;c.fillRect(0,0,W,H);
+  c.fillStyle='rgba(255,255,255,.8)';for(let i=0;i<70;i++){const x=(i*397)%W,y=(i*229)%(H*.55),r=i%5?1.6:3;c.globalAlpha=.3+(i%4)*.18;c.beginPath();c.arc(x,y,r,0,7);c.fill()}c.globalAlpha=1;
+  /* hilal ayrı tuvalde kesilir; ana tuvalde kesmek arka planı da delerdi */
+  const m=document.createElement('canvas'),mc=m.getContext('2d');m.width=m.height=180;mc.fillStyle='#FFE39A';mc.beginPath();mc.arc(90,90,78,0,7);mc.fill();mc.globalCompositeOperation='destination-out';mc.beginPath();mc.arc(122,68,70,0,7);mc.fill();c.drawImage(m,W-280,100)}
+ else if(imgSt==='yesil'){const g=c.createLinearGradient(0,0,W,H);g.addColorStop(0,'#2A9D8F');g.addColorStop(1,'#1B6F66');c.fillStyle=g;c.fillRect(0,0,W,H);
+  c.strokeStyle='rgba(255,255,255,.07)';c.lineWidth=3;for(let y=-60;y<H+120;y+=135)for(let x=(y/135%2)*67-60;x<W+120;x+=135){star8(c,x,y,52);c.stroke()}}
+ else{c.fillStyle='#FBF6EA';c.fillRect(0,0,W,H);c.strokeStyle='#C4952F';c.lineWidth=6;c.strokeRect(44,44,W-88,H-88);c.lineWidth=2;c.strokeRect(62,62,W-124,H-124);
+  c.fillStyle='#C4952F';[[62,62],[W-62,62],[62,H-62],[W-62,H-62]].forEach(([x,y])=>{star8(c,x,y,26);c.fill()});ink='#1D3A40';sub='#6A8589';acc='#C4952F'}
+ const title=MSG[mCat].n,pad=130,maxW=W-pad*2;
+ c.textAlign='center';c.fillStyle=acc;c.font='500 40px Rubik, sans-serif';c.fillText(title.toLocaleUpperCase('tr'),W/2,imgSt==='gece'?360:230);
+ let fs=66,lines;
+ const wrap=()=>{c.font=`500 ${fs}px Rubik, sans-serif`;const out=[];let ln='';for(const w of imgTxt.split(/\s+/)){const t=ln?ln+' '+w:w;if(c.measureText(t).width>maxW&&ln){out.push(ln);ln=w}else ln=t}if(ln)out.push(ln);return out};
+ do{lines=wrap();fs-=4}while(lines.length*fs*1.45>H*.5&&fs>34);fs+=4;
+ const lh=fs*1.45,top=H/2-lines.length*lh/2+fs*.35+(imgSt==='gece'?60:0);c.fillStyle=ink;c.font=`500 ${fs}px Rubik, sans-serif`;lines.forEach((l,i)=>c.fillText(l,W/2,top+i*lh));
+ c.fillStyle=sub;c.font='400 32px Rubik, sans-serif';c.fillText('Vakit ve Dua',W/2,H-110);
+ imgUrl=cv.toDataURL('image/png');document.getElementById('imgPrev').src=imgUrl}
+function openImg(t){imgTxt=t;imgSt=IMG_DEF[mCat]||'altin';document.getElementById('imgDlg').hidden=false;drawImg()}
+document.getElementById('imgStyle').onclick=()=>{imgSt=IMG_ST[(IMG_ST.indexOf(imgSt)+1)%IMG_ST.length];drawImg()};
+document.getElementById('imgClose').onclick=()=>document.getElementById('imgDlg').hidden=true;
+document.getElementById('imgDlg').onclick=e=>{if(e.target.id==='imgDlg')e.target.hidden=true};
+document.getElementById('imgShare').onclick=async()=>{const b64=imgUrl.split(',')[1],name='vakitvedua-mesaj.png';
+ try{if(NATIVE&&CAP.Plugins.Filesystem&&CAP.Plugins.Share){const f=await CAP.Plugins.Filesystem.writeFile({path:name,data:b64,directory:'CACHE'});await CAP.Plugins.Share.share({files:[f.uri],dialogTitle:'Görseli paylaş'});return}
+  const blob=await (await fetch(imgUrl)).blob(),file=new File([blob],name,{type:'image/png'});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});return}
+  const a=document.createElement('a');a.href=imgUrl;a.download=name;a.click();toast('Görsel indirildi')}catch(e){if(!/cancel|abort/i.test(e&&(e.message||e.name)||''))toast('Görsel paylaşılamadı')}};
 
 /* ---------- Android: reklamlar ---------- */
 const AM=NATIVE?CAP.Plugins.AdMob:null;
