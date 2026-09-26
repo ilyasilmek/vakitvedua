@@ -67,6 +67,7 @@ select{background:var(--card);border:1px solid var(--line);border-radius:12px;pa
 .chips button[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:500}
 .msgban{display:flex;gap:10px;align-items:center;background:var(--accsoft);border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:13px;margin-bottom:10px;line-height:1.4}
 .msgban b{color:var(--acc)}
+.travel{margin:12px 0 0;flex-wrap:wrap;justify-content:flex-end}.travel span{flex:1 1 100%}.travel .btn{font-size:13px;padding:6px 12px}
 .msg{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow);animation:rise .4s ease backwards}
 .msg p{margin:0 0 10px;line-height:1.6;white-space:pre-line}
 .msg .acts{margin-top:0}
@@ -286,6 +287,7 @@ details[open] .dua{animation:rise .35s ease}
  <div class="loc" id="loc"><select id="il" aria-label="İl"></select><select id="ilce" aria-label="İlçe"></select><button class="locbtn" id="locBtn" aria-label="Konumumu bul" title="Konumumu bul"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg></button></div>
 
 <section id="p-vakit">
+ <div class="msgban travel" id="travel" hidden><span></span><button class="btn" data-a="yes">Değiştir</button><button class="btn" data-a="no">Hayır</button></div>
  <div class="slides" id="slides">
  <div class="sky" id="sky"><small id="nextLbl"></small><div class="cd" id="cd">--:--:--</div>
   <div class="kr" id="kr"></div>
@@ -404,6 +406,7 @@ details[open] .dua{animation:rise .35s ease}
  <div class="set">
   <h3>Konum</h3>
   <div class="nrow"><div><b id="locNow"></b><span id="locInfo">Konumunu bularak en yakın ilçeyi seçer</span></div><button class="btn" id="locBtn2">Konumumu bul</button></div>
+  <div class="nrow"><div><b>Seyahat modu</b><span>Başka bir ilçeye gittiğinde konumu değiştirmeyi önerir. Konum izni verdiysen çalışır.</span></div><button class="sw" id="trSw" role="switch" aria-checked="true" aria-label="Seyahat modu"><i></i></button></div>
  </div>
  <div class="set">
   <h3>Zikirmatik</h3>
@@ -1428,6 +1431,24 @@ async function locate(silent){locBtn.classList.add('busy');locInfo.textContent='
  catch(e){const m=e.far?'Türkiye dışında görünüyorsun, il ve ilçeyi elle seç':e.code===1?'Konum izni verilmedi':'Konum bulunamadı. Konum servisinin açık olduğundan emin ol';locInfo.textContent=m;if(!silent)toast(m)}
  locBtn.classList.remove('busy')}
 locBtn.onclick=()=>locate();document.getElementById('locBtn2').onclick=()=>locate();
+/* ---------- Seyahat modu: konum değiştiyse sormak ---------- */
+async function locGranted(){try{if(NATIVE&&CAP.Plugins.Geolocation){const p=await CAP.Plugins.Geolocation.checkPermissions();return p.location==='granted'||p.coarseLocation==='granted'}
+ if(navigator.permissions){return (await navigator.permissions.query({name:'geolocation'})).state==='granted'}}catch(e){}return false}
+async function travelCheck(){
+ if(!store.get('travel',true)||Date.now()-store.get('travelAt',0)<30*6e4||!(await locGranted()))return;
+ store.set('travelAt',Date.now());
+ try{const c=await getPos(),n=nearest(c.latitude,c.longitude),k=n.il+'|'+n.ilce;if(!n||n.km>60)return;
+  const[la,ln]=coords(),moved=Math.hypot((ln-c.longitude)*Math.cos(la*R),la-c.latitude)*111.2;
+  if(k===locKey()||moved<15||store.get('travelNo','')===k)return;
+  const b=document.getElementById('travel'),nm=n.il+(n.ilce?' / '+n.ilce:'');b.hidden=false;
+  b.querySelector('span').innerHTML=`<b>${nm}</b> civarında görünüyorsun. Vakitleri buraya göre göstereyim mi?`;
+  b.querySelector('[data-a=yes]').onclick=()=>{b.hidden=true;ilSel.value=n.il;fillIlce();ilceSel.value=n.ilce;store.set('loc',{il:n.il,ilce:n.ilce});render();scheduleNotifs();locNow();dynRefresh();toast('Konum: '+nm)};
+  b.querySelector('[data-a=no]').onclick=()=>{b.hidden=true;store.set('travelNo',k)}}catch(e){}}
+const trSw=document.getElementById('trSw');trSw.setAttribute('aria-checked',store.get('travel',true));
+trSw.onclick=()=>{store.set('travel',!store.get('travel',true));trSw.setAttribute('aria-checked',store.get('travel',true))};
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)travelCheck()});
+setTimeout(travelCheck,4000);
+
 if(store.get('loc',null)===null&&!store.get('locTried',false)){store.set('locTried',true);locate(true)}
 
 /* ---------- Tespih sesi (Web Audio ile üretilir, ses dosyası yok) ---------- */
