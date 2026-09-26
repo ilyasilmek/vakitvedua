@@ -145,6 +145,19 @@ select{background:var(--card);border:1px solid var(--line);border-radius:12px;pa
 .t span{font-size:12px;color:var(--mute)}
 .t.on{border-color:var(--acc2);background:var(--accsoft);transform:translateY(-2px)}
 .t.on span{color:var(--acc);font-weight:600}
+.t.tk{cursor:pointer;position:relative}
+.t.kd::after{content:"";position:absolute;top:7px;right:7px;width:16px;height:16px;border-radius:50%;background:var(--acc) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;animation:pop .3s ease}
+@keyframes pop{from{transform:scale(0)}}
+.wk{display:grid;grid-template-columns:52px repeat(7,1fr);gap:6px 4px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 10px;box-shadow:var(--shadow)}
+.wk .wh{text-align:center;font-size:11px;color:var(--mute)}.wk .wh small{display:block;font-size:12px;color:var(--ink);font-weight:600}
+.wk .wl{font-size:12px;color:var(--mute)}
+.wd{aspect-ratio:1;width:100%;max-width:34px;justify-self:center;border-radius:50%;border:2px solid var(--line);background:none;cursor:pointer;padding:0}
+.wd.kd{background:var(--acc);border-color:var(--acc)}.wd:disabled{opacity:.35;cursor:default}
+.wkh{display:flex;justify-content:space-between;align-items:baseline}.wkh b{font-size:22px;color:var(--acc)}
+.kzr{display:grid;grid-template-columns:1fr 44px 70px 44px;align-items:center;gap:6px;padding:8px 0;border-top:1px solid var(--line)}
+.kzr:first-child{border-top:0}.kzr span{text-align:center;font-size:18px;font-weight:600;font-variant-numeric:tabular-nums}.kzr .btn{padding:6px 0;font-size:18px}
+.kzbox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 14px;box-shadow:var(--shadow)}
+.kzadd{display:flex;gap:8px;margin-top:10px}.kzadd input{flex:1;min-width:0;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 10px}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}}
 .note{font-size:12px;color:var(--mute);margin-top:12px;line-height:1.55}
 .qibla{margin-top:14px;display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow)}
@@ -287,6 +300,11 @@ details[open] .dua{animation:rise .35s ease}
   <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5.5h16v10.5H10l-4.5 3.5V16H4z"/></svg></span>
   <div><b id="occTxt"></b><div class="note">Bu güne özel mesajları paylaş</div></div><span class="go" aria-hidden="true">›</span>
  </button>
+ <button class="qibla" id="tkGo">
+  <span class="ic" aria-hidden="true" style="width:56px;height:56px;border-radius:50%;background:var(--accsoft);display:grid;place-items:center;color:var(--acc);flex:none"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12l3 3 5-6"/></svg></span>
+  <div><b>Namaz takibi</b><div class="note" style="margin:3px 0 0" id="tkSum"></div></div><span class="go" aria-hidden="true">›</span>
+ </button>
+ <div class="note" style="text-align:center;margin-top:6px">Kıldığın vakte dokunarak işaretle</div>
  <button class="qibla" id="qGo">
   <svg width="56" height="56" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" fill="none" stroke="var(--line)" stroke-width="2"/><text x="32" y="11" text-anchor="middle" font-size="8" fill="var(--mute)">K</text><g id="needle"><path d="M32 8 L37 32 L32 29 L27 32Z" fill="var(--brass)"/></g></svg>
   <div><b>Kıble: <span id="qdeg"></span>°</b><div class="note" style="margin:3px 0 0">Pusulayı aç</div></div><span class="go" aria-hidden="true">›</span>
@@ -339,6 +357,17 @@ details[open] .dua{animation:rise .35s ease}
   <div><span>Güneşe göre kıble</span><b id="qSun"></b></div>
  </div>
  <p class="note" id="sunNote"></p>
+</section>
+
+<section id="p-takip" hidden>
+ <h2>Namaz takibi</h2>
+ <div class="wkh"><span class="note" style="margin:0">Son 7 gün · işaretlemek için dokun</span><b id="wkPct"></b></div>
+ <div class="wk" id="wkGrid" style="margin-top:8px"></div>
+ <h2>Kaza namazları</h2>
+ <div class="kzbox"><div id="kzList"></div></div>
+ <div class="note">Toplam kaza: <b id="kzTot">0</b>. Kıldığın her kaza için − düğmesine bas.</div>
+ <div class="kzadd"><input id="kzDays" type="number" inputmode="numeric" min="1" placeholder="Kaç günlük kaza borcu?"><button class="btn" id="kzAdd">Ekle</button></div>
+ <div class="note">Girdiğin gün sayısı kadar kaza, beş vakte ve vitire ayrı ayrı eklenir. Kayıtlar yalnızca bu telefonda tutulur.</div>
 </section>
 
 <section id="p-ayar" hidden>
@@ -538,7 +567,7 @@ function tick(){
  if(!nk){nk='imsak';nt=tomorrow.imsak;cur='yatsi'}
  const key=cur||'yatsi';
  if(key+ilSel.value+ilceSel.value!==lastCur){lastCur=key+ilSel.value+ilceSel.value;
-  document.getElementById('times').innerHTML=Object.keys(NAMES).map(k=>`<div class="t${k===cur?' on':''}"><span>${NAMES[k]}</span><b>${hm(today[k])}</b></div>`).join('');
+  document.getElementById('times').innerHTML=Object.keys(NAMES).map(k=>{const p=k!=='gunes',ok=p&&prayed(now,k);return `<div class="t${k===cur?' on':''}${p?' tk':''}${ok?' kd':''}"${p?` data-k="${k}" role="button" aria-pressed="${!!ok}"`:''}><span>${NAMES[k]}</span><b>${hm(today[k])}</b></div>`}).join('');
   const g=SKY[key];const sky=document.getElementById('sky');sky.style.setProperty('--g',`linear-gradient(160deg,${g[0]},${g[1]})`);sky.style.setProperty('--g2',g[0])}
  document.getElementById('nextLbl').textContent=NAMES[nk]+' vaktine kalan';
  ramTick(now);
@@ -652,6 +681,38 @@ function events(){
   d.setDate(d.getDate()+1)}
  const t0=new Date();t0.setHours(12,0,0,0);document.getElementById('evList').innerHTML=out.map((e,i)=>`<div class="ev" style="animation-delay:${Math.min(i,12)*.04}s"><div>${Math.round((e.dt-t0)/864e5)===0?'<div class="left">Bugün</div>':`<div class="left">${Math.round((e.dt-t0)/864e5)} gün sonra</div>`}${e.n}${e.k?`<div class="k">${e.k}</div>`:''}</div><div class="d">${e.dt.toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'})}<br>${e.dt.toLocaleDateString('tr-TR',{weekday:'long'})}</div></div>`).join('');return out}
 const EVS=events();
+
+/* ---------- Namaz takibi ve kaza ---------- */
+const PK=['imsak','ogle','ikindi','aksam','yatsi'],PN={imsak:'Sabah',ogle:'Öğle',ikindi:'İkindi',aksam:'Akşam',yatsi:'Yatsı'};
+const KZ_K=['imsak','ogle','ikindi','aksam','yatsi','vitir'],KZ_N=Object.assign({vitir:'Vitir'},PN);
+/* var: ana sayfa ızgarası bu bölüm çalışmadan önce de çizilebilir */
+var kil=store.get('kilinan',{}),kaza=store.get('kaza',{});
+function prayed(d,k){return!!kil&&!!(kil[ymd(d)]||{})[k]}
+function togglePrayed(d,k){const y=ymd(d),o=kil[y]||(kil[y]={});if(o[k])delete o[k];else o[k]=1;if(!Object.keys(o).length)delete kil[y];
+ /* 60 günden eski kayıtlar silinir */
+ const lim=new Date();lim.setDate(lim.getDate()-60);for(const x in kil)if(x<ymd(lim))delete kil[x];
+ store.set('kilinan',kil);lastCur=null;tick();takipRender()}
+document.getElementById('times').addEventListener('click',e=>{const c=e.target.closest('.t[data-k]');if(!c)return;const k=c.dataset.k;
+ if(today[k]>new Date()){toast(`${NAMES[k]} vakti henüz girmedi`);return}
+ togglePrayed(new Date(),k);if(prayed(new Date(),k)&&navigator.vibrate)navigator.vibrate(15)});
+function weekDays(){const a=[],d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-6);for(let i=0;i<7;i++){a.push(new Date(d));d.setDate(d.getDate()+1)}return a}
+function takipRender(){
+ const W=weekDays(),now=new Date();let n=0,due=0;
+ W.forEach(d=>PK.forEach(k=>{const past=ymd(d)<ymd(now)||timesFor(d)[k]<=now;if(past){due++;if(prayed(d,k))n++}}));
+ const kt=KZ_K.reduce((a,k)=>a+(kaza[k]||0),0);
+ document.getElementById('tkSum').textContent=`Son 7 gün: ${n}/${due} vakit`+(kt?` · Kaza: ${kt.toLocaleString('tr-TR')}`:'');
+ document.getElementById('wkGrid').innerHTML='<div></div>'+W.map(d=>`<div class="wh">${d.toLocaleDateString('tr-TR',{weekday:'short'})}<small>${d.getDate()}</small></div>`).join('')+
+  PK.map(k=>`<div class="wl">${PN[k]}</div>`+W.map(d=>{const fut=ymd(d)===ymd(now)&&timesFor(d)[k]>now;return `<button class="wd${prayed(d,k)?' kd':''}" data-d="${ymd(d)}" data-k="${k}" ${fut?'disabled':''} aria-label="${d.toLocaleDateString('tr-TR',{weekday:'long'})} ${PN[k]}"></button>`}).join('')).join('');
+ document.getElementById('wkPct').textContent=due?`%${Math.round(n/due*100)}`:'';
+ document.getElementById('kzList').innerHTML=KZ_K.map(k=>`<div class="kzr"><b>${KZ_N[k]}</b><button class="btn" data-m="${k}" aria-label="${KZ_N[k]} kazası kıldım, bir azalt">−</button><span>${(kaza[k]||0).toLocaleString('tr-TR')}</span><button class="btn" data-p="${k}" aria-label="${KZ_N[k]} kaza borcu ekle">+</button></div>`).join('');
+ document.getElementById('kzTot').textContent=kt.toLocaleString('tr-TR')}
+document.getElementById('wkGrid').onclick=e=>{const b=e.target.closest('button.wd');if(!b)return;const[y,m,d]=b.dataset.d.split('-').map(Number);togglePrayed(new Date(y,m-1,d,12),b.dataset.k)};
+document.getElementById('kzList').onclick=e=>{const b=e.target.closest('button');if(!b)return;const k=b.dataset.m||b.dataset.p;
+ kaza[k]=Math.max(0,(kaza[k]||0)+(b.dataset.m?-1:1));store.set('kaza',kaza);takipRender();if(b.dataset.m&&navigator.vibrate)navigator.vibrate(15)};
+document.getElementById('kzAdd').onclick=()=>{const v=document.getElementById('kzDays'),n=Math.floor(+v.value);if(!(n>0))return toast('Gün sayısı gir');
+ KZ_K.forEach(k=>kaza[k]=(kaza[k]||0)+n);store.set('kaza',kaza);v.value='';takipRender();toast(`Her vakte ${n.toLocaleString('tr-TR')} kaza eklendi`)};
+document.getElementById('tkGo').onclick=()=>showPage('takip');
+takipRender();
 
 /* ---------- İmsakiye ---------- */
 const AYLAR=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
