@@ -58,6 +58,7 @@ select{background:var(--card);border:1px solid var(--line);border-radius:12px;pa
 .set .nrow{margin:0;border:0;box-shadow:none;border-radius:0;border-top:1px solid var(--line)}
 .set h3+.nrow{border-top:0}
 .set .seg{margin:6px 14px 14px}
+.set .nset .nrow{margin:0;padding:6px 0;border:0;background:none;box-shadow:none}
 .set .nset{margin:0;border:0;border-top:1px solid var(--line);border-radius:0;box-shadow:none}
 .set .seg button{flex:1;padding:8px 6px}
 .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none;margin:0 -16px;padding-left:16px;padding-right:16px}
@@ -269,6 +270,7 @@ details[open] .dua{animation:rise .35s ease}
  <div class="dots" id="dots"><button aria-label="Vakit ekranı" aria-current="true"></button><button aria-label="Kerahat ekranı"></button></div>
  <div class="kchips" id="kChips"></div>
  <div class="times" id="times"></div>
+ <div class="note" id="srcNote" style="text-align:center;margin-top:8px"></div>
  <button class="sup" id="occBtn" hidden>
   <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5.5h16v10.5H10l-4.5 3.5V16H4z"/></svg></span>
   <div><b id="occTxt"></b><div class="note">Bu güne özel mesajları paylaş</div></div><span class="go" aria-hidden="true">›</span>
@@ -334,6 +336,11 @@ details[open] .dua{animation:rise .35s ease}
   <div class="seg" id="themeSeg" role="group" aria-label="Tema"><button data-t="light">Açık</button><button data-t="dark">Koyu</button><button data-t="system">Sistem</button></div>
  </div>
  <div class="set">
+  <h3>Vakitler</h3>
+  <div class="seg" id="srcSeg" role="group" aria-label="Vakit kaynağı"><button data-s="diyanet">Diyanet</button><button data-s="hesap">Hesaplama</button></div>
+  <div class="nsub" style="padding:0 14px 14px;margin-top:-6px">Diyanet: resmi vakitler internetten bir aylık indirilir, internetsiz de çalışır. Hesaplama: vakitler telefonda hesaplanır, 1-2 dakika sapabilir.</div>
+ </div>
+ <div class="set">
   <h3>Konum</h3>
   <div class="nrow"><div><b id="locNow"></b><span id="locInfo">Konumunu bularak en yakın ilçeyi seçer</span></div><button class="btn" id="locBtn2">Konumumu bul</button></div>
  </div>
@@ -348,6 +355,9 @@ details[open] .dua{animation:rise .35s ease}
    <label for="nSnd">Bildirim sesi</label>
    <select id="nSnd"><option value="ezan">Ezan</option><option value="vakit">Telefonun bildirim sesi</option><option value="sessiz">Sessiz (yalnızca bildirim)</option></select>
    <div class="nk" id="nK"></div>
+   <label for="nPre">Vakitten önce hatırlat</label>
+   <select id="nPre"><option value="0">Hatırlatma yok</option><option value="5">5 dakika önce</option><option value="10">10 dakika önce</option><option value="15">15 dakika önce</option><option value="20">20 dakika önce</option><option value="30">30 dakika önce</option><option value="45">45 dakika önce</option></select>
+   <div class="nrow"><div><b>Cuma hatırlatması</b><span>Cuma namazından 20 dakika önce telefonunu sessize almayı hatırlatır</span></div><button class="sw" id="cumaSw" role="switch" aria-checked="true" aria-label="Cuma hatırlatması"><i></i></button></div>
    <div class="nsub">Seçtiğin vakitlerde bildirim gelir. Ezan sesi yalnızca bildirim geldiğinde çalar; bildirimi kaydırınca susar.</div>
   </div>
  </div>
@@ -365,7 +375,8 @@ details[open] .dua{animation:rise .35s ease}
  <div class="ab-head"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lg3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC2B3"/><stop offset="1" stop-color="#2A9D8F"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#lg3)"/><path class="lg-arch" d="M18 50V30a14 14 0 0 1 28 0v20" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><g transform="translate(2 15)"><path class="lg-moon" d="M36.5 20.5a7 7 0 1 1-6.2-7.3 5.4 5.4 0 1 0 6.2 7.3z" fill="#FFE39A"/></g><path class="lg-base" d="M12 50h40" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></svg><div><h2 style="margin:0">Vakit ve Dua</h2><div class="hijri">Sürüm 1.54.01</div></div></div>
  <div class="ab">
   <h3>Namaz vakitleri</h3>
-  <p>Vakitler, seçilen konuma göre telefonda hesaplanır. Diyanet'in yöntemi kullanılır: imsak için güneşin ufkun 18° altında, yatsı için 17° altında olduğu an, ikindi için tek gölge boyu ve Diyanet'in temkin payları. Sonuçlar resmi takvimden 1-2 dakika sapabilir. Kesin vakit için namazvakitleri.diyanet.gov.tr esastır.</p>
+  <p>Varsayılan olarak Diyanet İşleri Başkanlığı'nın yayımladığı vakitler kullanılır. Bu vakitler ezanvakti.emushaf.net servisi aracılığıyla bir aylık indirilir ve telefonda saklanır; internet olmasa da çalışır. Diyanet'in ayrıca listelemediği ilçelerde il merkezinin vakti gösterilir.</p>
+  <p>Diyanet vakitleri alınamazsa ya da Ayarlar'dan "Hesaplama" seçilirse vakitler telefonda hesaplanır. Diyanet'in yöntemi kullanılır: imsak için güneşin ufkun 18° altında, yatsı için 17° altında olduğu an, ikindi için tek gölge boyu ve Diyanet'in temkin payları. Sonuçlar resmi takvimden 1-2 dakika sapabilir. Kesin vakit için namazvakitleri.diyanet.gov.tr esastır.</p>
   <p>81 il ve 973 ilçe listelenir. Koordinatı bulunamayan yaklaşık 120 ilçede, çoğu büyükşehir merkez ilçesi, il merkezinin konumu kullanılır. Bu ilçelerde fark genellikle 1-2 dakikayı geçmez.</p>
   <h3>Kerahat vakitleri</h3>
   <p>Güneş doğduktan sonraki 45 dakika, öğle vaktinden önceki 45 dakika ve akşamdan önceki 45 dakika kerahat vakti olarak gösterilir. Bu süreler yaklaşıktır; kaynaklarda 40-50 dakika arası değerler geçer. O günün kılınmamış ikindi farzı akşamdan önceki kerahat vaktinde de kılınabilir.</p>
@@ -451,14 +462,46 @@ function prayerTimes(date,lat,lng,tz){
  return out}
 const NAMES={imsak:'İmsak',gunes:'Güneş',ogle:'Öğle',ikindi:'İkindi',aksam:'Akşam',yatsi:'Yatsı'};
 const hm=d=>d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+/* ---------- Diyanet vakitleri (ezanvakti.emushaf.net Diyanet'in vakitlerini aktarır; yoksa hesaplama) ---------- */
+const DAPI='https://ezanvakti.emushaf.net',DK=['imsak','gunes','ogle','ikindi','aksam','yatsi'];
+const trN=x=>x.toLocaleUpperCase('tr').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Z]/g,'');
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const locKey=()=>ilSel.value+'|'+ilceSel.value,useDyn=()=>store.get('src','diyanet')==='diyanet';
+let dyn=store.get('dyn',null);
+const isDyn=date=>useDyn()&&!!dyn&&dyn.loc===locKey()&&!!dyn.days[ymd(date)];
+/* Diyanet saatleri Türkiye saatidir (UTC+3); cihaz başka saat diliminde olsa da doğru ana çevrilir */
+function timesFor(date){
+ if(isDyn(date)){const v=dyn.days[ymd(date)],o={};DK.forEach((k,i)=>{const[h,m]=v[i].split(':').map(Number);o[k]=new Date(Date.UTC(date.getFullYear(),date.getMonth(),date.getDate(),h-3,m))});return o}
+ const[lat,lng]=coords();return prayerTimes(date,lat,lng,tz)}
+async function jget(u){const r=await fetch(DAPI+u);if(!r.ok)throw new Error(r.status);return r.json()}
+async function dynId(){const ids=store.get('dynIds',{}),k=locKey();if(ids[k])return ids[k];
+ let sh=store.get('dynSehir',null);if(!sh){sh=await jget('/sehirler/2');store.set('dynSehir',sh)}
+ const s=sh.find(x=>trN(x.SehirAdi)===trN(ilSel.value));if(!s)throw new Error('il');
+ const L=await jget('/ilceler/'+s.SehirID),want=trN(ilceSel.value||ilSel.value);
+ /* Diyanet'in ayrıca listelemediği ilçelerde il merkezinin vakti kullanılır */
+ const c=L.find(x=>trN(x.IlceAdi)===want)||L.find(x=>trN(x.IlceAdi)===trN(ilSel.value))||L[0];
+ ids[k]=c.IlceID;store.set('dynIds',ids);return c.IlceID}
+let dynBusy=false;
+async function dynRefresh(){
+ if(!useDyn()||dynBusy)return;const k=locKey(),ahead=new Date();ahead.setDate(ahead.getDate()+10);
+ if(dyn&&dyn.loc===k&&dyn.days[ymd(ahead)])return;
+ dynBusy=true;
+ try{const id=await dynId(),v=await jget('/vakitler/'+id),days={};
+  v.forEach(x=>{const[d,m,y]=x.MiladiTarihKisa.split('.');days[`${y}-${m}-${d}`]=[x.Imsak,x.Gunes,x.Ogle,x.Ikindi,x.Aksam,x.Yatsi]});
+  if(locKey()===k){dyn={loc:k,id,days};store.set('dyn',dyn);render();scheduleNotifs()}}
+ catch(e){}finally{dynBusy=false}
+ /* Beklerken konum değiştiyse yeni konum için tekrar dene */
+ if(locKey()!==k)dynRefresh()}
+
 
 /* Sistem saat dilimi Türkiye dışında olsa da vakitleri TSİ (UTC+3) gösterecek şekilde yerel tarih üzerinden çalışılır */
 const tz=-new Date().getTimezoneOffset()/60;
 let today,tomorrow,QB={};
 function render(){lastCur=null;window._seg=null;
  const [lat,lng]=coords(),now=new Date();
- today=prayerTimes(now,lat,lng,tz);
- const t2=new Date(now);t2.setDate(t2.getDate()+1);tomorrow=prayerTimes(t2,lat,lng,tz);
+ today=timesFor(now);
+ const t2=new Date(now);t2.setDate(t2.getDate()+1);tomorrow=timesFor(t2);
+ document.getElementById('srcNote').textContent=isDyn(now)?'Diyanet İşleri Başkanlığı vakitleri':useDyn()?'Hesaplanan vakitler · Diyanet vakitleri için bir kez internete bağlan':'Hesaplanan vakitler (Diyanet yöntemi)';
  document.getElementById('dateTxt').textContent=now.toLocaleDateString('tr-TR',{day:'numeric',month:'long',weekday:'long'});
  document.getElementById('hijriTxt').textContent=hijriStr(now);
  const q=fix(atan2(sin(39.8262-lng),cos(lat)*tan(21.4225)-sin(lat)*cos(39.8262-lng)),360);
@@ -673,7 +716,8 @@ const CAP=window.Capacitor,NATIVE=!!(CAP&&CAP.isNativePlatform&&CAP.isNativePlat
 const nSw=document.getElementById('nSw'),nInfo=document.getElementById('nInfo');
 function nState(){const on=!!store.get('notif',true);nSw.setAttribute('aria-checked',on);const ns=document.getElementById('nSet');if(ns&&NATIVE)ns.hidden=!on}
 function syncWidget(){if(!NATIVE)return;try{const [lat,lng]=coords(),P=CAP.Plugins.Preferences,W=CAP.Plugins.VakitWidget;
- if(P)P.set({key:'wloc',value:JSON.stringify({lat,lng,place:ilceSel.value||ilSel.value})}).then(()=>W&&W.refresh()).catch(()=>{})}catch(e){}}
+ if(!P)return;const wt={},d=new Date();for(let i=0;i<31;i++){if(isDyn(d))wt[ymd(d)]=DK.map(k=>+timesFor(d)[k]);d.setDate(d.getDate()+1)}
+ P.set({key:'wloc',value:JSON.stringify({lat,lng,place:ilceSel.value||ilSel.value})}).then(()=>P.set({key:'wtimes',value:JSON.stringify(wt)})).then(()=>W&&W.refresh()).catch(()=>{})}catch(e){}}
 async function scheduleNotifs(){
  syncWidget();
  if(!LN)return;
@@ -685,11 +729,15 @@ async function scheduleNotifs(){
   if(LN.checkExactNotificationSetting){const ex=await LN.checkExactNotificationSetting();if(ex.exact_alarm!=='granted'){nInfo.textContent='Tam zamanında gelmesi için "Alarm ve hatırlatıcılar" iznini aç.';await LN.changeExactNotificationSetting()}}
   await LN.createChannel({id:'vakit',name:'Vakit bildirimleri',description:'Namaz vakti girdiğinde, telefonun bildirim sesiyle',importance:4,visibility:1,vibration:true});
   await LN.createChannel({id:'ezan',name:'Ezan',description:'Namaz vakti girdiğinde ezan sesiyle',importance:5,visibility:1,vibration:true,sound:'ezan.ogg'});
+  await LN.createChannel({id:'hatirlat',name:'Vakit öncesi hatırlatmalar',description:'Vakitten önce ve Cuma namazı hatırlatmaları',importance:4,visibility:1,vibration:true});
   await LN.createChannel({id:'sessiz',name:'Sessiz vakit bildirimleri',description:'Sessiz bildirim',importance:2,visibility:1,vibration:false});
   const ch=store.get('nSnd','ezan'),on=store.get('nK',{imsak:true,ogle:true,ikindi:true,aksam:true,yatsi:true});
   const [lat,lng]=coords(),place=ilceSel.value||ilSel.value,now=new Date(),list=[];
   const K=['imsak','ogle','ikindi','aksam','yatsi'];
-  for(let d=0;d<14;d++){const day=new Date(now);day.setDate(day.getDate()+d);const pt=prayerTimes(day,lat,lng,tz);
+  const pre=+store.get('pre',0),cuma=store.get('cumaHat',true);
+  for(let d=0;d<14;d++){const day=new Date(now);day.setDate(day.getDate()+d);const pt=timesFor(day);
+   K.forEach((k,i)=>{const b=new Date(pt[k]-pre*6e4);if(pre&&on[k]!==false&&b>now)list.push({id:3000+d*10+i,title:`${NAMES[k]} vaktine ${pre} dakika kaldı`,body:`${place} · ${NAMES[k]} ${hm(pt[k])}`,schedule:{at:b,allowWhileIdle:true},channelId:'hatirlat',smallIcon:'ic_stat_vakit'})});
+   if(cuma&&day.getDay()===5){const c=new Date(pt.ogle-20*6e4);if(c>now)list.push({id:4000+d,title:'Cuma namazı yaklaşıyor',body:'Camiye girmeden telefonunu sessize almayı unutma. Hayırlı cumalar.',schedule:{at:c,allowWhileIdle:true},channelId:'hatirlat',smallIcon:'ic_stat_vakit'})}
    K.forEach((k,i)=>{if(on[k]!==false&&pt[k]>now)list.push({id:1000+d*10+i,title:NAMES[k]+' vakti',body:`${place} · ${hm(pt[k])}`,schedule:{at:pt[k],allowWhileIdle:true},channelId:ch,sound:ch==='ezan'?'ezan.ogg':undefined,smallIcon:'ic_stat_vakit'})})}
   await LN.schedule({notifications:list});
   nInfo.textContent=`${place} için sonraki 14 günün vakitleri kuruldu`;
@@ -699,6 +747,8 @@ if(NATIVE){document.getElementById('nCard').hidden=false;nState();
  const nSnd=document.getElementById('nSnd');nSnd.value=store.get('nSnd','ezan');nSnd.onchange=()=>{store.set('nSnd',nSnd.value);scheduleNotifs()};
  const nKEl=document.getElementById('nK'),KN={imsak:'İmsak',ogle:'Öğle',ikindi:'İkindi',aksam:'Akşam',yatsi:'Yatsı'};
  const drawK=()=>{const on=store.get('nK',{});nKEl.innerHTML=Object.keys(KN).map(k=>`<button data-k="${k}" aria-pressed="${on[k]!==false}">${KN[k]}</button>`).join('')};
+ const nPre=document.getElementById('nPre'),cumaSw=document.getElementById('cumaSw');nPre.value=store.get('pre',0);nPre.onchange=()=>{store.set('pre',+nPre.value);scheduleNotifs()};
+ cumaSw.setAttribute('aria-checked',store.get('cumaHat',true));cumaSw.onclick=()=>{store.set('cumaHat',!store.get('cumaHat',true));cumaSw.setAttribute('aria-checked',store.get('cumaHat',true));scheduleNotifs()};
  nKEl.onclick=e=>{const k=e.target.dataset&&e.target.dataset.k;if(!k)return;const on=store.get('nK',{});on[k]=on[k]===false;store.set('nK',on);drawK();scheduleNotifs()};drawK();
  scheduleNotifs();
  document.addEventListener('visibilitychange',()=>{if(!document.hidden){render();scheduleNotifs()}});}
@@ -989,6 +1039,14 @@ gece:{n:'Hayırlı Geceler',m:[
 "Hayırlı geceler! Dualarınızda beni de unutmayın."]}
 };
 
+/* ---------- Vakit kaynağı ayarı ---------- */
+function srcState(){document.querySelectorAll('#srcSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===store.get('src','diyanet')))}
+document.querySelectorAll('#srcSeg button').forEach(b=>b.onclick=()=>{store.set('src',b.dataset.s);srcState();render();scheduleNotifs();dynRefresh()});
+srcState();
+ilSel.addEventListener('change',()=>dynRefresh());ilceSel.addEventListener('change',()=>dynRefresh());
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)dynRefresh()});
+dynRefresh();
+
 /* ---------- Tema ---------- */
 const mqDark=matchMedia('(prefers-color-scheme: dark)');
 function applyTheme(){const t=store.get('theme','system'),d=t==='dark'||(t==='system'&&mqDark.matches);
@@ -1014,7 +1072,7 @@ async function getPos(){const opt={enableHighAccuracy:false,timeout:15000,maximu
  return new Promise((ok,no)=>navigator.geolocation?navigator.geolocation.getCurrentPosition(r=>ok(r.coords),no,opt):no({}))}
 async function locate(silent){locBtn.classList.add('busy');locInfo.textContent='Konum aranıyor…';
  try{const c=await getPos(),n=nearest(c.latitude,c.longitude);if(!n||n.km>60)throw{far:1};
-  ilSel.value=n.il;fillIlce();ilceSel.value=n.ilce;store.set('loc',{il:n.il,ilce:n.ilce});render();scheduleNotifs();locNow();
+  ilSel.value=n.il;fillIlce();ilceSel.value=n.ilce;store.set('loc',{il:n.il,ilce:n.ilce});render();scheduleNotifs();locNow();dynRefresh();
   const nm=n.il+(n.ilce?' / '+n.ilce:'');locInfo.textContent='Konumuna göre seçildi';toast('Konum: '+nm)}
  catch(e){const m=e.far?'Türkiye dışında görünüyorsun, il ve ilçeyi elle seç':e.code===1?'Konum izni verilmedi':'Konum bulunamadı. Konum servisinin açık olduğundan emin ol';locInfo.textContent=m;if(!silent)toast(m)}
  locBtn.classList.remove('busy')}
