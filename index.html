@@ -52,6 +52,12 @@ select{background:var(--card);border:1px solid var(--line);border-radius:12px;pa
 @keyframes draw{to{stroke-dashoffset:0}}
 @keyframes moonIn{from{transform:scale(0) rotate(-90deg);opacity:0}}
 @keyframes spOut{to{opacity:0;visibility:hidden}}
+.nset{margin-top:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);display:grid;gap:8px}
+.nset label{font-size:13px;color:var(--mute)}
+.nk{display:flex;flex-wrap:wrap;gap:6px}
+.nk button{border:1px solid var(--line);background:var(--bg);color:var(--mute);border-radius:16px;padding:6px 12px;font-size:13px;cursor:pointer;transition:.2s}
+.nk button[aria-pressed="true"]{background:var(--accsoft);color:var(--acc);border-color:var(--acc2);font-weight:600}
+.nsub{font-size:12px;color:var(--mute);line-height:1.5}
 .nrow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow)}
 .nrow span{display:block;font-size:12px;color:var(--mute);margin-top:2px}
 .sw{width:48px;height:28px;border-radius:14px;border:0;background:var(--line);position:relative;cursor:pointer;flex:none;transition:background .25s}
@@ -223,6 +229,12 @@ details[open] .dua{animation:rise .35s ease}
  <div class="dots" id="dots"><button aria-label="Vakit ekranı" aria-current="true"></button><button aria-label="Kerahat ekranı"></button></div>
  <div class="kchips" id="kChips"></div>
  <div class="nrow" id="nRow" hidden><div><b>Vakit bildirimleri</b><span id="nInfo">Her vakit girdiğinde bildirim gönderilir</span></div><button class="sw" id="nSw" role="switch" aria-checked="false" aria-label="Vakit bildirimleri"><i></i></button></div>
+ <div class="nset" id="nSet" hidden>
+  <label for="nSnd">Bildirim sesi</label>
+  <select id="nSnd"><option value="ezan">Ezan</option><option value="vakit">Telefonun bildirim sesi</option><option value="sessiz">Sessiz (yalnızca bildirim)</option></select>
+  <div class="nk" id="nK"></div>
+  <div class="nsub">Seçtiğin vakitlerde bildirim gelir. Ezan sesi yalnızca bildirim geldiğinde çalar; bildirimi kaydırınca susar.</div>
+ </div>
  <div class="times" id="times"></div>
  <button class="qibla" id="qGo">
   <svg width="56" height="56" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" fill="none" stroke="var(--line)" stroke-width="2"/><text x="32" y="11" text-anchor="middle" font-size="8" fill="var(--mute)">K</text><g id="needle"><path d="M32 8 L37 32 L32 29 L27 32Z" fill="var(--brass)"/></g></svg>
@@ -294,8 +306,11 @@ details[open] .dua{animation:rise .35s ease}
   <p>Tarihler Ümmü'l-Kurâ hicri takvimiyle hesaplanır. Diyanet'in ilan ettiği tarihle bir gün fark olabilir. Ramazan başlangıcı ve bayramlar için Diyanet duyurusu esastır. Kandiller, geceye girilen günün akşamında gösterilir.</p>
   <h3>Veriler</h3>
   <p>İlçe listesi turkey-neighbourhoods paketinden, koordinatlar GeoNames veri setinden alınmıştır. Seçtiğin konum, sekme ve zikir sayıların yalnızca bu cihazda saklanır.</p>
+  <h3>Gizlilik</h3>
+  <p>Uygulama hesap istemez, konumunu ya da kişisel verini sunucuya göndermez. Ayrıntılar için <a href="https://ilyasilmek.github.io/vakitvedua/gizlilik.html" target="_blank" rel="noopener">gizlilik politikası</a>.</p>
+  <button class="btn" id="privBtn" hidden>Reklam gizlilik seçenekleri</button>
   <h3 class="adnote" hidden>Reklamlar</h3>
-  <p class="adnote" hidden>Android uygulaması, açılışta bir kez ve yalnızca sen "Destek ol &amp; Reklam izle" düğmesine bastığında Google AdMob reklamı gösterir. Reklamlar uygulamanın geliştirilmesine destek olur. Konumun ve diğer ayarların reklam için kullanılmaz.</p>
+  <p class="adnote" hidden>Android uygulaması, açılışta en fazla dört saatte bir ve yalnızca sen "Destek ol &amp; Reklam izle" düğmesine bastığında Google AdMob reklamı gösterir. Reklamlar uygulamanın geliştirilmesine destek olur. Konumun ve diğer ayarların reklam için kullanılmaz.</p>
  </div>
 </section>
 
@@ -575,8 +590,11 @@ render();setInterval(tick,1000);
 /* ---------- Android: vakit bildirimleri ---------- */
 const CAP=window.Capacitor,NATIVE=!!(CAP&&CAP.isNativePlatform&&CAP.isNativePlatform()),LN=NATIVE?CAP.Plugins.LocalNotifications:null;
 const nSw=document.getElementById('nSw'),nInfo=document.getElementById('nInfo');
-function nState(){nSw.setAttribute('aria-checked',!!store.get('notif',true))}
+function nState(){const on=!!store.get('notif',true);nSw.setAttribute('aria-checked',on);const ns=document.getElementById('nSet');if(ns&&NATIVE)ns.hidden=!on}
+function syncWidget(){if(!NATIVE)return;try{const [lat,lng]=coords(),P=CAP.Plugins.Preferences,W=CAP.Plugins.VakitWidget;
+ if(P)P.set({key:'wloc',value:JSON.stringify({lat,lng,place:ilceSel.value||ilSel.value})}).then(()=>W&&W.refresh()).catch(()=>{})}catch(e){}}
 async function scheduleNotifs(){
+ syncWidget();
  if(!LN)return;
  try{
   const old=await LN.getPending();if(old.notifications.length)await LN.cancel({notifications:old.notifications.map(n=>({id:n.id}))});
@@ -584,16 +602,24 @@ async function scheduleNotifs(){
   let p=await LN.checkPermissions();if(p.display!=='granted')p=await LN.requestPermissions();
   if(p.display!=='granted'){nInfo.textContent='Bildirim izni verilmedi. Telefon ayarlarından izin ver.';return}
   if(LN.checkExactNotificationSetting){const ex=await LN.checkExactNotificationSetting();if(ex.exact_alarm!=='granted'){nInfo.textContent='Tam zamanında gelmesi için "Alarm ve hatırlatıcılar" iznini aç.';await LN.changeExactNotificationSetting()}}
-  await LN.createChannel({id:'vakit',name:'Vakit bildirimleri',description:'Namaz vakti girdiğinde',importance:4,visibility:1,vibration:true});
+  await LN.createChannel({id:'vakit',name:'Vakit bildirimleri',description:'Namaz vakti girdiğinde, telefonun bildirim sesiyle',importance:4,visibility:1,vibration:true});
+  await LN.createChannel({id:'ezan',name:'Ezan',description:'Namaz vakti girdiğinde ezan sesiyle',importance:5,visibility:1,vibration:true,sound:'ezan.mp3'});
+  await LN.createChannel({id:'sessiz',name:'Sessiz vakit bildirimleri',description:'Sessiz bildirim',importance:2,visibility:1,vibration:false});
+  const ch=store.get('nSnd','ezan'),on=store.get('nK',{imsak:true,ogle:true,ikindi:true,aksam:true,yatsi:true});
   const [lat,lng]=coords(),place=ilceSel.value||ilSel.value,now=new Date(),list=[];
   const K=['imsak','ogle','ikindi','aksam','yatsi'];
   for(let d=0;d<14;d++){const day=new Date(now);day.setDate(day.getDate()+d);const pt=prayerTimes(day,lat,lng,tz);
-   K.forEach((k,i)=>{if(pt[k]>now)list.push({id:1000+d*10+i,title:NAMES[k]+' vakti',body:`${place} · ${hm(pt[k])}`,schedule:{at:pt[k],allowWhileIdle:true},channelId:'vakit',smallIcon:'ic_stat_vakit'})})}
+   K.forEach((k,i)=>{if(on[k]!==false&&pt[k]>now)list.push({id:1000+d*10+i,title:NAMES[k]+' vakti',body:`${place} · ${hm(pt[k])}`,schedule:{at:pt[k],allowWhileIdle:true},channelId:ch,smallIcon:'ic_stat_vakit'})})}
   await LN.schedule({notifications:list});
   nInfo.textContent=`${place} için sonraki 14 günün vakitleri kuruldu`;
  }catch(e){nInfo.textContent='Bildirimler kurulamadı: '+(e.message||e)}}
 if(NATIVE){document.getElementById('nRow').hidden=false;nState();
  nSw.onclick=()=>{store.set('notif',!store.get('notif',true));nState();scheduleNotifs()};
+ document.getElementById('nSet').hidden=false;
+ const nSnd=document.getElementById('nSnd');nSnd.value=store.get('nSnd','ezan');nSnd.onchange=()=>{store.set('nSnd',nSnd.value);scheduleNotifs()};
+ const nKEl=document.getElementById('nK'),KN={imsak:'İmsak',ogle:'Öğle',ikindi:'İkindi',aksam:'Akşam',yatsi:'Yatsı'};
+ const drawK=()=>{const on=store.get('nK',{});nKEl.innerHTML=Object.keys(KN).map(k=>`<button data-k="${k}" aria-pressed="${on[k]!==false}">${KN[k]}</button>`).join('')};
+ nKEl.onclick=e=>{const k=e.target.dataset&&e.target.dataset.k;if(!k)return;const on=store.get('nK',{});on[k]=on[k]===false;store.set('nK',on);drawK();scheduleNotifs()};drawK();
  scheduleNotifs();
  document.addEventListener('visibilitychange',()=>{if(!document.hidden){render();scheduleNotifs()}});}
 
@@ -606,17 +632,20 @@ if(AM){
  let rwReady=null,busy=false;
  const loadReward=()=>rwReady=AM.prepareRewardVideoAd({adId:AD.reward}).catch(e=>{rwReady=null;throw e});
  (async()=>{
+  let ci=null;
   try{
    await AM.initialize();
-   const ci=await AM.requestConsentInfo().catch(()=>null);
+   ci=await AM.requestConsentInfo().catch(()=>null);
    if(ci&&ci.status==='REQUIRED'&&ci.isConsentFormAvailable)await AM.showConsentForm().catch(()=>{});
   }catch(e){return}
   supBtn.hidden=false;loadReward().catch(()=>{});
   /* Açılış reklamı: animasyondan sonra, uygulama her açıldığında bir kez. Geç yüklenirse o açılışta atlanır. */
+  const privBtn=document.getElementById('privBtn');if(privBtn&&AM.showPrivacyOptionsForm){privBtn.hidden=false;privBtn.onclick=()=>AM.showPrivacyOptionsForm().catch(()=>{})}
   const loaded=AM.loadAppOpen({adId:AD.open}).then(()=>true,()=>false);
   await splashGone;
   const ok=await Promise.race([loaded,new Promise(r=>setTimeout(()=>r(false),5000))]);
-  if(ok&&!document.hidden)AM.showAppOpen().catch(()=>{});
+  /* Günde defalarca açılan bir uygulama: açılış reklamı en fazla 4 saatte bir. */
+  if(ok&&!document.hidden&&Date.now()-store.get('lastAO',0)>4*3600e3){store.set('lastAO',Date.now());AM.showAppOpen().catch(()=>{})}
  })();
  /* Ödül gelmezse showRewardVideoAd hiç sonuçlanmaz; kapanışı olaylardan izliyoruz. */
  let earned=false;
