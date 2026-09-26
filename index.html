@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Vakit ve Dua</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Rubik:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Rubik:wght@400;500;600&display=swap">
 <style>
 :root{--bg:#F2F8F8;--bg2:#E6F2F1;--card:#FFFFFF;--ink:#1D3A40;--mute:#6A8589;--line:#DCE9E8;--acc:#2A9D8F;--acc2:#5CC2B3;--brass:#C4952F;--accsoft:#E2F4F1;--shadow:0 6px 24px rgba(42,110,110,.08);--sp1:#F4FBFA;--sp2:#DDF1EE;--ks1:#FFFFFF;--ks2:#E4F4F1;--dA:#FFFFFF;--dB:#EEF8F6;--dS:#A9D8D0;--dT:#1D3A40;--dK:#8FB3B0;--kon:#FFE9E5;--konb:#F5A99C;--kont:#B8412F;color-scheme:light}
 :root[data-theme="dark"]{--bg:#0E1A1C;--bg2:#12282A;--card:#172629;--ink:#E2EEED;--mute:#8EA7AA;--line:#263B3E;--acc:#3DB5A5;--acc2:#5CC2B3;--brass:#D8AD55;--accsoft:#1A3432;--shadow:0 6px 24px rgba(0,0,0,.35);--sp1:#10201F;--sp2:#0C1719;--ks1:#1B2D30;--ks2:#132325;--dA:#1E3033;--dB:#18292B;--dS:#2E4B4C;--dT:#D7E7E5;--dK:#4F6E6C;--kon:#3A1F1B;--konb:#8A3D31;--kont:#FF9C8A;color-scheme:dark}
@@ -251,6 +251,26 @@ details[open] .dua{animation:rise .35s ease}
 .info div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;box-shadow:var(--shadow)}
 .info span{display:block;font-size:12px;color:var(--mute)}
 .info b{font-size:17px;font-variant-numeric:tabular-nums}
+:root{--qf:"Amiri Quran",Amiri,serif}
+.qlist{flex-wrap:wrap;margin:0;padding:0}.qlist button{padding:6px 11px}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:14px 0 8px}.qhead b{display:block;font-size:17px}.qfs{display:flex;gap:6px}.qfs .btn{padding:6px 10px;font-size:13px}
+.qbody{font-family:var(--qf);line-height:2.3;text-align:right;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+.qbody .an{color:var(--brass);font-size:.8em;margin:0 .25em;white-space:nowrap}
+.es{display:grid;grid-template-columns:28px 1fr auto;grid-template-rows:auto auto;gap:2px 10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:8px;box-shadow:var(--shadow)}
+.es .no{grid-row:1/3;width:28px;height:28px;border-radius:50%;background:var(--accsoft);color:var(--acc);display:grid;place-items:center;font-size:12px;font-weight:600}
+.es .et b{display:block}.es .et span{font-size:12.5px;color:var(--mute);line-height:1.4}
+.es .ea{font-family:Amiri,serif;font-size:22px;color:var(--acc);text-align:right}.es .btn{grid-column:3;font-size:12px;padding:4px 10px;justify-self:end}
+.rh{list-style:none;padding:0;margin:0;counter-reset:r}.rh li{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 14px;margin-bottom:8px;box-shadow:var(--shadow);counter-increment:r}
+.rh li b{display:block;margin-bottom:3px}.rh li span{font-size:13.5px;line-height:1.55;color:var(--ink)}.rh:not(.rhn) li b::before{content:counter(r) ". "}
+.rh em{font-style:normal;font-size:11px;font-weight:600;color:var(--brass);background:color-mix(in srgb,var(--brass) 14%,transparent);border-radius:6px;padding:1px 6px;margin-left:4px;vertical-align:1px}
+.rhn li{display:flex;gap:12px;align-items:flex-start}.rp{flex:none;width:52px;height:52px;border-radius:12px;background:var(--accsoft);color:var(--acc);display:grid;place-items:center}.rp svg{width:44px;height:44px}
+.zkstat{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);text-align:left}
+.zkh{display:flex;justify-content:space-between;align-items:center;gap:8px}.zkh .btn{font-size:12px;padding:5px 10px}
+.zkpb{height:6px;border-radius:3px;background:var(--line);margin-top:10px;overflow:hidden}.zkpb i{display:block;height:100%;background:var(--brass);transition:width .3s}
+.zkw{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;height:110px;margin-top:12px}
+.zkw div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;min-width:0}
+.zkw i{width:70%;max-width:26px;border-radius:5px 5px 2px 2px;background:var(--acc2);opacity:.75}.zkw i.kd{background:var(--brass);opacity:1}
+.zkw span{font-size:10px;color:var(--mute);font-variant-numeric:tabular-nums}.zkw small{font-size:10.5px;color:var(--mute)}
 .status{margin-top:12px;text-align:center;font-size:13px;color:var(--brass);min-height:1.2em}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
@@ -439,8 +459,31 @@ details[open] .dua{animation:rise .35s ease}
 </section>
 
 <section id="p-dua" hidden>
- <h2>Namaz sureleri ve dualar</h2>
- <div id="duaList"></div>
+ <div class="seg tkseg" id="duSeg" role="group" aria-label="Bölüm"><button data-v="dua">Dualar</button><button data-v="kuran">Kur'an</button><button data-v="esma">Esmâ</button><button data-v="rehber">Rehber</button></div>
+ <div id="du-dua">
+  <h2>Namaz sureleri ve dualar</h2>
+  <div id="duaList"></div>
+ </div>
+ <div id="du-kuran" hidden>
+  <h2>Kur'an-ı Kerim</h2>
+  <div class="chips qlist" id="qList" role="group" aria-label="Sure"></div>
+  <div class="qhead"><div><b id="qTitle"></b><span class="note" id="qInfo" style="margin:0"></span></div><div class="qfs"><button class="btn" id="qMinus" aria-label="Yazıyı küçült">A−</button><button class="btn" id="qPlus" aria-label="Yazıyı büyüt">A+</button></div></div>
+  <div class="qbody" id="qBody" lang="ar" dir="rtl"></div>
+  <div class="note">Arapça metin: <a href="https://tanzil.net" target="_blank" rel="noopener">Tanzil Projesi</a> (Uthmani, CC BY 3.0), değiştirilmeden kullanılmıştır. Türkçe meal ve okunuş, yayıncı izni alınınca eklenecektir.</div>
+ </div>
+ <div id="du-esma" hidden>
+  <h2>Esmâü'l-Hüsnâ</h2>
+  <p class="note" style="margin-top:-4px">Allah'ın en güzel isimleri. Bir ismi zikirmatikte saymak için "Zikret"e dokun.</p>
+  <div id="esmaList"></div>
+ </div>
+ <div id="du-rehber" hidden>
+  <h2>Abdest nasıl alınır?</h2>
+  <ol class="rh" id="rhAbdest"></ol>
+  <p class="note">Abdestin farzları dörttür: yüzü yıkamak, kolları dirseklerle birlikte yıkamak, başın dörtte birini meshetmek ve ayakları topuklarla birlikte yıkamak. Diğerleri sünnet ve adaptır.</p>
+  <h2>Namaz nasıl kılınır? (iki rekât)</h2>
+  <ol class="rh rhn" id="rhNamaz"></ol>
+  <p class="note">Üç ve dört rekâtlı namazlarda ikinci rekâttan sonra oturulup yalnızca Ettehiyyâtü okunur, sonra kalkılır; son rekâtın oturuşunda bütün dualar okunup selam verilir. Farz namazların üçüncü ve dördüncü rekâtlarında Fâtiha'dan sonra sure okunmaz. Duaların metinleri "Dualar" bölümündedir. Ayrıntılar için Diyanet'in ilmihaline başvurulabilir.</p>
+ </div>
 </section>
 
 <section id="p-zikir" hidden>
@@ -452,6 +495,13 @@ details[open] .dua{animation:rise .35s ease}
   <div class="ringwrap" id="ringwrap"><svg viewBox="0 0 220 220"><circle cx="110" cy="110" r="104" fill="none" stroke="var(--line)" stroke-width="8"/><circle id="ring" cx="110" cy="110" r="104" fill="none" stroke="var(--brass)" stroke-width="8" stroke-linecap="round" stroke-dasharray="653.5" stroke-dashoffset="653.5"/></svg><button class="tap" id="zkTap">Dokun</button></div>
   <div class="row"><button class="btn" id="zkUndo">Geri al</button><button class="btn" id="zkReset">Sıfırla</button><button class="btn" id="zkT">Hedef: 33</button></div>
   <div class="zkbar"><button class="btn sndbtn" id="zkSnd" aria-pressed="true"></button></div>
+  <div class="zkstat">
+   <div class="zkh"><b id="zkToday"></b><button class="btn" id="zkGoal"></button></div>
+   <div class="zkpb"><i id="zkBar"></i></div>
+   <div class="zkw" id="zkWeek" aria-label="Son 7 günün zikir sayıları"></div>
+  </div>
+  <div class="row" style="margin-top:10px"><button class="btn" id="zkAdd">+ Zikir ekle</button><button class="btn" id="zkDel" hidden>Bu zikri sil</button></div>
+  <div class="kzadd" id="zkNew" hidden><input id="zkName" placeholder="Zikir adı, ör. Yâ Latîf" maxlength="40"><button class="btn" id="zkNewOk">Ekle</button></div>
  </div>
 </section>
 
@@ -660,6 +710,31 @@ const rb=document.getElementById('zkReset');let armed=false;
 rb.onclick=()=>{if(!armed){armed=true;rb.textContent='Emin misin?';setTimeout(()=>{armed=false;rb.textContent='Sıfırla'},2500);return}zk.c[zk.sel]=0;armed=false;rb.textContent='Sıfırla';zRender()};
 document.getElementById('zkT').onclick=()=>{zk.target=TG[(TG.indexOf(zk.target)+1)%TG.length];zRender()};
 zRender();
+/* ---------- Zikir: kendi zikirlerin, günlük hedef ve geçmiş ---------- */
+let zkCus=store.get('zkCustom',[]),zkLog=store.get('zkLog',{});
+const GOALS=[0,100,300,500,1000];
+function zkOpts(){zs.innerHTML='';ZK.concat(zkCus).forEach(z=>zs.add(new Option(z,z)));if(!ZK.concat(zkCus).includes(zk.sel))zk.sel=ZK[0];zs.value=zk.sel;document.getElementById('zkDel').hidden=!zkCus.includes(zk.sel)}
+function zkOpen(n){n=n.trim();if(!n)return;if(!ZK.includes(n)&&!zkCus.includes(n)){zkCus.push(n);store.set('zkCustom',zkCus)}zk.sel=n;zkOpts();zRender()}
+function zkStats(){const n=zkLog[ymd(new Date())]||0,g=store.get('zkGoal',0),f=x=>x.toLocaleString('tr-TR');
+ document.getElementById('zkToday').textContent=g?`Bugün ${f(n)} / ${f(g)}`:`Bugün ${f(n)} zikir`;
+ document.getElementById('zkGoal').textContent=g?'Hedef: '+f(g):'Günlük hedef koy';
+ document.getElementById('zkBar').style.width=g?Math.min(100,n/g*100)+'%':'0';document.getElementById('zkBar').parentNode.hidden=!g;
+ const D=[],d=new Date();d.setDate(d.getDate()-6);for(let i=0;i<7;i++){D.push([new Date(d),zkLog[ymd(d)]||0]);d.setDate(d.getDate()+1)}
+ const mx=Math.max(g,...D.map(x=>x[1]),1);
+ document.getElementById('zkWeek').innerHTML=D.map(([dd,v])=>`<div><span>${v?f(v):''}</span><i style="height:${Math.max(v?4:0,Math.round(v/mx*100))}%"${g&&v>=g?' class="kd"':''}></i><small>${dd.toLocaleDateString('tr-TR',{weekday:'short'})}</small></div>`).join('')}
+document.getElementById('zkTap').addEventListener('click',()=>{const t=ymd(new Date()),g=store.get('zkGoal',0);zkLog[t]=(zkLog[t]||0)+1;
+ const lim=new Date();lim.setDate(lim.getDate()-90);for(const x in zkLog)if(x<ymd(lim))delete zkLog[x];
+ store.set('zkLog',zkLog);zkStats();if(g&&zkLog[t]===g){toast('Günlük hedefe ulaştın, Allah kabul etsin');if(store.get('zkSound',true)&&window.chime)chime()}});
+document.getElementById('zkUndo').addEventListener('click',()=>{const t=ymd(new Date());if(zkLog[t]>0){zkLog[t]--;store.set('zkLog',zkLog);zkStats()}});
+document.getElementById('zkGoal').onclick=()=>{store.set('zkGoal',GOALS[(GOALS.indexOf(store.get('zkGoal',0))+1)%GOALS.length]);zkStats()};
+document.getElementById('zkAdd').onclick=()=>{const w=document.getElementById('zkNew');w.hidden=!w.hidden;if(!w.hidden)document.getElementById('zkName').focus()};
+document.getElementById('zkNewOk').onclick=()=>{const i=document.getElementById('zkName');if(!i.value.trim())return;zkOpen(i.value);i.value='';document.getElementById('zkNew').hidden=true;toast('Zikir eklendi')};
+const zd=document.getElementById('zkDel');let zdArm=false;
+zd.onclick=()=>{if(!zdArm){zdArm=true;zd.textContent='Silinsin mi?';setTimeout(()=>{zdArm=false;zd.textContent='Bu zikri sil'},2500);return}
+ zdArm=false;zd.textContent='Bu zikri sil';zkCus=zkCus.filter(x=>x!==zk.sel);delete zk.c[zk.sel];store.set('zkCustom',zkCus);zk.sel=ZK[0];zkOpts();zRender()};
+zs.addEventListener('change',()=>{document.getElementById('zkDel').hidden=!zkCus.includes(zk.sel)});
+zkOpts();zRender();zkStats();
+
 
 /* ---------- Dini günler ---------- */
 function events(){
@@ -681,6 +756,166 @@ function events(){
   d.setDate(d.getDate()+1)}
  const t0=new Date();t0.setHours(12,0,0,0);document.getElementById('evList').innerHTML=out.map((e,i)=>`<div class="ev" style="animation-delay:${Math.min(i,12)*.04}s"><div>${Math.round((e.dt-t0)/864e5)===0?'<div class="left">Bugün</div>':`<div class="left">${Math.round((e.dt-t0)/864e5)} gün sonra</div>`}${e.n}${e.k?`<div class="k">${e.k}</div>`:''}</div><div class="d">${e.dt.toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'})}<br>${e.dt.toLocaleDateString('tr-TR',{weekday:'long'})}</div></div>`).join('');return out}
 const EVS=events();
+
+/* ---------- Esmâü'l-Hüsnâ ---------- */
+const ESMA=[
+["Allah","اللّٰهُ","Bütün isimlerin sahibi, eşi ve benzeri olmayan tek ilah"],
+["Er-Rahmân","الرَّحْمٰنُ","Dünyada bütün yaratılmışlara merhamet eden"],
+["Er-Rahîm","الرَّحِيمُ","Ahirette müminlere merhamet eden"],
+["El-Melik","الْمَلِكُ","Bütün kâinatın sahibi ve hükümdarı"],
+["El-Kuddûs","الْقُدُّوسُ","Her türlü eksiklikten uzak, tertemiz"],
+["Es-Selâm","السَّلَامُ","Esenlik veren, kullarını selamete çıkaran"],
+["El-Mü'min","الْمُؤْمِنُ","Güven veren, gönüllere iman ışığı veren"],
+["El-Müheymin","الْمُهَيْمِنُ","Her şeyi gözetip koruyan"],
+["El-Azîz","الْعَزِيزُ","İzzet sahibi, mağlup edilemeyen"],
+["El-Cebbâr","الْجَبَّارُ","Dilediğini yaptırmaya gücü yeten, eksikleri tamamlayan"],
+["El-Mütekebbir","الْمُتَكَبِّرُ","Büyüklükte eşi olmayan"],
+["El-Hâlık","الْخَالِقُ","Yaratan, yoktan var eden"],
+["El-Bâri'","الْبَارِئُ","Her şeyi kusursuz ve uyumlu yaratan"],
+["El-Musavvir","الْمُصَوِّرُ","Her şeye şekil veren"],
+["El-Gaffâr","الْغَفَّارُ","Günahları çokça bağışlayan"],
+["El-Kahhâr","الْقَهَّارُ","Her şeye galip gelen"],
+["El-Vehhâb","الْوَهَّابُ","Karşılıksız bol bol veren"],
+["Er-Rezzâk","الرَّزَّاقُ","Bütün yaratılmışlara rızık veren"],
+["El-Fettâh","الْفَتَّاحُ","Hayır kapılarını açan, darlıkları gideren"],
+["El-Alîm","الْعَلِيمُ","Her şeyi en ince ayrıntısıyla bilen"],
+["El-Kâbıd","الْقَابِضُ","Dilediğine rızkı daraltan"],
+["El-Bâsıt","الْبَاسِطُ","Dilediğine rızkı genişleten"],
+["El-Hâfıd","الْخَافِضُ","Dilediğini alçaltan"],
+["Er-Râfi'","الرَّافِعُ","Dilediğini yükselten"],
+["El-Muiz","الْمُعِزُّ","Dilediğini aziz kılan"],
+["El-Müzil","الْمُذِلُّ","Dilediğini zillete düşüren"],
+["Es-Semî'","السَّمِيعُ","Her şeyi işiten"],
+["El-Basîr","الْبَصِيرُ","Her şeyi gören"],
+["El-Hakem","الْحَكَمُ","Hükmeden, hakkı batıldan ayıran"],
+["El-Adl","الْعَدْلُ","Mutlak adalet sahibi"],
+["El-Latîf","اللَّطِيفُ","Lütfu bol, en ince işleri bilen"],
+["El-Habîr","الْخَبِيرُ","Her şeyden haberdar olan"],
+["El-Halîm","الْحَلِيمُ","Cezalandırmada acele etmeyen, yumuşak davranan"],
+["El-Azîm","الْعَظِيمُ","Pek büyük, azameti sonsuz"],
+["El-Gafûr","الْغَفُورُ","Affı ve mağfireti bol"],
+["Eş-Şekûr","الشَّكُورُ","Az amele çok sevap veren"],
+["El-Aliyy","الْعَلِيُّ","Yüceler yücesi"],
+["El-Kebîr","الْكَبِيرُ","Büyüklükte benzeri olmayan"],
+["El-Hafîz","الْحَفِيظُ","Her şeyi koruyup gözeten"],
+["El-Mukît","الْمُقِيتُ","Her yaratılmışın azığını veren"],
+["El-Hasîb","الْحَسِيبُ","Kullarını hesaba çeken, kuluna yeten"],
+["El-Celîl","الْجَلِيلُ","Celal ve azamet sahibi"],
+["El-Kerîm","الْكَرِيمُ","Keremi ve ikramı bol"],
+["Er-Rakîb","الرَّقِيبُ","Her şeyi gözetleyen"],
+["El-Mücîb","الْمُجِيبُ","Duaları kabul eden"],
+["El-Vâsi'","الْوَاسِعُ","İlmi ve rahmeti her şeyi kuşatan"],
+["El-Hakîm","الْحَكِيمُ","Her işi hikmetli olan"],
+["El-Vedûd","الْوَدُودُ","Kullarını seven, sevilmeye en layık olan"],
+["El-Mecîd","الْمَجِيدُ","Şanı yüce, şerefi büyük"],
+["El-Bâis","الْبَاعِثُ","Ölüleri dirilten"],
+["Eş-Şehîd","الشَّهِيدُ","Her şeye şahit olan"],
+["El-Hakk","الْحَقُّ","Varlığı hiç değişmeden duran, gerçek olan"],
+["El-Vekîl","الْوَكِيلُ","Kendisine tevekkül edilen"],
+["El-Kaviyy","الْقَوِيُّ","Kuvvetli, kudretli"],
+["El-Metîn","الْمَتِينُ","Çok sağlam, hiçbir şeyden etkilenmeyen"],
+["El-Veliyy","الْوَلِيُّ","İnananların dostu ve yardımcısı"],
+["El-Hamîd","الْحَمِيدُ","Her türlü övgüye layık"],
+["El-Muhsî","الْمُحْصِي","Her şeyin sayısını bilen"],
+["El-Mübdi'","الْمُبْدِئُ","Örneksiz, maddesiz yaratan"],
+["El-Muîd","الْمُعِيدُ","Hayatı sona erenleri yeniden yaratan"],
+["El-Muhyî","الْمُحْيِي","Hayat veren"],
+["El-Mümît","الْمُمِيتُ","Ölümü yaratan"],
+["El-Hayy","الْحَيُّ","Ezelî ve ebedî hayat sahibi"],
+["El-Kayyûm","الْقَيُّومُ","Her şeyi ayakta tutan"],
+["El-Vâcid","الْوَاجِدُ","İstediğini istediği anda bulan"],
+["El-Mâcid","الْمَاجِدُ","Kadri ve şanı büyük"],
+["El-Vâhid","الْوَاحِدُ","Tek, eşi olmayan"],
+["Es-Samed","الصَّمَدُ","Hiçbir şeye muhtaç olmayan, her şeyin kendisine muhtaç olduğu"],
+["El-Kâdir","الْقَادِرُ","Dilediğini yapmaya gücü yeten"],
+["El-Muktedir","الْمُقْتَدِرُ","Kudret sahiplerinin üstünde kudret sahibi"],
+["El-Mukaddim","الْمُقَدِّمُ","Dilediğini öne geçiren"],
+["El-Muahhir","الْمُؤَخِّرُ","Dilediğini geride bırakan"],
+["El-Evvel","الْأَوَّلُ","Başlangıcı olmayan"],
+["El-Âhir","الْآخِرُ","Sonu olmayan"],
+["Ez-Zâhir","الظَّاهِرُ","Varlığı apaçık olan"],
+["El-Bâtın","الْبَاطِنُ","Zatının hakikati akıllarca kavranamayan"],
+["El-Vâlî","الْوَالِي","Bütün kâinatı yöneten"],
+["El-Müteâlî","الْمُتَعَالِي","Yaratılmışların sıfatlarından uzak ve yüce"],
+["El-Berr","الْبَرُّ","İyiliği ve ihsanı bol"],
+["Et-Tevvâb","التَّوَّابُ","Tövbeleri kabul eden"],
+["El-Müntekım","الْمُنْتَقِمُ","Suçluları hak ettikleri şekilde cezalandıran"],
+["El-Afüvv","الْعَفُوُّ","Affı çok olan"],
+["Er-Raûf","الرَّؤُوفُ","Çok şefkatli"],
+["Mâlikü'l-Mülk","مَالِكُ الْمُلْكِ","Mülkün ebedî sahibi"],
+["Zü'l-Celâli ve'l-İkrâm","ذُو الْجَلَالِ وَالْإِكْرَامِ","Celal ve ikram sahibi"],
+["El-Muksit","الْمُقْسِطُ","Adaletle hükmeden"],
+["El-Câmi'","الْجَامِعُ","Dilediğini bir araya getiren"],
+["El-Ganiyy","الْغَنِيُّ","Zengin, hiçbir şeye muhtaç olmayan"],
+["El-Mugnî","الْمُغْنِي","Dilediğini zengin eden"],
+["El-Mâni'","الْمَانِعُ","Dilemediği şeye engel olan"],
+["Ed-Dârr","الضَّارُّ","Zarar verecek şeyleri de yaratan"],
+["En-Nâfi'","النَّافِعُ","Fayda veren şeyleri yaratan"],
+["En-Nûr","النُّورُ","Âlemleri nurlandıran"],
+["El-Hâdî","الْهَادِي","Hidayet veren, doğru yola ileten"],
+["El-Bedî'","الْبَدِيعُ","Eşi benzeri olmayan güzellikte yaratan"],
+["El-Bâkî","الْبَاقِي","Varlığının sonu olmayan"],
+["El-Vâris","الْوَارِثُ","Her şeyin asıl sahibi olan"],
+["Er-Reşîd","الرَّشِيدُ","Doğru yolu gösteren"],
+["Es-Sabûr","الصَّبُورُ","Çok sabırlı"]];
+document.getElementById('esmaList').innerHTML=ESMA.map(([t,a,m],i)=>`<div class="es"><span class="no">${i+1}</span><div class="et"><b>${t}</b><span>${m}</span></div><div class="ea" lang="ar">${a}</div><button class="btn" data-z="${i}" aria-label="${t} zikret">Zikret</button></div>`).join('');
+document.getElementById('esmaList').onclick=e=>{const b=e.target.closest('button[data-z]');if(!b)return;const[t]=ESMA[b.dataset.z];
+ const name=t==='Allah'?'Allah':'Yâ '+t.replace(/^E[a-zş]-/,'');
+ zkOpen(name);document.querySelector('nav button[data-p="zikir"]').click()};
+
+/* ---------- Kur'an (Arapça metin: Tanzil Projesi, değiştirilmeden) ---------- */
+let QR=null,qSel=store.get('qSel',3),qFs=store.get('qFs',28);
+const arNum=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
+async function qLoad(){if(QR)return QR;try{QR=await (await fetch('quran.json')).json()}catch(e){document.getElementById('qBody').innerHTML='<p class="note">Kur\'an metni yüklenemedi.</p>'}return QR}
+async function qRender(){const q=await qLoad();if(!q)return;
+ document.getElementById('qList').innerHTML=q.sureler.map((x,i)=>`<button data-i="${i}" aria-pressed="${i===qSel}">${x.n}</button>`).join('');
+ const x=q.sureler[qSel]||q.sureler[0];
+ document.getElementById('qTitle').textContent=x.n+(x.n.includes('(')?'':' Suresi');
+ document.getElementById('qInfo').textContent=`${x.s}. sure · ${x.a.length} ayet${x.a.length<q.sureler[qSel].a.length?'':''}`;
+ const body=document.getElementById('qBody');body.style.fontSize=qFs+'px';
+ body.innerHTML=x.a.map(([n,t])=>`<span class="ay">${t}<span class="an">۝${arNum(n)}</span></span>`).join(' ')}
+document.getElementById('qList').onclick=e=>{const b=e.target.closest('button[data-i]');if(!b)return;qSel=+b.dataset.i;store.set('qSel',qSel);qRender();document.getElementById('qTitle').scrollIntoView({behavior:'smooth',block:'start'})};
+document.getElementById('qMinus').onclick=()=>{qFs=Math.max(20,qFs-3);store.set('qFs',qFs);document.getElementById('qBody').style.fontSize=qFs+'px'};
+document.getElementById('qPlus').onclick=()=>{qFs=Math.min(46,qFs+3);store.set('qFs',qFs);document.getElementById('qBody').style.fontSize=qFs+'px'};
+
+/* ---------- Abdest ve namaz rehberi ---------- */
+const POS={
+tekbir:'<circle cx="30" cy="10" r="5.5"/><path d="M30 17v19M30 36l1 22h7M30 21l8 2-1-11"/>',
+kiyam:'<circle cx="30" cy="10" r="5.5"/><path d="M30 17v19M30 36l1 22h7M30 21l7 7-5 2"/>',
+ruku:'<circle cx="13" cy="31" r="5.5"/><path d="M19 34h21M40 34v24h7M22 34l18 10"/>',
+secde:'<circle cx="15" cy="53" r="5.5"/><path d="M21 51l21-10M42 41l2 17h10M24 50l-2 8h-6"/>',
+oturus:'<circle cx="26" cy="12" r="5.5"/><path d="M26 19v29M26 48l20 4M46 52l-20 6M26 25l6 12 10 10"/>',
+selam:'<circle cx="26" cy="12" r="5.5"/><path d="M26 19v29M26 48l20 4M46 52l-20 6M26 25l6 12 10 10M34 6l5-3M35 11h6M34 16l5 3"/>'};
+const svgP=k=>`<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${POS[k]}</svg>`;
+const ABDEST=[
+["Niyet","Abdest almaya niyet edilir, \"Eûzü besmele\" çekilir.",0],
+["Eller","Eller bileklere kadar üç kez yıkanır. Parmak araları hilallenir, yüzük varsa oynatılır.",0],
+["Ağız","Sağ elle ağza üç kez su verilip çalkalanır.",0],
+["Burun","Sağ elle buruna üç kez su çekilir, sol elle temizlenir.",0],
+["Yüz","Alında saçın bittiği yerden çene altına, iki kulak yumuşağına kadar yüz üç kez yıkanır.",1],
+["Kollar","Önce sağ, sonra sol kol dirseklerle birlikte üç kez yıkanır.",1],
+["Başı meshetmek","Islak elle başın en az dörtte biri meshedilir.",1],
+["Kulaklar ve boyun","Serçe parmaklarla kulakların içi, başparmaklarla arkası; ardından ellerin dış yüzüyle boyun meshedilir.",0],
+["Ayaklar","Önce sağ, sonra sol ayak topuklarla birlikte üç kez yıkanır. Parmak araları hilallenir.",1]];
+const NAMAZ=[
+["tekbir","İftitah tekbiri","Kıbleye dönülür, kılınacak namaza niyet edilir. \"Allâhu ekber\" denerek eller kaldırılır (erkekler kulak hizasına, kadınlar omuz hizasına)."],
+["kiyam","Kıyam","Eller bağlanır. Sübhâneke, Eûzü besmele, Fâtiha ve bir sure (zamm-ı sure) okunur."],
+["ruku","Rükû","\"Allâhu ekber\" denerek eğilinir, eller dizlere konur. Üç kez \"Sübhâne rabbiye'l-azîm\" denir."],
+["kiyam","Kavme","\"Semiallâhu limen hamideh\" denerek doğrulunur, \"Rabbenâ leke'l-hamd\" denir."],
+["secde","Secde","\"Allâhu ekber\" denerek secdeye varılır; alın, burun, eller, dizler ve ayak parmakları yere değer. Üç kez \"Sübhâne rabbiye'l-a'lâ\" denir."],
+["oturus","Celse","\"Allâhu ekber\" denerek oturulur, bir \"Sübhânallâh\" diyecek kadar beklenir."],
+["secde","İkinci secde","\"Allâhu ekber\" denerek yeniden secdeye varılır, üç kez \"Sübhâne rabbiye'l-a'lâ\" denir. Böylece bir rekât tamamlanır."],
+["kiyam","İkinci rekât","\"Allâhu ekber\" denerek ayağa kalkılır. Besmele, Fâtiha ve bir sure okunur; rükû ve iki secde aynı şekilde yapılır."],
+["oturus","Ka'de (oturuş)","İkinci rekâtın sonunda oturulur. Ettehiyyâtü, Allâhümme salli, Allâhümme bârik ve Rabbenâ duaları okunur."],
+["selam","Selam","Baş önce sağa, sonra sola çevrilerek \"Esselâmü aleyküm ve rahmetullâh\" denir. Namaz tamamlanır."]];
+document.getElementById('rhAbdest').innerHTML=ABDEST.map(([t,d,f],i)=>`<li><b>${t}${f?' <em>farz</em>':''}</b><span>${d}</span></li>`).join('');
+document.getElementById('rhNamaz').innerHTML=NAMAZ.map(([p,t,d],i)=>`<li><div class="rp">${svgP(p)}</div><div><b>${i+1}. ${t}</b><span>${d}</span></div></li>`).join('');
+
+/* ---------- Dualar sekmesi alt bölümleri ---------- */
+document.querySelectorAll('#duSeg button').forEach(b=>b.onclick=()=>{const v=b.dataset.v;store.set('duSeg',v);
+ document.querySelectorAll('#duSeg button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+ ['dua','kuran','esma','rehber'].forEach(k=>document.getElementById('du-'+k).hidden=k!==v);if(v==='kuran')qRender()});
+document.querySelector(`#duSeg button[data-v="${store.get('duSeg','dua')}"]`).click();
 
 /* ---------- Namaz takibi ve kaza ---------- */
 const PK=['imsak','ogle','ikindi','aksam','yatsi'],PN={imsak:'Sabah',ogle:'Öğle',ikindi:'İkindi',aksam:'Akşam',yatsi:'Yatsı'};
