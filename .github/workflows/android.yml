@@ -3,7 +3,11 @@ name: Android APK
 on:
   push:
     branches: [main]
+    tags: ['v*']
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -71,8 +75,9 @@ jobs:
           fi
           echo "$KS_B64" | base64 -d > upload.jks
           jarsigner -sigalg SHA256withRSA -digestalg SHA-256 -keystore upload.jks -storepass "$KS_PASS" -keypass "${KEY_PASS:-$KS_PASS}" "$AAB" "$KEY_ALIAS"
-          jarsigner -verify "$AAB" | tail -1
+          jarsigner -verify -strict "$AAB" | tail -1
           rm upload.jks
+          echo "SIGNED=1" >> $GITHUB_ENV
 
       - uses: actions/upload-artifact@v4
         with:
@@ -83,3 +88,16 @@ jobs:
         with:
           name: vakitvedua-release-aab
           path: android/app/build/outputs/bundle/release/app-release.aab
+
+      # v ile başlayan bir etiket gönderildiğinde (ör. v1.54.01) AAB ve APK bir GitHub sürümüne eklenir.
+      - name: GitHub sürümü
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V=$(node -p "require('./package.json').version")
+          [ "v$V" = "$GITHUB_REF_NAME" ] || { echo "::error::Etiket ($GITHUB_REF_NAME) package.json sürümüyle (v$V) aynı değil"; exit 1; }
+          [ "${SIGNED:-0}" = 1 ] || { echo "::error::AAB imzasız; önce imza sırlarını ekle"; exit 1; }
+          cp android/app/build/outputs/bundle/release/app-release.aab vakitvedua-$V.aab
+          cp android/app/build/outputs/apk/debug/app-debug.apk vakitvedua-$V-debug.apk
+          gh release create "$GITHUB_REF_NAME" vakitvedua-$V.aab vakitvedua-$V-debug.apk --title "Vakit ve Dua $V" --notes "Play Console'a yüklenecek dosya: vakitvedua-$V.aab" --verify-tag

@@ -16,3 +16,7 @@ AAB'nin imzalı çıkması için depoya şu sırlar eklenmelidir: `ANDROID_KEYST
 - `android-res/`: Derleme sırasında Android projesine kopyalanan widget, bildirim ikonu ve Java kodu.
 - Gizlilik politikası: `gizlilik.html` (Play Console'da bu sayfanın GitHub Pages adresini ver).
 - `app-ads.txt`: AdMob doğrulaması için alan adının köküne konmalıdır (bkz. aşağıdaki not).
+
+### Play Store
+
+Adım adım yayın rehberi `store/play-console.md`, mağaza metinleri `store/magaza.md` dosyasında. İmza anahtarı için: `bash scripts/imza-anahtari.sh`. `v<sürüm>` etiketi gönderildiğinde imzalı AAB bir GitHub sürümüne eklenir.
