@@ -1,0 +1,6 @@
+{
+  "name": "Vakit ve Dua",
+  "description": "Namaz vakitleri, kerahat vakti takibi, kıble pusulası, kaza takibi, zikirmatik, dualar ve Kur'an-ı Kerim",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

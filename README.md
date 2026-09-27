@@ -1,22 +1,23 @@
-# Vakit ve Dua
+# Vakit ve Dua: Namaz Vakitleri
 
-Diyanet yöntemiyle namaz vakitleri, kerahat kadranı, kıble pusulası, sureler ve dualar, zikirmatik ve dini günler takvimi. 81 il ve 973 ilçe.
+Modern, sade ve güçlü bir Android uygulaması. Kotlin ve Jetpack Compose ile geliştirilmiştir.
 
-Tek sayfalık bir PWA'dır; derleme gerektirmez. GitHub Pages'te yayınlandığında telefona "Ana ekrana ekle" ile kendi ikonuyla kurulur ve internetsiz çalışır.
+## Özellikler
 
-## Android
+- **Namaz Vakitleri & Geri Sayım:** Diyanet İşleri Başkanlığı yöntemiyle çalışan çevrimdışı astronomik hesaplama. 81 il ve 973 ilçe desteği.
+- **Kerahat Vakitleri & 24 Saatlik Kadran:** Güneş doğuşu, öğle öncesi (istiva) ve güneş batışı kerahat vakitleri, kalan süre ve 24 saatlik görsel kadran göstergesi.
+- **Kıble Pusulası:** Cihazın manyetik sensörleri ile gerçek zamanlı çalışan kıble pusulası. Kıble açısına dönüldüğünde titreşimli geri bildirim, Kâbe mesafesi ve gündüz vakti için güneş yöntemiyle açı tayini rehberi.
+- **Namaz Takibi ve Kaza Sayacı:** Son 7 günün 5 vakit namazını interaktif olarak işaretleme, kaza namazları (Sabah, Öğle, İkindi, Akşam, Yatsı, Vitir, Oruç) sayacı.
+- **Zikirmatik:** Halka animasyonlu sayaç, 33/99/100/1000 hedef seçenekleri, titreşim desteği, hazır zikirler ve özel zikir ekleme/silme.
+- **Kur'an-ı Kerim:** 114 surenin Tanzil Projesi Arapça metinleri, hızlı arama, ayet kopyalama ve paylaşma, son okunan sureyi yer imine kaydetme, ayarlanabilir yazı boyutu.
+- **Dualar, Esmâü'l-Hüsnâ ve Rehber:** Namaz sureleri ve duaları (Arapça, Türkçe okunuş ve meal ile), Allah'ın 99 ismi (Esmâü'l-Hüsnâ), abdest ve namaz kılınışı rehberleri.
+- **Hazır Mesajlar:** Cuma, Kandil, Ramazan ve Bayram tebrik mesajları, tek dokunuşla WhatsApp veya diğer uygulamalarda paylaşma/kopyalama.
+- **Takvim & İmsakiye:** Dini günler ve kandiller geri sayımı, seçili il/ilçe için 30 günlük namaz vakitleri tablosu.
+- **Ayarlar:** İl/ilçe seçimi, sistem/açık/koyu tema desteği, ezan sesi ve kerahat uyarısı ayarları.
 
-GitHub Actions her `main` gönderiminde iki dosya üretir: test için debug APK (`vakitvedua-debug-apk`) ve Play Store için AAB (`vakitvedua-release-aab`). Uygulama açılışta bir kez uygulama açılışı reklamı, ana sayfadaki "Destek ol & Reklam izle" düğmesiyle de ödüllü reklam gösterir (Google AdMob).
+## Mimari ve Teknolojiler
 
-AAB'nin imzalı çıkması için depoya şu sırlar eklenmelidir: `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`. Sırlar yoksa AAB imzasız üretilir.
-
-### Dosyalar
-
-- `android-res/raw/ezan.ogg`: Bildirimde çalan ezan kaydı (Wikimedia Commons, "Beautiful adhan", CC0). Başka bir kayıtla değiştirmek için aynı adla koy; telif hakkı sende olan ya da kullanım izni bulunan bir kayıt olmalı.
-- `android-res/`: Derleme sırasında Android projesine kopyalanan widget, bildirim ikonu ve Java kodu.
-- Gizlilik politikası: `gizlilik.html` (Play Console'da bu sayfanın GitHub Pages adresini ver).
-- `app-ads.txt`: AdMob doğrulaması için alan adının köküne konmalıdır (bkz. aşağıdaki not).
-
-### Play Store
-
-Adım adım yayın rehberi `store/play-console.md`, mağaza metinleri `store/magaza.md` dosyasında. İmza anahtarı için: `bash scripts/imza-anahtari.sh`. `v<sürüm>` etiketi gönderildiğinde imzalı AAB bir GitHub sürümüne eklenir.
+- **Dil:** Kotlin
+- **Arayüz:** Jetpack Compose & Material 3
+- **Tasarım:** "Sakin, hürmetkâr, zamansız" geleneksel tasarım kimliği
+- **Yapı:** Gradle (Kotlin DSL), Version Catalog (`libs.versions.toml`)
