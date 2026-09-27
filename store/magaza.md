@@ -85,6 +85,7 @@ Vakitler Diyanet'in yayımladığı verilerden alınır; bağlantı yoksa Diyane
 - **Kategori:** Yaşam tarzı (Lifestyle)
 - **Etiketler:** Din, namaz vakitleri
 - **İletişim e-postası:** ilyasilmk@gmail.com
+- **Web sitesi:** https://ilyasilmek.github.io
 - **Gizlilik politikası:** https://ilyasilmek.github.io/vakitvedua/gizlilik.html
 
 ## Uygulama içeriği formları için yanıtlar
@@ -109,4 +110,4 @@ Vakitler Diyanet'in yayımladığı verilerden alınır; bağlantı yoksa Diyane
 
 1. AAB'nin imzalı çıkması için yükleme anahtarını oluşturup GitHub sırlarına ekle (README'de anlatılıyor). İmzasız AAB Play Console'a yüklenemez.
 2. Play Console'a ilk kez yüklenen sürüm kodu, daha sonra yüklenecek sürümlerden küçük olmalı. Her yeni yüklemede `package.json`'daki sürümü yükselt.
-3. `app-ads.txt` dosyasını, Play Console'da girdiğin geliştirici web sitesinin kök dizinine koy.
+3. `app-ads.txt` https://ilyasilmek.github.io/app-ads.txt adresinde hazır; Play Console'da web sitesi olarak https://ilyasilmek.github.io yaz.

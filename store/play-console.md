@@ -90,7 +90,7 @@ AdMob'un güncel listesi: https://developers.google.com/admob/android/privacy/pl
 | Öne çıkan grafik (1024×500) | `store/tanitim-gorseli.png` |
 | Telefon ekran görüntüleri (en az 2, en çok 8) | `store/ekran/1-vakitler.png` … `8-ayarlar.png` |
 
-Kategori: Yaşam tarzı. İletişim e-postası: ilyasilmk@gmail.com.
+Kategori: Yaşam tarzı. İletişim e-postası: ilyasilmk@gmail.com. Web sitesi: **https://ilyasilmek.github.io** (app-ads.txt burada; alan adı kökü olduğu için başına ya da sonuna yol ekleme).
 
 ## 7. İlk sürüm: kapalı test
 
@@ -118,5 +118,5 @@ Onaydan sonra aynı AAB'yi üretim kanalına tanıt.
 ## 9. Yayından sonra
 
 - **AdMob:** AdMob > Uygulamalar > Vakit ve Dua > Uygulama ayarları > "Mağazaya bağla" ile Play Store girişine bağla.
-- **app-ads.txt:** Play Console'daki geliştirici web sitesi alanına yazdığın alan adının kök dizininde `app-ads.txt` bulunmalı (örneğin `https://ilyasilmek.github.io/app-ads.txt`). AdMob bu dosyayı birkaç gün içinde tarar.
+- **app-ads.txt:** Hazır: https://ilyasilmek.github.io/app-ads.txt (ayrı `ilyasilmek.github.io` deposunda). Play Console'da web sitesi olarak https://ilyasilmek.github.io yazılı olmalı. AdMob, uygulama mağazaya bağlandıktan sonra dosyayı birkaç gün içinde tarar; AdMob > Uygulamalar > app-ads.txt sekmesinden durumu görebilirsin.
 - **Her yeni sürüm:** `package.json`'daki sürümü yükselt, `v<sürüm>` etiketini gönder, oluşan AAB'yi yükle.
