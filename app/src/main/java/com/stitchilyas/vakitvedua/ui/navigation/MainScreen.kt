@@ -2,25 +2,31 @@ package com.stitchilyas.vakitvedua.ui.navigation
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.stitchilyas.vakitvedua.data.local.AppPreferences
@@ -28,19 +34,20 @@ import com.stitchilyas.vakitvedua.ui.components.DestekOlDialog
 import com.stitchilyas.vakitvedua.ui.screens.*
 import com.stitchilyas.vakitvedua.ui.theme.BrassGold
 import com.stitchilyas.vakitvedua.ui.theme.TealPrimary
+import com.stitchilyas.vakitvedua.util.L10n
 
-enum class Screen(val title: String, val icon: ImageVector) {
-    VAKITLER("Vakitler", Icons.Default.AccessTime),
-    KIBLE("Kıble", Icons.Default.Explore),
-    REHBER("Rehber", Icons.Default.AutoStories),
-    KURAN("Kur'an", Icons.Default.MenuBook),
-    MESAJLAR("Mesajlar", Icons.Default.Chat),
-    ZIKIR("Zikir", Icons.Default.Adjust),
-    DUALAR("Dualar", Icons.Default.AutoStories),
-    TAKIP("Takip", Icons.Default.CheckCircle),
-    TAKVIM("Takvim", Icons.Default.CalendarMonth),
-    AYARLAR("Ayarlar", Icons.Default.Settings),
-    DIGER("Menü", Icons.Default.MoreHoriz)
+enum class Screen(val key: String, val defaultTitle: String, val icon: ImageVector) {
+    VAKITLER("nav_vakitler", "Vakitler", Icons.Default.AccessTime),
+    KIBLE("nav_kible", "Kıble", Icons.Default.Explore),
+    REHBER("nav_rehber", "Rehber", Icons.AutoMirrored.Filled.MenuBook),
+    KURAN("nav_kuran", "Kur'an", Icons.AutoMirrored.Filled.MenuBook),
+    MESAJLAR("nav_mesajlar", "Mesajlar", Icons.AutoMirrored.Filled.Chat),
+    ZIKIR("nav_zikir", "Zikir", Icons.Default.Adjust),
+    DUALAR("nav_dualar", "Dualar", Icons.AutoMirrored.Filled.MenuBook),
+    TAKIP("nav_takip", "Takip", Icons.Default.CheckCircle),
+    TAKVIM("nav_takvim", "Takvim", Icons.Default.CalendarMonth),
+    AYARLAR("nav_ayarlar", "Ayarlar", Icons.Default.Settings),
+    DIGER("nav_diger", "Menü", Icons.Default.MoreHoriz)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,6 +58,7 @@ fun MainScreen(
 ) {
     var currentScreen by remember { mutableStateOf(Screen.VAKITLER) }
     var showDestekDialog by remember { mutableStateOf(false) }
+    var appLang by remember { mutableStateOf(prefs.language) }
 
     // System BackHandler: if on secondary screen, go back to Vakitler
     if (currentScreen != Screen.VAKITLER) {
@@ -77,7 +85,7 @@ fun MainScreen(
                         modifier = Modifier.clickable { currentScreen = Screen.VAKITLER }
                     ) {
                         Text(
-                            text = "Vakit ve Dua",
+                            text = L10n.get("app_name", appLang),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = TealPrimary
@@ -101,7 +109,7 @@ fun MainScreen(
                     IconButton(onClick = { currentScreen = Screen.TAKIP }) {
                         Icon(
                             Icons.Default.CheckCircle,
-                            contentDescription = "Namaz Takibi",
+                            contentDescription = L10n.get("nav_takip", appLang),
                             tint = if (currentScreen == Screen.TAKIP) TealPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -110,7 +118,7 @@ fun MainScreen(
                     IconButton(onClick = { currentScreen = Screen.TAKVIM }) {
                         Icon(
                             Icons.Default.CalendarMonth,
-                            contentDescription = "Takvim ve İmsakiye",
+                            contentDescription = L10n.get("nav_takvim", appLang),
                             tint = if (currentScreen == Screen.TAKVIM) TealPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -119,7 +127,7 @@ fun MainScreen(
                     IconButton(onClick = { currentScreen = Screen.AYARLAR }) {
                         Icon(
                             Icons.Default.Settings,
-                            contentDescription = "Ayarlar",
+                            contentDescription = L10n.get("nav_ayarlar", appLang),
                             tint = if (currentScreen == Screen.AYARLAR) TealPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -142,18 +150,19 @@ fun MainScreen(
                                     currentScreen == Screen.AYARLAR ||
                                     currentScreen == Screen.ZIKIR
                             ))
+                    val title = L10n.get(screen.key, appLang)
                     NavigationBarItem(
                         selected = isSelected,
                         onClick = { currentScreen = screen },
                         icon = {
                             Icon(
                                 screen.icon,
-                                contentDescription = screen.title
+                                contentDescription = title
                             )
                         },
                         label = {
                             Text(
-                                screen.title,
+                                title,
                                 fontSize = 11.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                             )
@@ -181,15 +190,22 @@ fun MainScreen(
                     onNavigateToTakip = { currentScreen = Screen.TAKIP }
                 )
                 Screen.KIBLE -> KibleScreen(prefs = prefs)
-                Screen.REHBER -> DualarScreen(initialTab = 2) // Opens İbadet Rehberi (Namaz & Abdest) directly
+                Screen.REHBER -> DualarScreen(initialTab = 2) // Opens İbadet Rehberi
                 Screen.KURAN -> KuranScreen(prefs = prefs)
                 Screen.MESAJLAR -> MesajlarScreen()
                 Screen.ZIKIR -> ZikirScreen(prefs = prefs)
                 Screen.DUALAR -> DualarScreen(initialTab = 0)
                 Screen.TAKIP -> TakipScreen(prefs = prefs)
                 Screen.TAKVIM -> TakvimScreen(prefs = prefs)
-                Screen.AYARLAR -> AyarlarScreen(prefs = prefs, onThemeChanged = onThemeChanged)
+                Screen.AYARLAR -> AyarlarScreen(
+                    prefs = prefs,
+                    onThemeChanged = onThemeChanged,
+                    onLanguageChanged = { newLang ->
+                        appLang = newLang
+                    }
+                )
                 Screen.DIGER -> DigerMenuScreen(
+                    prefs = prefs,
                     onNavigate = { screen -> currentScreen = screen },
                     onOpenDestek = { showDestekDialog = true }
                 )
@@ -202,116 +218,252 @@ fun MainScreen(
     }
 }
 
-private data class MenuItemInfo(
+private data class MenuItemData(
     val screen: Screen,
     val title: String,
     val subtitle: String,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val badgeColor: Color,
+    val shape: Shape
 )
 
 @Composable
 fun DigerMenuScreen(
+    prefs: AppPreferences,
     onNavigate: (Screen) -> Unit,
     onOpenDestek: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val gridMenuItems = listOf(
-        MenuItemInfo(Screen.ZIKIR, "Zikirmatik", "Zikir & tesbihat sayacı", Icons.Default.Adjust),
-        MenuItemInfo(Screen.TAKIP, "Namaz & Kaza", "Kaza namazı takibi", Icons.Default.CheckCircle),
-        MenuItemInfo(Screen.TAKVIM, "Takvim & İmsakiye", "Hicri vakitler & takvim", Icons.Default.CalendarMonth),
-        MenuItemInfo(Screen.DUALAR, "Sure ve Dualar", "Dualar & ibadet rehberi", Icons.Default.MenuBook)
-    )
+    val lang = prefs.language
+
+    val menuItems = remember(lang) {
+        listOf(
+            MenuItemData(
+                screen = Screen.ZIKIR,
+                title = L10n.get("nav_zikir", lang),
+                subtitle = "Zikirmatik & Esmâlar",
+                icon = Icons.Default.Adjust,
+                badgeColor = Color(0xFFE91E63),
+                shape = CutCornerShape(topStart = 20.dp, bottomEnd = 20.dp)
+            ),
+            MenuItemData(
+                screen = Screen.TAKIP,
+                title = L10n.get("nav_takip", lang),
+                subtitle = "Namaz & Oruç Çetelesi",
+                icon = Icons.Default.CheckCircle,
+                badgeColor = Color(0xFF00897B),
+                shape = RoundedCornerShape(topEnd = 20.dp, bottomStart = 20.dp)
+            ),
+            MenuItemData(
+                screen = Screen.TAKVIM,
+                title = L10n.get("nav_takvim", lang),
+                subtitle = "Hicri Takvim & Kandiller",
+                icon = Icons.Default.CalendarMonth,
+                badgeColor = Color(0xFF3F51B5),
+                shape = CutCornerShape(topEnd = 20.dp, bottomStart = 20.dp)
+            ),
+            MenuItemData(
+                screen = Screen.DUALAR,
+                title = L10n.get("nav_dualar", lang),
+                subtitle = "Arapça Dualar & Cevşen",
+                icon = Icons.AutoMirrored.Filled.MenuBook,
+                badgeColor = Color(0xFFFFA000),
+                shape = RoundedCornerShape(20.dp)
+            ),
+            MenuItemData(
+                screen = Screen.AYARLAR,
+                title = L10n.get("nav_ayarlar", lang),
+                subtitle = "Konum, Ses & Görünüm",
+                icon = Icons.Default.Settings,
+                badgeColor = Color(0xFF7B1FA2),
+                shape = CutCornerShape(bottomEnd = 20.dp, topStart = 20.dp)
+            ),
+            MenuItemData(
+                screen = Screen.KIBLE,
+                title = L10n.get("nav_kible", lang),
+                subtitle = "Kâbe Yönü & Pusula",
+                icon = Icons.Default.Explore,
+                badgeColor = Color(0xFF0288D1),
+                shape = RoundedCornerShape(20.dp)
+            )
+        )
+    }
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
     ) {
-        Text(
-            text = "Tüm Özellikler ve Menü",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = "Zikirmatik, kaza takibi, takvim ve ayarlar",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Spacer(modifier = Modifier.height(10.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Destek Ol Special Banner Card in Menu
+        // Vibrant Menu Hero Banner
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(18.dp))
-                .clickable { onOpenDestek() }
-                .testTag("menu_destek_banner"),
-            shape = RoundedCornerShape(18.dp),
-            colors = CardDefaults.cardColors(containerColor = TealPrimary.copy(alpha = 0.1f)),
-            border = BorderStroke(1.dp, TealPrimary.copy(alpha = 0.35f))
+                .shadow(6.dp, RoundedCornerShape(24.dp)),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent)
         ) {
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                Color(0xFF0F3832),
+                                Color(0xFF00695C),
+                                Color(0xFF3E2723)
+                            )
+                        )
+                    )
+                    .padding(20.dp)
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("🕌", fontSize = 22.sp)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Vakit ve Dua Menüsü",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "İbadet Rehberi, Zikir, Takip & Tüm Araçlar",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = BrassGold
+                        )
+                    }
+
                     Surface(
-                        shape = RoundedCornerShape(14.dp),
-                        color = TealPrimary,
-                        modifier = Modifier.size(44.dp)
+                        shape = CircleShape,
+                        color = BrassGold.copy(alpha = 0.25f),
+                        modifier = Modifier.size(46.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.VolunteerActivism, contentDescription = null, tint = Color.White)
+                            Icon(
+                                Icons.Default.Apps,
+                                contentDescription = null,
+                                tint = BrassGold,
+                                modifier = Modifier.size(24.dp)
+                            )
                         }
                     }
-                    Spacer(modifier = Modifier.width(14.dp))
-                    Column {
-                        Text(
-                            text = "Destek Ol & Reklam İzle",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = TealPrimary
-                        )
-                        Text(
-                            text = "Geliştiriciye katkıda bulunun",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
                 }
-                Icon(Icons.Default.ChevronRight, contentDescription = null, tint = TealPrimary)
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
+        // Special Destek Banner Card
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .shadow(4.dp, RoundedCornerShape(20.dp))
+                .clickable { onOpenDestek() }
+                .testTag("menu_destek_banner"),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.horizontalGradient(
+                            listOf(
+                                Color(0xFF3E2723),
+                                Color(0xFF5D4037)
+                            )
+                        )
+                    )
+                    .padding(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Surface(
+                            shape = CircleShape,
+                            color = BrassGold,
+                            modifier = Modifier.size(42.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Default.VolunteerActivism,
+                                    contentDescription = null,
+                                    tint = Color.Black,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = "Geliştiriciye Destek Ol",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = BrassGold
+                            )
+                            Text(
+                                text = "Kısa reklam izleyerek hayır duası alın",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White.copy(alpha = 0.85f)
+                            )
+                        }
+                    }
+
+                    Button(
+                        onClick = { onOpenDestek() },
+                        shape = CircleShape,
+                        colors = ButtonDefaults.buttonColors(containerColor = BrassGold),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                        modifier = Modifier.height(34.dp)
+                    ) {
+                        Text("✨ Destek", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 11.sp)
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        // Feature Cards Grid
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(bottom = 90.dp)
         ) {
-            items(gridMenuItems) { item ->
+            items(menuItems) { item ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(128.dp)
-                        .clip(RoundedCornerShape(20.dp))
+                        .height(125.dp)
+                        .shadow(3.dp, item.shape)
+                        .clip(item.shape)
                         .clickable { onNavigate(item.screen) }
                         .testTag("menu_card_${item.screen.name.lowercase()}"),
-                    shape = RoundedCornerShape(20.dp),
+                    shape = item.shape,
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    border = BorderStroke(1.dp, TealPrimary.copy(alpha = 0.15f)),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    border = BorderStroke(1.dp, item.badgeColor.copy(alpha = 0.25f))
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp),
+                            .padding(14.dp),
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
                         Row(
@@ -320,111 +472,43 @@ fun DigerMenuScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Surface(
-                                shape = RoundedCornerShape(14.dp),
-                                color = TealPrimary.copy(alpha = 0.12f),
-                                modifier = Modifier.size(44.dp)
+                                shape = CircleShape,
+                                color = item.badgeColor,
+                                modifier = Modifier.size(38.dp)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
                                         item.icon,
                                         contentDescription = null,
-                                        tint = TealPrimary,
-                                        modifier = Modifier.size(24.dp)
+                                        tint = Color.White,
+                                        modifier = Modifier.size(20.dp)
                                     )
                                 }
                             }
+
                             Icon(
                                 Icons.Default.ChevronRight,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                                tint = item.badgeColor,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
 
-                        Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                        Column {
                             Text(
                                 text = item.title,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                fontSize = 15.sp
                             )
                             Text(
                                 text = item.subtitle,
                                 style = MaterialTheme.typography.bodySmall,
-                                fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                fontSize = 11.sp,
+                                maxLines = 1
                             )
                         }
-                    }
-                }
-            }
-
-            // Prominent Full-Width Card for "Ayarlar & Bildirimler"
-            item(span = { GridItemSpan(2) }) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(20.dp))
-                        .clickable { onNavigate(Screen.AYARLAR) }
-                        .testTag("menu_card_ayarlar"),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    border = BorderStroke(1.dp, TealPrimary.copy(alpha = 0.2f)),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Surface(
-                                shape = RoundedCornerShape(14.dp),
-                                color = TealPrimary.copy(alpha = 0.12f),
-                                modifier = Modifier.size(48.dp)
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Icon(
-                                        Icons.Default.Settings,
-                                        contentDescription = null,
-                                        tint = TealPrimary,
-                                        modifier = Modifier.size(26.dp)
-                                    )
-                                }
-                            }
-                            Spacer(modifier = Modifier.width(14.dp))
-                            Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                                Text(
-                                    text = "Ayarlar & Bildirimler",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                                Text(
-                                    text = "Ezan bildirimleri, sesler, konum ve tema",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    fontSize = 12.sp,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                        Icon(
-                            Icons.Default.ChevronRight,
-                            contentDescription = null,
-                            tint = TealPrimary,
-                            modifier = Modifier.size(22.dp)
-                        )
                     }
                 }
             }

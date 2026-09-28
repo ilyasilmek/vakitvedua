@@ -4,8 +4,11 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.media.AudioAttributes
+import android.media.MediaPlayer
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -48,9 +51,84 @@ fun KuranScreen(
     var searchQuery by remember { mutableStateOf("") }
     var arabicFontSize by remember { mutableFloatStateOf(24f) }
 
+    // Audio Player state
+    var isPlayingAudio by remember { mutableStateOf(false) }
+    var isBufferingAudio by remember { mutableStateOf(false) }
+    var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
+
+    DisposableEffect(selectedSurah) {
+        onDispose {
+            mediaPlayer?.release()
+            mediaPlayer = null
+            isPlayingAudio = false
+            isBufferingAudio = false
+        }
+    }
+
+    fun playSurahAudio(surahId: Int) {
+        if (isPlayingAudio && mediaPlayer != null) {
+            mediaPlayer?.pause()
+            isPlayingAudio = false
+            return
+        }
+
+        if (mediaPlayer != null && !isPlayingAudio) {
+            mediaPlayer?.start()
+            isPlayingAudio = true
+            return
+        }
+
+        // Formatted Surah number (e.g. 001, 002, 114)
+        val formattedNum = String.format("%03d", surahId)
+        val audioUrl = when (prefs.quranReciter) {
+            "abdulsamad" -> "https://server8.mp3quran.net/basit/$formattedNum.mp3"
+            "ghamadi" -> "https://server13.mp3quran.net/ghamdi/$formattedNum.mp3"
+            else -> "https://server8.mp3quran.net/afs/$formattedNum.mp3"
+        }
+
+        try {
+            isBufferingAudio = true
+            val mp = MediaPlayer().apply {
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .build()
+                )
+                setDataSource(audioUrl)
+                setOnPreparedListener {
+                    isBufferingAudio = false
+                    isPlayingAudio = true
+                    start()
+                }
+                setOnCompletionListener {
+                    isPlayingAudio = false
+                    isBufferingAudio = false
+                }
+                setOnErrorListener { _, _, _ ->
+                    isBufferingAudio = false
+                    isPlayingAudio = false
+                    Toast.makeText(context, "Ses akışı başlatılamadı. İnternet bağlantınızı kontrol edin.", Toast.LENGTH_LONG).show()
+                    true
+                }
+                prepareAsync()
+            }
+            mediaPlayer = mp
+        } catch (e: Exception) {
+            isBufferingAudio = false
+            isPlayingAudio = false
+            Toast.makeText(context, "Ses oynatma hatası: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     // If surah reading view is open, handle system back button
     if (selectedSurah != null) {
         BackHandler {
+            mediaPlayer?.stop()
+            mediaPlayer?.release()
+            mediaPlayer = null
+            isPlayingAudio = false
+            isBufferingAudio = false
             selectedSurah = null
         }
     }
@@ -224,6 +302,27 @@ fun KuranScreen(
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Audio Play/Pause Button
+                    IconButton(
+                        onClick = { playSurahAudio(surah.id) },
+                        modifier = Modifier.testTag("surah_audio_button")
+                    ) {
+                        if (isBufferingAudio) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                strokeWidth = 2.dp,
+                                color = TealPrimary
+                            )
+                        } else {
+                            Icon(
+                                imageVector = if (isPlayingAudio) Icons.Default.PauseCircle else Icons.Default.PlayCircle,
+                                contentDescription = if (isPlayingAudio) "Durdur" else "Dinle",
+                                tint = TealPrimary,
+                                modifier = Modifier.size(28.dp)
+                            )
+                        }
+                    }
+
                     // Font size down
                     IconButton(
                         onClick = { if (arabicFontSize > 18f) arabicFontSize -= 2f },
@@ -258,6 +357,45 @@ fun KuranScreen(
             }
 
             HorizontalDivider()
+
+            // Audio Player Active Banner
+            AnimatedVisibility(visible = isPlayingAudio || isBufferingAudio) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = TealPrimary.copy(alpha = 0.12f))
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.VolumeUp, contentDescription = null, tint = TealPrimary)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = if (isBufferingAudio) "${surah.name} Suresi Yükleniyor..." else "${surah.name} Suresi Okunuyor",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = TealPrimary
+                            )
+                        }
+                        IconButton(onClick = {
+                            mediaPlayer?.stop()
+                            mediaPlayer?.release()
+                            mediaPlayer = null
+                            isPlayingAudio = false
+                            isBufferingAudio = false
+                        }) {
+                            Icon(Icons.Default.Close, contentDescription = "Kapat", tint = TealPrimary)
+                        }
+                    }
+                }
+            }
 
             // Besmele Header (for all surahs except Tawbah #9, if not already starting with Besmele)
             if (surah.id != 9 && surah.id != 1) {

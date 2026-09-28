@@ -164,14 +164,8 @@ fun TakvimScreen(
                 contentPadding = PaddingValues(bottom = 90.dp)
             ) {
                 item {
-                    val currentDist = if (prefs.districtName.isNotEmpty()) prefs.districtName else if (prefs.cityName == "İstanbul") "Maltepe" else ""
-                    val takvimLocText = if (currentDist.isNotEmpty()) {
-                        "${prefs.cityName.uppercase(Locale.getDefault())}-$currentDist"
-                    } else {
-                        prefs.cityName.uppercase(Locale.getDefault())
-                    }
                     Text(
-                        text = "$takvimLocText için 30 Günlük Namaz Vakitleri",
+                        text = "${prefs.cityName} için 30 Günlük Namaz Vakitleri",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

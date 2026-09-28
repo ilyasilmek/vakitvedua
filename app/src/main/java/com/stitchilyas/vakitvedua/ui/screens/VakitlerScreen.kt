@@ -1,6 +1,12 @@
 package com.stitchilyas.vakitvedua.ui.screens
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.provider.Settings
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -37,6 +43,7 @@ import com.stitchilyas.vakitvedua.ui.components.KerahatSlideCard
 import com.stitchilyas.vakitvedua.ui.components.SkyCard
 import com.stitchilyas.vakitvedua.ui.theme.BrassGold
 import com.stitchilyas.vakitvedua.ui.theme.TealPrimary
+import com.stitchilyas.vakitvedua.util.LocationHelper
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -63,13 +70,7 @@ fun VakitlerScreen(
     }
 
     var selectedCityName by remember { mutableStateOf(prefs.cityName) }
-    var selectedDistrictName by remember {
-        mutableStateOf(
-            if (prefs.districtName.isNotEmpty()) prefs.districtName
-            else if (prefs.cityName == "İstanbul") "Maltepe"
-            else ""
-        )
-    }
+    var selectedDistrictName by remember { mutableStateOf(prefs.districtName) }
     var lat by remember { mutableDoubleStateOf(prefs.latitude) }
     var lng by remember { mutableDoubleStateOf(prefs.longitude) }
 
@@ -95,6 +96,132 @@ fun VakitlerScreen(
 
     val hijriDate = remember(todayCal) { HijriCalc.fromGregorian(todayCal) }
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+
+    // GPS Location Detection
+    var isLocating by remember { mutableStateOf(false) }
+
+    fun applyDetectedLocation(
+        newCityName: String,
+        newDistrictName: String,
+        newLat: Double,
+        newLng: Double
+    ) {
+        selectedCityName = newCityName
+        selectedDistrictName = newDistrictName
+        lat = newLat
+        lng = newLng
+        prefs.cityName = newCityName
+        prefs.districtName = newDistrictName
+        prefs.latitude = newLat
+        prefs.longitude = newLng
+
+        val locationText = if (newDistrictName.isNotEmpty()) "$newCityName, $newDistrictName" else newCityName
+        Toast.makeText(context, "Konumunuz güncellendi: $locationText", Toast.LENGTH_LONG).show()
+    }
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val fineGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+        val coarseGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        if (fineGranted || coarseGranted) {
+            isLocating = true
+            Toast.makeText(context, "Konumunuz aranıyor...", Toast.LENGTH_SHORT).show()
+            LocationHelper.getCurrentLocation(context, cities) { result ->
+                isLocating = false
+                when (result) {
+                    is LocationHelper.LocationResult.Success -> {
+                        applyDetectedLocation(
+                            result.cityName,
+                            result.districtName,
+                            result.latitude,
+                            result.longitude
+                        )
+                    }
+                    is LocationHelper.LocationResult.GpsDisabled -> {
+                        Toast.makeText(
+                            context,
+                            "Lütfen telefonunuzun GPS servisini açın.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    is LocationHelper.LocationResult.PermissionDenied -> {
+                        Toast.makeText(
+                            context,
+                            "Konum izni verilmedi.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    is LocationHelper.LocationResult.Error -> {
+                        Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        } else {
+            Toast.makeText(
+                context,
+                "Konumunuzu otomatik bulabilmek için lütfen konum iznini onaylayın.",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    fun requestGpsLocation() {
+        if (!LocationHelper.hasPermission(context)) {
+            locationPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+            return
+        }
+
+        if (!LocationHelper.isLocationEnabled(context)) {
+            Toast.makeText(
+                context,
+                "Lütfen telefonunuzun Konum (GPS) servisini açın.",
+                Toast.LENGTH_LONG
+            ).show()
+            try {
+                context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            } catch (_: Exception) {}
+            return
+        }
+
+        isLocating = true
+        Toast.makeText(context, "Konumunuz aranıyor...", Toast.LENGTH_SHORT).show()
+        LocationHelper.getCurrentLocation(context, cities) { result ->
+            isLocating = false
+            when (result) {
+                is LocationHelper.LocationResult.Success -> {
+                    applyDetectedLocation(
+                        result.cityName,
+                        result.districtName,
+                        result.latitude,
+                        result.longitude
+                    )
+                }
+                is LocationHelper.LocationResult.GpsDisabled -> {
+                    Toast.makeText(
+                        context,
+                        "Lütfen telefonunuzun GPS servisini açın.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                is LocationHelper.LocationResult.PermissionDenied -> {
+                    Toast.makeText(
+                        context,
+                        "Konum izni verilmedi.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                is LocationHelper.LocationResult.Error -> {
+                    Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
 
     // State for tracked prayer checks today
     var trackingVersion by remember { mutableIntStateOf(0) }
@@ -150,13 +277,8 @@ fun VakitlerScreen(
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                val displayLoc = if (selectedDistrictName.isNotEmpty()) {
-                                    "${selectedCityName.uppercase(Locale.getDefault())}-$selectedDistrictName"
-                                } else {
-                                    selectedCityName.uppercase(Locale.getDefault())
-                                }
                                 Text(
-                                    text = displayLoc,
+                                    text = if (selectedDistrictName.isNotEmpty()) "$selectedCityName, $selectedDistrictName" else selectedCityName,
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -178,29 +300,28 @@ fun VakitlerScreen(
                     // GPS Button
                     IconButton(
                         onClick = {
-                            // Automatically pick Istanbul or nearest city
-                            val defaultCity = cities.find { it.name == "İstanbul" } ?: cities.firstOrNull()
-                            if (defaultCity != null) {
-                                selectedCityName = defaultCity.name
-                                selectedDistrictName = ""
-                                lat = defaultCity.lat
-                                lng = defaultCity.lng
-                                prefs.cityName = defaultCity.name
-                                prefs.districtName = ""
-                                prefs.latitude = defaultCity.lat
-                                prefs.longitude = defaultCity.lng
+                            if (!isLocating) {
+                                requestGpsLocation()
                             }
                         },
                         modifier = Modifier
                             .size(38.dp)
                             .testTag("gps_locate_button")
                     ) {
-                        Icon(
-                            Icons.Default.MyLocation,
-                            contentDescription = "Konumumu Bul",
-                            tint = TealPrimary,
-                            modifier = Modifier.size(20.dp)
-                        )
+                        if (isLocating) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                strokeWidth = 2.dp,
+                                color = TealPrimary
+                            )
+                        } else {
+                            Icon(
+                                Icons.Default.MyLocation,
+                                contentDescription = "Konumumu Bul",
+                                tint = TealPrimary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
                 }
             }

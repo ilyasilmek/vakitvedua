@@ -10,6 +10,13 @@ class AppPreferences(context: Context) {
     private val prefs: SharedPreferences =
         context.getSharedPreferences("vakitvedua_prefs", Context.MODE_PRIVATE)
 
+    init {
+        // Force language preference to Turkish
+        if (prefs.getString("app_language", "tr") != "tr") {
+            prefs.edit().putString("app_language", "tr").apply()
+        }
+    }
+
     // Location
     var cityName: String
         get() = prefs.getString("city_name", "İstanbul") ?: "İstanbul"
@@ -108,6 +115,26 @@ class AppPreferences(context: Context) {
         current.remove(name)
         prefs.edit().putString("custom_dhikrs", current.joinToString(";;;")).apply()
     }
+
+    // Language (Always "tr")
+    var language: String
+        get() = "tr"
+        set(_) = prefs.edit().putString("app_language", "tr").apply()
+
+    // Ezan Makam Choice ("Genel", "Saba", "Uşşak", "Rast", "Segâh", "Hicaz")
+    var ezanMakam: String
+        get() = prefs.getString("ezan_makam", "Genel") ?: "Genel"
+        set(value) = prefs.edit().putString("ezan_makam", value).apply()
+
+    // Auto Silent Mode during Prayer
+    var autoSilentMode: Boolean
+        get() = prefs.getBoolean("auto_silent_mode", false)
+        set(value) = prefs.edit().putBoolean("auto_silent_mode", value).apply()
+
+    // Quran Reciter ID
+    var quranReciter: String
+        get() = prefs.getString("quran_reciter", "mishari") ?: "mishari"
+        set(value) = prefs.edit().putString("quran_reciter", value).apply()
 
     // Quran bookmark
     var bookmarkSurah: Int

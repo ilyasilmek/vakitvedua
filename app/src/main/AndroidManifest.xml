@@ -6,6 +6,11 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -14,6 +19,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.VakitVeDua">
+        
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-4494482100556023~2278665585" />
@@ -27,6 +33,39 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Widgets -->
+        <receiver
+            android:name=".widget.VakitWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_vakit_small_info" />
+        </receiver>
+
+        <!-- Actionable Prayer Notification Receiver -->
+        <receiver
+            android:name=".notification.PrayerNotificationReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.stitchilyas.vakitvedua.ACTION_MARK_PRAYER_DONE" />
+            </intent-filter>
+        </receiver>
+
+        <!-- File Provider for Sharing Greeting Cards -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.stitchilyas.vakitvedua.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
     </application>
 
 </manifest>

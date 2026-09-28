@@ -11,30 +11,24 @@ android {
         applicationId = "com.stitchilyas.vakitvedua"
         minSdk = 26
         targetSdk = 36
-        versionCode = 15401
-        versionName = "1.54.01"
+        versionCode = 15402
+        versionName = "1.54.02"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
         getByName("debug") {
-            val debugKeystore = file("$rootDir/debug.keystore")
-            if (debugKeystore.exists()) {
-                storeFile = debugKeystore
-                storePassword = "android"
-                keyAlias = "androiddebugkey"
-                keyPassword = "android"
-            }
+            storeFile = file("${rootDir}/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
         }
         create("release") {
-            val debugKeystore = file("$rootDir/debug.keystore")
-            if (debugKeystore.exists()) {
-                storeFile = debugKeystore
-                storePassword = "android"
-                keyAlias = "androiddebugkey"
-                keyPassword = "android"
-            }
+            storeFile = file("${rootDir}/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
         }
     }
 

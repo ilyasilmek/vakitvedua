@@ -23,9 +23,13 @@ object AdManager {
 
     fun initialize(context: Context) {
         if (isInitialized) return
-        MobileAds.initialize(context) {
-            isInitialized = true
-            preloadRewardedAd(context)
+        try {
+            MobileAds.initialize(context) {
+                isInitialized = true
+                preloadRewardedAd(context)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "AdManager initialization error: ${e.message}", e)
         }
     }
 

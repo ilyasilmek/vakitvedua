@@ -223,13 +223,104 @@ fun TakipScreen(
             }
         }
 
-        // Kaza Namazı Başlığı
+        // Kaza Namazı Başlığı & Sihirbaz Butonu
         item {
-            Text(
-                text = "Kaza Namazı Sayacı",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
+            var showWizardDialog by remember { mutableStateOf(false) }
+            var ageText by remember { mutableStateOf("25") }
+            var pubertyText by remember { mutableStateOf("12") }
+            var unperformedYearsText by remember { mutableStateOf("2") }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = "Kaza Namazı Sayacı",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Manuel takip edebilir veya sihirbazla hesaplayabilirsiniz.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                Button(
+                    onClick = { showWizardDialog = true },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = BrassGold)
+                ) {
+                    Text("Sihirbaz", fontWeight = FontWeight.Bold, color = Color.Black)
+                }
+            }
+
+            if (showWizardDialog) {
+                AlertDialog(
+                    onDismissRequest = { showWizardDialog = false },
+                    title = { Text("🧮 Kaza Borcu Hesaplama Sihirbazı", fontWeight = FontWeight.Bold) },
+                    text = {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(10.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Sorumlu olduğunuz süre içerisindeki tahmini kılınmayan namaz ve oruç borcunuzu otomatik hesaplar.")
+
+                            OutlinedTextField(
+                                value = ageText,
+                                onValueChange = { ageText = it },
+                                label = { Text("Mevcut Yaşınız") },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            OutlinedTextField(
+                                value = pubertyText,
+                                onValueChange = { pubertyText = it },
+                                label = { Text("Ergenlik/Buluğ Yaşı (Varsayılan 12)") },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            OutlinedTextField(
+                                value = unperformedYearsText,
+                                onValueChange = { unperformedYearsText = it },
+                                label = { Text("Tahmini Kılınmayan Yıl Sayısı") },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                val years = unperformedYearsText.toIntOrNull() ?: 1
+                                val days = years * 365
+                                prefs.setKazaCount("sabah", days)
+                                prefs.setKazaCount("ogle", days)
+                                prefs.setKazaCount("ikindi", days)
+                                prefs.setKazaCount("aksam", days)
+                                prefs.setKazaCount("yatsi", days)
+                                prefs.setKazaCount("vitir", days)
+                                prefs.setKazaCount("oruc", years * 30)
+                                trackerRefresh++
+                                showWizardDialog = false
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = TealPrimary)
+                        ) {
+                            Text("Hesapla ve Kaydet")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showWizardDialog = false }) {
+                            Text("İptal")
+                        }
+                    }
+                )
+            }
+
             Spacer(modifier = Modifier.height(4.dp))
         }
 
