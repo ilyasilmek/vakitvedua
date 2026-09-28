@@ -1,0 +1,87 @@
+name: Android CI/CD
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Grant execute permission for gradlew
+        run: |
+          if [ -f "./gradlew" ]; then
+            chmod +x gradlew
+          fi
+
+      - name: Build Debug APK, Release APK & AAB
+        run: |
+          gradle assembleDebug bundleRelease assembleRelease
+
+      - name: Sign AAB (If Release Keystore Secrets Provided)
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          AAB=app/build/outputs/bundle/release/app-release.aab
+          if [ -n "$KS_B64" ]; then
+            echo "$KS_B64" | base64 -d > upload.jks
+            jarsigner -sigalg SHA256withRSA -digestalg SHA-256 -keystore upload.jks -storepass "$KS_PASS" -keypass "${KEY_PASS:-$KS_PASS}" "$AAB" "$KEY_ALIAS"
+            jarsigner -verify -strict "$AAB" | tail -1
+            rm upload.jks
+            echo "SIGNED=1" >> $GITHUB_ENV
+          else
+            echo "Keystore secret not provided, skipping custom signing step."
+          fi
+
+      - name: Upload Debug APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vakitvedua-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload Release APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vakitvedua-release-apk
+          path: app/build/outputs/apk/release/app-release.apk
+
+      - name: Upload Release AAB Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vakitvedua-release-aab
+          path: app/build/outputs/bundle/release/app-release.aab
+
+      - name: Create GitHub Release on Tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG_NAME="${GITHUB_REF_NAME}"
+          cp app/build/outputs/bundle/release/app-release.aab "vakitvedua-${TAG_NAME}.aab"
+          cp app/build/outputs/apk/release/app-release.apk "vakitvedua-${TAG_NAME}-release.apk"
+          cp app/build/outputs/apk/debug/app-debug.apk "vakitvedua-${TAG_NAME}-debug.apk"
+          gh release create "$TAG_NAME" "vakitvedua-${TAG_NAME}.aab" "vakitvedua-${TAG_NAME}-release.apk" "vakitvedua-${TAG_NAME}-debug.apk" \
+            --title "Vakit ve Dua $TAG_NAME" \
+            --notes "Play Console AAB ve APK indirme bağlantıları." \
+            --verify-tag
