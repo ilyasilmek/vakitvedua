@@ -18,19 +18,16 @@ android {
     }
 
     signingConfigs {
-        getByName("debug") {
-            val ks = file("${rootDir}/debug.keystore")
-            if (ks.exists()) {
-                storeFile = ks
+        val rootKeystore = file("${rootDir}/debug.keystore")
+        if (rootKeystore.exists()) {
+            getByName("debug") {
+                storeFile = rootKeystore
                 storePassword = "android"
                 keyAlias = "androiddebugkey"
                 keyPassword = "android"
             }
-        }
-        create("release") {
-            val ks = file("${rootDir}/debug.keystore")
-            if (ks.exists()) {
-                storeFile = ks
+            create("release") {
+                storeFile = rootKeystore
                 storePassword = "android"
                 keyAlias = "androiddebugkey"
                 keyPassword = "android"
@@ -42,7 +39,7 @@ android {
         release {
             isMinifyEnabled = false
             val relConfig = signingConfigs.findByName("release")
-            if (relConfig?.storeFile?.exists() == true) {
+            if (relConfig != null) {
                 signingConfig = relConfig
             }
             proguardFiles(
@@ -52,7 +49,7 @@ android {
         }
         debug {
             val dbgConfig = signingConfigs.findByName("debug")
-            if (dbgConfig?.storeFile?.exists() == true) {
+            if (dbgConfig?.storeFile != null) {
                 signingConfig = dbgConfig
             }
         }
