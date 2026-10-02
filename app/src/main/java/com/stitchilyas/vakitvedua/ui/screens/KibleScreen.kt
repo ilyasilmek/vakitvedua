@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.NearMe
@@ -431,64 +430,6 @@ fun KibleScreen(
                     color = TealPrimary
                 )
             }
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        // AR Camera Mode Button
-        var showArCameraDialog by remember { mutableStateOf(false) }
-
-        Button(
-            onClick = { showArCameraDialog = true },
-            modifier = Modifier
-                .fillMaxWidth()
-                .testTag("ar_camera_qibla_button"),
-            shape = RoundedCornerShape(14.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = TealPrimary)
-        ) {
-            Icon(Icons.Default.CameraAlt, contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Kamera (AR) ile Kıble Yönü Bul", fontWeight = FontWeight.Bold)
-        }
-
-        if (showArCameraDialog) {
-            AlertDialog(
-                onDismissRequest = { showArCameraDialog = false },
-                title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("🕋 Kamera (AR) Kıble Rehberi", fontWeight = FontWeight.Bold)
-                    }
-                },
-                text = {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(220.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            color = Color.Black
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Text(
-                                    text = "📷 Kamera Görünümü\n\nKıble Açısı: ${Math.round(qiblaAngle)}°\nFark: ${Math.round(abs(shortestAngleToQibla))}°\n\n${if (isAligned) "✅ KÂBE YÖNÜNDESİNİZ!" else "➡️ Kâbe için telefonu sağa/sola çevirin"}",
-                                    color = if (isAligned) Color(0xFF00E676) else Color.White,
-                                    fontWeight = FontWeight.Bold,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(16.dp)
-                                )
-                            }
-                        }
-                    }
-                },
-                confirmButton = {
-                    TextButton(onClick = { showArCameraDialog = false }) {
-                        Text("Tamam")
-                    }
-                }
-            )
         }
 
         Spacer(modifier = Modifier.height(10.dp))

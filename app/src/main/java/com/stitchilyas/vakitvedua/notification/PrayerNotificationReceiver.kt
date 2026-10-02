@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import com.stitchilyas.vakitvedua.data.local.AppPreferences
+import com.stitchilyas.vakitvedua.util.SilentModeManager
 import java.util.Date
 
 /**
@@ -21,6 +22,14 @@ class PrayerNotificationReceiver : BroadcastReceiver() {
                 val prayerIndex = intent.getIntExtra(EXTRA_PRAYER_INDEX, -1)
                 if (prayerIndex != -1) {
                     PrayerNotificationScheduler.showPrayerNotification(context, prayerIndex)
+                    // Namazda Otomatik Sessiz Mod ayarı açıksa cihazı titreşime al
+                    SilentModeManager.onPrayerTime(context)
+                }
+            }
+            ACTION_RESTORE_RINGER -> {
+                val savedRinger = intent.getIntExtra(EXTRA_RESTORE_RINGER, -1)
+                if (savedRinger != -1) {
+                    SilentModeManager.restore(context, savedRinger)
                 }
             }
             ACTION_KERAHAT_WARNING -> {
@@ -56,9 +65,11 @@ class PrayerNotificationReceiver : BroadcastReceiver() {
         const val ACTION_MARK_PRAYER_DONE = "com.stitchilyas.vakitvedua.ACTION_MARK_PRAYER_DONE"
         const val ACTION_PRAYER_TIME = "com.stitchilyas.vakitvedua.ACTION_PRAYER_TIME"
         const val ACTION_KERAHAT_WARNING = "com.stitchilyas.vakitvedua.ACTION_KERAHAT_WARNING"
+        const val ACTION_RESTORE_RINGER = "com.stitchilyas.vakitvedua.ACTION_RESTORE_RINGER"
         const val EXTRA_PRAYER_NAME = "extra_prayer_name"
         const val EXTRA_NOTIFICATION_ID = "extra_notification_id"
         const val EXTRA_PRAYER_INDEX = "extra_prayer_index"
         const val EXTRA_KERAHAT_NAME = "extra_kerahat_name"
+        const val EXTRA_RESTORE_RINGER = "extra_restore_ringer"
     }
 }

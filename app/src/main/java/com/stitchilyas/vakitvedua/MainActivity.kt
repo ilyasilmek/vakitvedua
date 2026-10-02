@@ -18,6 +18,8 @@ import com.stitchilyas.vakitvedua.data.local.DataLoader
 import com.stitchilyas.vakitvedua.notification.PrayerNotificationScheduler
 import com.stitchilyas.vakitvedua.ui.navigation.MainScreen
 import com.stitchilyas.vakitvedua.ui.theme.VakitVeDuaTheme
+import com.stitchilyas.vakitvedua.util.LocationHelper
+import android.widget.Toast
 
 class MainActivity : ComponentActivity() {
 
@@ -30,6 +32,9 @@ class MainActivity : ComponentActivity() {
         com.stitchilyas.vakitvedua.ads.AdManager.initialize(this)
 
         val prefs = AppPreferences(this)
+
+        // Açılışta sessiz konum doğrulaması: il/ilçe değiştiyse otomatik güncelle
+        maybeAutoVerifyLocation(prefs)
 
         // Namaz vakti bildirimlerini kur; Android 13+ izin gerekir
         if (Build.VERSION.SDK_INT >= 33 &&
@@ -69,6 +74,41 @@ class MainActivity : ComponentActivity() {
             grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED
         ) {
             PrayerNotificationScheduler.reschedule(this)
+        }
+    }
+
+    /**
+     * Konum izni zaten verilmişse açılışta sessizce konum doğrulaması yapar.
+     * Cihazın bulunduğu il/ilçe, kayıtlı seçimden farklıysa otomatik güncelleştirir.
+     * İzin verilmemişse hiçbir şey yapmaz (izin isteme yalnızca kullanıcı aksiyonuyla).
+     */
+    private fun maybeAutoVerifyLocation(prefs: AppPreferences) {
+        if (!LocationHelper.hasPermission(this)) return
+        if (!LocationHelper.isLocationEnabled(this)) return
+
+        val cities = DataLoader.loadCities(this)
+        if (cities.isEmpty()) return
+
+        LocationHelper.verifyLocationSilently(this, cities) { result ->
+            if (result is LocationHelper.LocationResult.Success) {
+                val cityChanged = result.cityName != prefs.cityName
+                val districtChanged = result.districtName != prefs.districtName
+                if (cityChanged || districtChanged) {
+                    prefs.cityName = result.cityName
+                    prefs.districtName = result.districtName
+                    prefs.latitude = result.latitude
+                    prefs.longitude = result.longitude
+                    PrayerNotificationScheduler.reschedule(this)
+
+                    val locationText = if (result.districtName.isNotEmpty())
+                        "${result.cityName}, ${result.districtName}" else result.cityName
+                    Toast.makeText(
+                        this,
+                        "Konumunuz güncellendi: $locationText",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
         }
     }
 

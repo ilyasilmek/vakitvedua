@@ -103,30 +103,21 @@ fun MesajlarScreen(
         if (showCardDialog) {
             AlertDialog(
                 onDismissRequest = { showCardDialog = false },
-                title = { Text("🎨 Görsel Tebrik Kartı Tasarla", fontWeight = FontWeight.Bold) },
+                title = {
+                    Text(
+                        "Tebrik Kartı",
+                        fontWeight = FontWeight.Bold,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
                 text = {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("WhatsApp & Sosyal Medya için PNG Görsel Kartı Oluşturun:")
-
-                        OutlinedTextField(
-                            value = cardTitleText,
-                            onValueChange = { cardTitleText = it },
-                            label = { Text("Kart Başlığı") },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        OutlinedTextField(
-                            value = cardMessageText,
-                            onValueChange = { cardMessageText = it },
-                            label = { Text("Kart Mesajı") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        Text("Kart Teması (5 Farklı Tasarım):", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
+                        Text("Kart Teması:", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.fillMaxWidth())
 
                         LazyRow(
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -197,15 +188,18 @@ fun MesajlarScreen(
                             )
                             showCardDialog = false
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = TealPrimary)
+                        colors = ButtonDefaults.buttonColors(containerColor = TealPrimary),
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(vertical = 10.dp)
                     ) {
-                        Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("🖼️ Görsel Olarak Paylaş", fontWeight = FontWeight.Bold)
+                        Text("Paylaş", fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showCardDialog = false }) {
+                    TextButton(
+                        onClick = { showCardDialog = false },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         Text("İptal")
                     }
                 }

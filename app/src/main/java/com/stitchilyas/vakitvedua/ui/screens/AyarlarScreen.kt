@@ -574,6 +574,10 @@ fun AyarlarScreen(
                             onCheckedChange = {
                                 autoSilent = it
                                 prefs.autoSilentMode = it
+                                if (!it) {
+                                    // Kapatıldığında bekleyen geri yükleme alarmını iptal et
+                                    com.stitchilyas.vakitvedua.util.SilentModeManager.cancelPendingRestore(context)
+                                }
                             },
                             colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = Color(0xFFE91E63))
                         )
@@ -657,7 +661,7 @@ fun AyarlarScreen(
                                 color = TealPrimary
                             )
                             Text(
-                                text = "Sürüm 1.54.02",
+                                text = "Sürüm 1.55.02",
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = BrassGold
@@ -681,9 +685,17 @@ fun AyarlarScreen(
 
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(
-                        text = "Vakit ve Dua; namaz vakitlerini, kıble pusulasını, duaları ve günlük ibadet takibini sade ve modern bir arayüzde sunar. İnternetsiz çalışır ve verileriniz cihazınızda saklanır.\n\n" +
-                                "• Namaz vakitleri Diyanet İşleri Başkanlığı yöntemiyle hesaplanır.\n" +
-                                "• Kur'an-ı Kerim metinleri Tanzil Projesi'nden derlenmiştir.",
+                        text = "Vakit ve Dua; namaz vakitleri, kıble pusulası, Kur'an-ı Kerim, dualar ve ibadet takibini sade ve modern bir arayüzde sunar.\n\n" +
+                                "KUR'AN-ı KERİM\n" +
+                                "• 114 sure ve 6236 ayet, tam Türkçe sure adlarıyla\n" +
+                                "• 5 farklı hâfızdan ayet ayet sesli tilavet (everyayah.com)\n" +
+                                "• Okunan ayette animasyonlu takip ve otomatik kaydırma\n" +
+                                "• Sure ve ayet yer işaretleri\n\n" +
+                                "KAYNAKLAR VE VERİ GİZLİLİĞİ\n" +
+                                "• Namaz vakitleri Diyanet İşleri Başkanlığı yöntemiyle hesaplanır\n" +
+                                "• Kur'an metinleri Tanzil Projesi'nden derlenmiştir\n" +
+                                "• Tüm veriler cihazınızda saklanır; internet gerektiren tek özellik sesli tilavet ve reklamlardır\n" +
+                                "• Konum doğrulaması yalnızca izninizle, kapalıyken çalışır",
                         style = MaterialTheme.typography.bodySmall,
                         lineHeight = 20.sp
                     )

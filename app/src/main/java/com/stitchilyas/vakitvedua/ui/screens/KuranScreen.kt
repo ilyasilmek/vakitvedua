@@ -9,6 +9,12 @@ import android.media.MediaPlayer
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,6 +31,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -482,11 +489,16 @@ fun KuranScreen(
 
             // Ayahs list — oynatılan ayet vurgulanır ve görünüme kaydırılır
             val listState = rememberLazyListState()
-            // Oynatılan ayet değiştikçe otomatik kaydır
-            LaunchedEffect(audio.currentSurah?.id, audio.currentAyahIndex) {
-                if (audio.currentSurah?.id == surah.id && audio.currentAyahIndex >= 0 && audio.isPlaying) {
+            // Oynatılan ayet değiştikçe otomatik kaydır.
+            // NOT: isBuffering aşamasında (isPlaying=false) da tetiklenmesi gerekir;
+            // aksi halde ayet geçiş anında kaydırma hiç çalışmaz.
+            LaunchedEffect(audio.currentSurah?.id, audio.currentAyahIndex, audio.isBuffering, audio.isPlaying) {
+                if (audio.currentSurah?.id == surah.id && audio.currentAyahIndex >= 0) {
                     try {
-                        listState.animateScrollToItem(audio.currentAyahIndex)
+                        listState.animateScrollToItem(
+                            index = audio.currentAyahIndex,
+                            scrollOffset = -40
+                        )
                     } catch (_: Exception) {
                         // liste henüz hazır değilse yoksay
                     }
@@ -500,16 +512,41 @@ fun KuranScreen(
             ) {
                 itemsIndexed(surah.ayahs, key = { _, a -> "${surah.id}_${a.number}" }) { index, ayah ->
                     val isCurrentAyah = audio.currentSurah?.id == surah.id && audio.currentAyahIndex == index
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (isCurrentAyah) TealPrimary.copy(alpha = 0.10f)
-                            else MaterialTheme.colorScheme.surface
+
+                    // Animasyonlu vurgu: renk yumuşakça geçiş yapar
+                    val cardColor by animateColorAsState(
+                        targetValue = if (isCurrentAyah) TealPrimary.copy(alpha = 0.16f)
+                        else MaterialTheme.colorScheme.surface,
+                        animationSpec = tween(durationMillis = 450),
+                        label = "ayahCardColor"
+                    )
+                    val borderColor by animateColorAsState(
+                        targetValue = if (isCurrentAyah) TealPrimary.copy(alpha = 0.55f)
+                        else MaterialTheme.colorScheme.surface.copy(alpha = 0f),
+                        animationSpec = tween(durationMillis = 450),
+                        label = "ayahBorderColor"
+                    )
+
+                    // Çalarken yumuşak nabız efekti (yalnızca aktif ayet)
+                    val infiniteTransition = rememberInfiniteTransition(label = "ayahPulse")
+                    val pulseScale by infiniteTransition.animateFloat(
+                        initialValue = 1f,
+                        targetValue = 1.03f,
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(durationMillis = 900),
+                            repeatMode = RepeatMode.Reverse
                         ),
-                        border = if (isCurrentAyah) androidx.compose.foundation.BorderStroke(
-                            1.dp, TealPrimary.copy(alpha = 0.45f)
-                        ) else null,
+                        label = "ayahPulseScale"
+                    )
+                    val highlightScale = if (isCurrentAyah && audio.isPlaying) pulseScale else 1f
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .scale(highlightScale),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = CardDefaults.cardColors(containerColor = cardColor),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, borderColor),
                         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                     ) {
                         Column(

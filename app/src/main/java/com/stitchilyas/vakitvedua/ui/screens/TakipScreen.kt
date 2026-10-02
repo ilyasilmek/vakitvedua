@@ -232,10 +232,10 @@ fun TakipScreen(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = "Kaza Namazı Sayacı",
                         style = MaterialTheme.typography.titleLarge,
@@ -251,7 +251,8 @@ fun TakipScreen(
                 Button(
                     onClick = { showWizardDialog = true },
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = BrassGold)
+                    colors = ButtonDefaults.buttonColors(containerColor = BrassGold),
+                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
                 ) {
                     Text("Sihirbaz", fontWeight = FontWeight.Bold, color = Color.Black)
                 }

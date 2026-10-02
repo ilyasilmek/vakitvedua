@@ -324,4 +324,28 @@ object LocationHelper {
             )
         )
     }
+
+    /**
+     * Uygulama açılışında sessiz konum doğrulaması: cihaz konumunu alır, en yakın
+     * il/ilçeyi bulur ve kayıtlı seçimden farklıysa [onResult] ile bildirir.
+     * Konum alınamazsa hiçbir şey yapmaz (kullanıcıyı rahatsız etmez).
+     */
+    fun verifyLocationSilently(
+        context: Context,
+        cities: List<City>,
+        onResult: (LocationResult) -> Unit
+    ) {
+        Thread {
+            try {
+                getCurrentLocation(context, cities) { result ->
+                    android.os.Handler(Looper.getMainLooper()).post { onResult(result) }
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "Sessiz konum doğrulaması başarısız: ${e.message}")
+            }
+        }.apply {
+            name = "SilentLocationVerifier"
+            isDaemon = true
+        }.start()
+    }
 }
