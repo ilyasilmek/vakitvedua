@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Vakit ve Dua</string>
+    <string name="prayer_time_title">%1$s vakti</string>
+    <string name="prayer_time_text">%1$s namazı vakti girdi. Allah kabul etsin.</string>
+    <string name="prayer_done_action">Namazı Kıldım İşaretle</string>
+    <string name="kerahat_title">Kerahat Vakti Uyarısı</string>
+    <string name="kerahat_text">%1$s kerahat vakti başlıyor. Bu vakitte nafile ibadet mekruhtur.</string>
 </resources>

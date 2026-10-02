@@ -1,6 +1,33 @@
+# Gradle
+.gradle/
+build/
+
+# Keystore / imza dosyaları — asla repoya girmesin
+*.jks
+*.keystore
+*.p12
+*.pem
+local.keystore.properties
+debug.keystore.base64
+
+# IntelliJ / Android Studio
+.idea/
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Android
+local.properties
+
+# Node (web kalıntısı)
 node_modules/
 www/
 android/
 package-lock.json
-*.jks
-*.keystore
+
+# OS
+.DS_Store
+
+# Kotlin
+.kotlin/

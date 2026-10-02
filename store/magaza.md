@@ -104,7 +104,7 @@ Vakitler Diyanet'in yayımladığı verilerden alınır; bağlantı yoksa Diyane
 
 **Hassas izinler:**
 - *Tam zamanlı alarm (SCHEDULE_EXACT_ALARM):* Namaz vakti bildirimlerinin tam vaktinde gelmesi için. Play Console bunu sorarsa gerekçe: "Kullanıcının seçtiği namaz vakitlerinde tam zamanında bildirim."
-- *Konum (yaklaşık ve kesin):* Yalnızca kullanıcı "Konumumu bul"a bastığında ya da seyahat modu açıkken, en yakın ilçeyi bulmak için. Arka planda konum kullanılmaz.
+- *Konum (yaklaşık ve kesin):* Vakitler seçilen il/ilçeye göre cihaz üzerinde hesaplanır; konum verisi hiçbir sunucuya gönderilmez. Arka planda konum kullanılmaz.
 
 ## Yüklemeden önce
 

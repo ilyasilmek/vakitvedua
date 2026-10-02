@@ -56,7 +56,7 @@ Play Console > Tüm uygulamalar > Uygulama oluştur:
 
 İzinler hakkında soru gelirse:
 - **Tam zamanlı alarm (SCHEDULE_EXACT_ALARM):** "Namaz vakti bildirimlerinin kullanıcının seçtiği vakitlerde tam zamanında gelmesi için." Bu izin Android 14'te kullanıcının kendisi tarafından açılır; ayrıca beyan gerektiren USE_EXACT_ALARM kullanılmıyor.
-- **Konum:** Yalnızca ön planda, kullanıcı "Konumumu bul"a bastığında ya da seyahat modunda, en yakın ilçeyi bulmak için. Arka planda konum yok.
+- **Konum:** Vakitler seçilen il/ilçeye göre cihaz üzerinde hesaplanır; konum verisi hiçbir sunucuya gönderilmez. Arka planda konum yok.
 - **Ön plan hizmeti:** Uygulamada tür belirten ön plan hizmeti yok (listelenen tek hizmet AndroidX WorkManager'ın standart hizmeti). Form çıkmaz.
 
 ## 5. Veri güvenliği formu
