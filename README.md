@@ -9,7 +9,7 @@ Modern, sade ve güçlü bir Android uygulaması. Kotlin ve Jetpack Compose ile 
 - **Kıble Pusulası:** Cihazın manyetik sensörleri ile gerçek zamanlı çalışan kıble pusulası. Kıble açısına dönüldüğünde titreşimli geri bildirim, Kâbe mesafesi ve gündüz vakti için güneş yöntemiyle açı tayini rehberi.
 - **Namaz Takibi ve Kaza Sayacı:** Son 7 günün 5 vakit namazını interaktif olarak işaretleme, kaza namazları (Sabah, Öğle, İkindi, Akşam, Yatsı, Vitir, Oruç) sayacı.
 - **Zikirmatik:** Halka animasyonlu sayaç, 33/99/100/1000 hedef seçenekleri, titreşim desteği, hazır zikirler ve özel zikir ekleme/silme.
-- **Kur'an-ı Kerim:** 114 surenin Tanzil Projesi Arapça metinleri, hızlı arama, ayet kopyalama ve paylaşma, son okunan sureyi yer imine kaydetme, ayarlanabilir yazı boyutu.
+- **Kur'an-ı Kerim:** 114 sure, 6236 ayet — Tanzil Projesi Uthmani metinleri (yeni sureler AlQuran.cloud üzerinden çapraz doğrulandı), ayet bazlı sesli takip (oynatılan ayet vurgulanır, otomatik kaydırma), 5 hâfız seçeneği, hızlı arama, ayet kopyalama ve paylaşma, son okunan sureyi yer imine kaydetme, ayarlanabilir yazı boyutu.
 - **Dualar, Esmâü'l-Hüsnâ ve Rehber:** Namaz sureleri ve duaları (Arapça, Türkçe okunuş ve meal ile), Allah'ın 99 ismi (Esmâü'l-Hüsnâ), abdest ve namaz kılınışı rehberleri.
 - **Hazır Mesajlar:** Cuma, Kandil, Ramazan ve Bayram tebrik mesajları, tek dokunuşla WhatsApp veya diğer uygulamalarda paylaşma/kopyalama.
 - **Takvim & İmsakiye:** 400 günlük dini günler ve kandiller geri sayımı, seçili il/ilçe için 30 günlük namaz vakitleri tablosu.

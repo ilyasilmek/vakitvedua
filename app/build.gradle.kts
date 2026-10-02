@@ -38,8 +38,8 @@ android {
         applicationId = "com.stitchilyas.vakitvedua"
         minSdk = 26
         targetSdk = 36
-        versionCode = 15402
-        versionName = "1.54.02"
+        versionCode = 15500
+        versionName = "1.55.00"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

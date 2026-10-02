@@ -13,6 +13,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -38,6 +40,136 @@ import com.stitchilyas.vakitvedua.data.model.QuranSurah
 import com.stitchilyas.vakitvedua.ui.theme.BrassGold
 import com.stitchilyas.vakitvedua.ui.theme.TealPrimary
 
+/**
+ * Hâfız tercihini her ayetin MP3 dosyasının bulunduğu everyayah.com klasörüne eşler.
+ * Kaynak: everyayah.com (ücretsiz, açık erişimli ayet-bazlı tilavet arşivi).
+ */
+private val RECITER_DIRS = mapOf(
+    "mishari" to "Alafasy_128kbps",
+    "abdulsamad" to "Abdul_Basit_Murattal_192kbps",
+    "ghamadi" to "Ghamadi_40kbps",
+    "husary" to "Husary_128kbps",
+    "minshawi" to "Minshawy_Murattal_128kbps"
+)
+
+/**
+ * Ayet ayet sesli okuma denetleyicisi. Her ayet için ayrı MP3 çalar, ayet bitince
+ * otomatik olarak sıradaki ayete geçer; surenin sonunda durur. Okunan ayet
+ * [currentSurah]/[currentAyahIndex] üzerinden takip edilir ve arayüzde vurgulanır.
+ */
+private class AyahAudioController(private val context: Context) {
+
+    var mediaPlayer by mutableStateOf<MediaPlayer?>(null)
+    var isPlaying by mutableStateOf(false)
+    var isBuffering by mutableStateOf(false)
+    var currentSurah by mutableStateOf<QuranSurah?>(null)
+    var currentAyahIndex by mutableIntStateOf(-1)
+
+    fun ayahAudioUrl(surah: QuranSurah, index: Int, reciterId: String): String {
+        val dir = RECITER_DIRS[reciterId] ?: RECITER_DIRS.getValue("mishari")
+        val ayahNo = surah.ayahs[index].number
+        return "https://everyayah.com/data/$dir/" + String.format("%03d%03d.mp3", surah.id, ayahNo)
+    }
+
+    /** Verilen surede verilen ayetten (0 tabanlı indeks) itibaren okumayı başlatır. */
+    fun playFrom(surah: QuranSurah, startIndex: Int, reciterId: String) {
+        releasePlayer()
+        currentSurah = surah
+        currentAyahIndex = startIndex.coerceIn(0, surah.ayahs.size - 1)
+        startCurrent(reciterId)
+    }
+
+    /** Başlat/duraklat: çalıyorsa duraklat, duraklatılmışsa devam ettir, boşsa sureyi baştan çal. */
+    fun togglePlayback(surah: QuranSurah, reciterId: String) {
+        val mp = mediaPlayer
+        if (mp != null && currentSurah?.id == surah.id) {
+            if (isPlaying) {
+                if (mp.isPlaying) mp.pause()
+                isPlaying = false
+            } else {
+                mp.start()
+                isPlaying = true
+            }
+        } else {
+            playFrom(surah, 0, reciterId)
+        }
+    }
+
+    fun stopAll() {
+        releasePlayer()
+        currentSurah = null
+        currentAyahIndex = -1
+    }
+
+    private fun releasePlayer() {
+        try {
+            mediaPlayer?.stop()
+        } catch (_: IllegalStateException) {
+            // henüz hazırlanmamış oynatıcıyı durdurma denemesi — yoksay
+        }
+        mediaPlayer?.release()
+        mediaPlayer = null
+        isPlaying = false
+        isBuffering = false
+    }
+
+    private fun startCurrent(reciterId: String) {
+        val surah = currentSurah ?: return
+        val idx = currentAyahIndex
+        if (idx < 0 || idx >= surah.ayahs.size) return
+        val url = ayahAudioUrl(surah, idx, reciterId)
+        isBuffering = true
+        try {
+            val mp = MediaPlayer().apply {
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .build()
+                )
+                setDataSource(url)
+                setOnPreparedListener {
+                    this@AyahAudioController.isBuffering = false
+                    this@AyahAudioController.isPlaying = true
+                    start()
+                }
+                setOnCompletionListener { advance(reciterId) }
+                setOnErrorListener { _, _, _ ->
+                    onPlaybackError()
+                    true
+                }
+                prepareAsync()
+            }
+            mediaPlayer = mp
+        } catch (_: Exception) {
+            onPlaybackError()
+        }
+    }
+
+    private fun advance(reciterId: String) {
+        val surah = currentSurah
+        if (surah == null || currentAyahIndex >= surah.ayahs.size - 1) {
+            // Sure bitti — oynatıcıyı bırak
+            releasePlayer()
+            return
+        }
+        releasePlayer()
+        currentAyahIndex += 1
+        startCurrent(reciterId)
+    }
+
+    private fun onPlaybackError() {
+        releasePlayer()
+        currentAyahIndex = -1
+        Toast.makeText(
+            context,
+            "Ses yüklenemedi. İnternet bağlantınızı kontrol edin.",
+            Toast.LENGTH_LONG
+        ).show()
+    }
+}
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KuranScreen(
@@ -51,84 +183,16 @@ fun KuranScreen(
     var searchQuery by remember { mutableStateOf("") }
     var arabicFontSize by remember { mutableFloatStateOf(24f) }
 
-    // Audio Player state
-    var isPlayingAudio by remember { mutableStateOf(false) }
-    var isBufferingAudio by remember { mutableStateOf(false) }
-    var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
-
-    DisposableEffect(selectedSurah) {
-        onDispose {
-            mediaPlayer?.release()
-            mediaPlayer = null
-            isPlayingAudio = false
-            isBufferingAudio = false
-        }
-    }
-
-    fun playSurahAudio(surahId: Int) {
-        if (isPlayingAudio && mediaPlayer != null) {
-            mediaPlayer?.pause()
-            isPlayingAudio = false
-            return
-        }
-
-        if (mediaPlayer != null && !isPlayingAudio) {
-            mediaPlayer?.start()
-            isPlayingAudio = true
-            return
-        }
-
-        // Formatted Surah number (e.g. 001, 002, 114)
-        val formattedNum = String.format("%03d", surahId)
-        val audioUrl = when (prefs.quranReciter) {
-            "abdulsamad" -> "https://server8.mp3quran.net/basit/$formattedNum.mp3"
-            "ghamadi" -> "https://server13.mp3quran.net/ghamdi/$formattedNum.mp3"
-            else -> "https://server8.mp3quran.net/afs/$formattedNum.mp3"
-        }
-
-        try {
-            isBufferingAudio = true
-            val mp = MediaPlayer().apply {
-                setAudioAttributes(
-                    AudioAttributes.Builder()
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .build()
-                )
-                setDataSource(audioUrl)
-                setOnPreparedListener {
-                    isBufferingAudio = false
-                    isPlayingAudio = true
-                    start()
-                }
-                setOnCompletionListener {
-                    isPlayingAudio = false
-                    isBufferingAudio = false
-                }
-                setOnErrorListener { _, _, _ ->
-                    isBufferingAudio = false
-                    isPlayingAudio = false
-                    Toast.makeText(context, "Ses akışı başlatılamadı. İnternet bağlantınızı kontrol edin.", Toast.LENGTH_LONG).show()
-                    true
-                }
-                prepareAsync()
-            }
-            mediaPlayer = mp
-        } catch (e: Exception) {
-            isBufferingAudio = false
-            isPlayingAudio = false
-            Toast.makeText(context, "Ses oynatma hatası: ${e.message}", Toast.LENGTH_SHORT).show()
-        }
+    // Ayet bazlı sesli okuma denetleyicisi (durdur: geri tuşu veya X düğmesi)
+    val audio = remember { AyahAudioController(context) }
+    DisposableEffect(Unit) {
+        onDispose { audio.stopAll() }
     }
 
     // If surah reading view is open, handle system back button
     if (selectedSurah != null) {
         BackHandler {
-            mediaPlayer?.stop()
-            mediaPlayer?.release()
-            mediaPlayer = null
-            isPlayingAudio = false
-            isBufferingAudio = false
+            audio.stopAll()
             selectedSurah = null
         }
     }
@@ -302,12 +366,12 @@ fun KuranScreen(
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    // Audio Play/Pause Button
+                    // Audio Play/Pause Button — sureyi ayet ayet okur
                     IconButton(
-                        onClick = { playSurahAudio(surah.id) },
+                        onClick = { audio.togglePlayback(surah, prefs.quranReciter) },
                         modifier = Modifier.testTag("surah_audio_button")
                     ) {
-                        if (isBufferingAudio) {
+                        if (audio.isBuffering && audio.currentSurah?.id == surah.id) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(20.dp),
                                 strokeWidth = 2.dp,
@@ -315,8 +379,8 @@ fun KuranScreen(
                             )
                         } else {
                             Icon(
-                                imageVector = if (isPlayingAudio) Icons.Default.PauseCircle else Icons.Default.PlayCircle,
-                                contentDescription = if (isPlayingAudio) "Durdur" else "Dinle",
+                                imageVector = if (audio.isPlaying && audio.currentSurah?.id == surah.id) Icons.Default.PauseCircle else Icons.Default.PlayCircle,
+                                contentDescription = if (audio.isPlaying && audio.currentSurah?.id == surah.id) "Duraklat" else "Dinle",
                                 tint = TealPrimary,
                                 modifier = Modifier.size(28.dp)
                             )
@@ -359,7 +423,8 @@ fun KuranScreen(
             HorizontalDivider()
 
             // Audio Player Active Banner
-            AnimatedVisibility(visible = isPlayingAudio || isBufferingAudio) {
+            val surahActive = audio.currentSurah?.id == surah.id
+            AnimatedVisibility(visible = surahActive && (audio.isPlaying || audio.isBuffering)) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -374,24 +439,23 @@ fun KuranScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                             Icon(Icons.Default.VolumeUp, contentDescription = null, tint = TealPrimary)
                             Spacer(modifier = Modifier.width(8.dp))
+                            val currentAyahNo = if (audio.currentAyahIndex >= 0 && audio.currentAyahIndex < surah.ayahs.size) surah.ayahs[audio.currentAyahIndex].number else null
                             Text(
-                                text = if (isBufferingAudio) "${surah.name} Suresi Yükleniyor..." else "${surah.name} Suresi Okunuyor",
+                                text = when {
+                                    audio.isBuffering -> "Yükleniyor..."
+                                    currentAyahNo != null -> "${surah.name} ${currentAyahNo}. Âyet Okunuyor"
+                                    else -> "${surah.name} Suresi Okunuyor"
+                                },
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = TealPrimary
                             )
                         }
-                        IconButton(onClick = {
-                            mediaPlayer?.stop()
-                            mediaPlayer?.release()
-                            mediaPlayer = null
-                            isPlayingAudio = false
-                            isBufferingAudio = false
-                        }) {
-                            Icon(Icons.Default.Close, contentDescription = "Kapat", tint = TealPrimary)
+                        IconButton(onClick = { audio.stopAll() }) {
+                            Icon(Icons.Default.Close, contentDescription = "Durdur ve Kapat", tint = TealPrimary)
                         }
                     }
                 }
@@ -416,17 +480,36 @@ fun KuranScreen(
                 }
             }
 
-            // Ayahs list
+            // Ayahs list — oynatılan ayet vurgulanır ve görünüme kaydırılır
+            val listState = rememberLazyListState()
+            // Oynatılan ayet değiştikçe otomatik kaydır
+            LaunchedEffect(audio.currentSurah?.id, audio.currentAyahIndex) {
+                if (audio.currentSurah?.id == surah.id && audio.currentAyahIndex >= 0 && audio.isPlaying) {
+                    try {
+                        listState.animateScrollToItem(audio.currentAyahIndex)
+                    } catch (_: Exception) {
+                        // liste henüz hazır değilse yoksay
+                    }
+                }
+            }
             LazyColumn(
+                state = listState,
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(top = 8.dp, bottom = 90.dp)
             ) {
-                items(surah.ayahs, key = { "${surah.id}_${it.number}" }) { ayah ->
+                itemsIndexed(surah.ayahs, key = { _, a -> "${surah.id}_${a.number}" }) { index, ayah ->
+                    val isCurrentAyah = audio.currentSurah?.id == surah.id && audio.currentAyahIndex == index
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(14.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isCurrentAyah) TealPrimary.copy(alpha = 0.10f)
+                            else MaterialTheme.colorScheme.surface
+                        ),
+                        border = if (isCurrentAyah) androidx.compose.foundation.BorderStroke(
+                            1.dp, TealPrimary.copy(alpha = 0.45f)
+                        ) else null,
                         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                     ) {
                         Column(
@@ -434,24 +517,52 @@ fun KuranScreen(
                                 .fillMaxWidth()
                                 .padding(16.dp)
                         ) {
-                            // Ayah Number Pill and Share
+                            // Ayah Number, Play and Share buttons
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Surface(
-                                    shape = CircleShape,
-                                    color = TealPrimary.copy(alpha = 0.12f),
-                                    modifier = Modifier.size(28.dp)
-                                ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Text(
-                                            text = ayah.number.toString(),
-                                            style = MaterialTheme.typography.labelSmall,
-                                            fontWeight = FontWeight.Bold,
-                                            color = TealPrimary
-                                        )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Surface(
+                                        shape = CircleShape,
+                                        color = TealPrimary.copy(alpha = 0.12f),
+                                        modifier = Modifier.size(28.dp)
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Text(
+                                                text = ayah.number.toString(),
+                                                style = MaterialTheme.typography.labelSmall,
+                                                fontWeight = FontWeight.Bold,
+                                                color = TealPrimary
+                                            )
+                                        }
+                                    }
+                                    // Bu ayetten itibaren okumayı başlat
+                                    IconButton(
+                                        onClick = {
+                                            if (isCurrentAyah && audio.isPlaying) {
+                                                audio.togglePlayback(surah, prefs.quranReciter)
+                                            } else {
+                                                audio.playFrom(surah, index, prefs.quranReciter)
+                                            }
+                                        },
+                                        modifier = Modifier.size(32.dp).testTag("ayah_audio_button_${surah.id}_${ayah.number}")
+                                    ) {
+                                        if (isCurrentAyah && audio.isBuffering) {
+                                            CircularProgressIndicator(
+                                                modifier = Modifier.size(16.dp),
+                                                strokeWidth = 2.dp,
+                                                color = TealPrimary
+                                            )
+                                        } else {
+                                            Icon(
+                                                imageVector = if (isCurrentAyah && audio.isPlaying) Icons.Default.PauseCircle else Icons.Default.PlayCircle,
+                                                contentDescription = if (isCurrentAyah && audio.isPlaying) "Duraklat" else "Bu Âyeti Dinle",
+                                                tint = if (isCurrentAyah) TealPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                        }
                                     }
                                 }
 

@@ -460,9 +460,11 @@ fun AyarlarScreen(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             val reciters = listOf(
-                                "mishari" to "Mişari el-Afasi",
+                                "mishari" to "Mişari Raşid el-Afasi",
                                 "abdulsamad" to "Abdulbasit Abdussamed",
-                                "ghamdi" to "Saad el-Gamidi"
+                                "ghamadi" to "Saad el-Gamidi",
+                                "husary" to "Mahmud Halil el-Husari",
+                                "minshawi" to "Muhammed Sıddık el-Minşevî"
                             )
                             items(reciters) { (id, name) ->
                                 val isSelected = selectedReciter == id

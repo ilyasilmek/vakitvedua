@@ -44,7 +44,7 @@ NAMAZ TAKİBİ VE KAZA
 • Kaza sayacı: beş vakit ve vitir ayrı ayrı
 
 KUR'AN, DUALAR VE ESMÂÜ'L-HÜSNÂ
-• Yâsîn, Mülk, Nebe', Âyetü'l-Kürsî ve namaz sureleri (Arapça metin)
+• Kur'an-ı Kerim'in tamamı: 114 sure ve 6236 ayet (Tanzil Uthmani metni), ayet bazlı sesli takip ve 5 hâfız seçeneği
 • Namaz sureleri ve duaları; Arapça, okunuş ve anlamıyla
 • Esmâü'l-Hüsnâ: 99 isim ve anlamları
 • Kütüb-i Sitte'den seçilmiş sahih hadisler ve günün hadisi
