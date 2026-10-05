@@ -655,7 +655,7 @@ fun AyarlarScreen(
                                 color = TealPrimary
                             )
                             Text(
-                                text = "Sürüm 1.54.02",
+                                text = "Sürüm 1.54.04",
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = BrassGold

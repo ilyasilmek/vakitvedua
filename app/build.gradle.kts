@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -11,24 +13,39 @@ android {
         applicationId = "com.stitchilyas.vakitvedua"
         minSdk = 26
         targetSdk = 36
-        versionCode = 15402
-        versionName = "1.54.02"
+        versionCode = 15404
+        versionName = "1.54.04"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
         getByName("debug") {
-            storeFile = file("${rootDir}/debug.keystore")
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
+            val ks = file("${rootDir}/debug.keystore")
+            if (ks.exists()) {
+                storeFile = ks
+                storePassword = "android"
+                keyAlias = "androiddebugkey"
+                keyPassword = "android"
+            }
         }
         create("release") {
-            storeFile = file("${rootDir}/debug.keystore")
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
+            val keystorePropertiesFile = file("${rootDir}/local.keystore.properties")
+                .takeIf { it.exists() }
+                ?: file("/Users/zeynepilyas/Desktop/Android Projeler/imzalar/vakitvedua/keystore.properties")
+                    .takeIf { it.exists() }
+
+            if (keystorePropertiesFile != null && keystorePropertiesFile.exists()) {
+                val properties = Properties()
+                keystorePropertiesFile.inputStream().use { properties.load(it) }
+                val propStoreFile = properties.getProperty("storeFile")?.let { file(it) }
+                if (propStoreFile != null && propStoreFile.exists()) {
+                    storeFile = propStoreFile
+                    storePassword = properties.getProperty("storePassword")
+                    keyAlias = properties.getProperty("keyAlias")
+                    keyPassword = properties.getProperty("keyPassword")
+                }
+            }
         }
     }
 

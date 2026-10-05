@@ -11,8 +11,8 @@ android {
         applicationId = "com.stitchilyas.vakitvedua"
         minSdk = 26
         targetSdk = 36
-        versionCode = 15402
-        versionName = "1.54.02"
+        versionCode = 15404
+        versionName = "1.54.04"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
