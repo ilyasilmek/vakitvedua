@@ -1,0 +1,7 @@
+com.stitchilyas.vakitvedua.app-pngs-0 /Users/zeynepilyas/Desktop/Android Projeler/vakitvedua/app/build/generated/res/pngs/debug
+com.stitchilyas.vakitvedua.app-updated_navigation_xml-1 /Users/zeynepilyas/Desktop/Android Projeler/vakitvedua/app/build/generated/updated_navigation_xml/debug
+com.stitchilyas.vakitvedua.app-packageDebugResources-2 /Users/zeynepilyas/Desktop/Android Projeler/vakitvedua/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.stitchilyas.vakitvedua.app-packageDebugResources-3 /Users/zeynepilyas/Desktop/Android Projeler/vakitvedua/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.stitchilyas.vakitvedua.app-debug-4 /Users/zeynepilyas/Desktop/Android Projeler/vakitvedua/app/build/intermediates/merged_res/debug/mergeDebugResources
+com.stitchilyas.vakitvedua.app-debug-5 /Users/zeynepilyas/Desktop/Android Projeler/vakitvedua/app/src/debug/res
+com.stitchilyas.vakitvedua.app-main-6 /Users/zeynepilyas/Desktop/Android Projeler/vakitvedua/app/src/main/res
